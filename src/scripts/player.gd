@@ -79,3 +79,12 @@ func _input(event):
 
 func _on_CollisionShape_gameplay_entered():
 	print("weeeeee")
+
+
+func _on_Area_body_entered_right_hand(body):
+	print("hit right"  + body.name)
+
+
+
+func _on_Area_body_entered(body):
+	print("hit right"  + body.name)

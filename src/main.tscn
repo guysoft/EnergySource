@@ -46,7 +46,7 @@ mesh = SubResource( 2 )
 
 [node name="LeftHand" type="ARVRController" parent="Player/ARVROrigin"]
 
-[node name="LeftHandBody" type="KinematicBody" parent="Player/ARVROrigin/LeftHand"]
+[node name="LeftHandBody" type="Spatial" parent="Player/ARVROrigin/LeftHand"]
 
 [node name="MeshInstance" type="MeshInstance" parent="Player/ARVROrigin/LeftHand/LeftHandBody"]
 transform = Transform( 0.0999998, -0.000179429, 0.000101316, 0.000179483, 0.0999998, -5.3572e-05, -0.00010122, 5.37534e-05, 0.0999999, 0, 0, 0 )
@@ -57,7 +57,9 @@ material/0 = null
 
 [node name="LeftHand" parent="Player/ARVROrigin/LeftHand/LeftHandBody" instance=ExtResource( 6 )]
 
-[node name="CollisionShape" type="CollisionShape" parent="Player/ARVROrigin/LeftHand/LeftHandBody"]
+[node name="Area" type="Area" parent="Player/ARVROrigin/LeftHand/LeftHandBody"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Player/ARVROrigin/LeftHand/LeftHandBody/Area"]
 transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0 )
 shape = SubResource( 14 )
 
@@ -65,18 +67,20 @@ shape = SubResource( 14 )
 controller_id = 2
 script = ExtResource( 9 )
 
-[node name="RightHandBody" type="KinematicBody" parent="Player/ARVROrigin/RightHand"]
+[node name="RightHandBody2" type="Spatial" parent="Player/ARVROrigin/RightHand"]
 
-[node name="MeshInstance" type="MeshInstance" parent="Player/ARVROrigin/RightHand/RightHandBody"]
+[node name="MeshInstance" type="MeshInstance" parent="Player/ARVROrigin/RightHand/RightHandBody2"]
 transform = Transform( 0.1, 8.67924e-05, -4.89624e-05, -8.67795e-05, 0.1, 2.59732e-05, 4.89852e-05, -2.59302e-05, 0.1, 0, 0, 0 )
 visible = false
 mesh = SubResource( 12 )
 skeleton = NodePath("../..")
 material/0 = null
 
-[node name="HandModel" parent="Player/ARVROrigin/RightHand/RightHandBody" instance=ExtResource( 5 )]
+[node name="HandModel" parent="Player/ARVROrigin/RightHand/RightHandBody2" instance=ExtResource( 5 )]
 
-[node name="CollisionShape" type="CollisionShape" parent="Player/ARVROrigin/RightHand/RightHandBody"]
+[node name="Area" type="Area" parent="Player/ARVROrigin/RightHand/RightHandBody2"]
+
+[node name="CollisionShape" type="CollisionShape" parent="Player/ARVROrigin/RightHand/RightHandBody2/Area"]
 transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0 )
 shape = SubResource( 13 )
 
@@ -123,5 +127,6 @@ script = ExtResource( 8 )
 wait_time = 0.5
 autostart = true
 
-[connection signal="gameplay_entered" from="Player/ARVROrigin/LeftHand/LeftHandBody/CollisionShape" to="Player" method="_on_CollisionShape_gameplay_entered"]
+[connection signal="body_entered" from="Player/ARVROrigin/LeftHand/LeftHandBody/Area" to="Player" method="_on_Area_body_entered"]
+[connection signal="body_entered" from="Player/ARVROrigin/RightHand/RightHandBody2/Area" to="Player" method="_on_Area_body_entered_right_hand"]
 [connection signal="timeout" from="Spawner/Timer" to="Spawner" method="_on_Timer_timeout"]
