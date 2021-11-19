@@ -14,7 +14,7 @@ func _ready():
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):
 #	pass
-var ENABLE_VR = false
+var ENABLE_VR = true
 
 # Don't edit
 export var vr_enabled = false
