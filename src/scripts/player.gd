@@ -77,10 +77,6 @@ func _input(event):
 			# rotate_x(-Sensitivity_Y * event.relative.y)
 
 
-func _on_CollisionShape_gameplay_entered():
-	print("weeeeee")
-
-
 func _on_Area_body_entered_right_hand(body):
 	print("hit right"  + body.name)
 
