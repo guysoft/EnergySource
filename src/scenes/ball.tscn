@@ -20,17 +20,17 @@ roughness_texture = ExtResource( 3 )
 transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0 )
 script = ExtResource( 4 )
 
-[node name="StaticBody" type="StaticBody" parent="."]
+[node name="Ball" type="StaticBody" parent="."]
 
-[node name="CollisionShape" type="CollisionShape" parent="StaticBody"]
+[node name="CollisionShape" type="CollisionShape" parent="Ball"]
 transform = Transform( 0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 0, 0, 0 )
 shape = SubResource( 4 )
 
-[node name="MeshInstance" type="MeshInstance" parent="StaticBody"]
+[node name="MeshInstance" type="MeshInstance" parent="Ball"]
 transform = Transform( 0.254268, 0, 0, 0, 0.254268, 0, 0, 0, 0.254268, 0, 0, 0 )
 mesh = SubResource( 1 )
 skin = SubResource( 2 )
 skeleton = NodePath("../..")
 material/0 = SubResource( 3 )
 
-[connection signal="gameplay_entered" from="StaticBody/CollisionShape" to="." method="_on_CollisionShape_gameplay_entered"]
+[connection signal="gameplay_entered" from="Ball/CollisionShape" to="." method="_on_CollisionShape_gameplay_entered"]
