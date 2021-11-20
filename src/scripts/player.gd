@@ -77,10 +77,8 @@ func _input(event):
 			# rotate_x(-Sensitivity_Y * event.relative.y)
 
 
-func _on_Area_body_entered_right_hand(body):
-	print("hit right"  + body.name)
+func _on_left_hand_body_entered(body):
+	print("hit left"  + body.name)
 
-
-
-func _on_Area_body_entered(body):
+func _on_right_hand_body_entered(body):
 	print("hit right"  + body.name)
