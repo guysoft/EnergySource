@@ -1,30 +1,21 @@
 extends Spatial
 
-var BALL_SPEED = 0.01
+export(float) var speed = 1
+export(Vector3) var direction = Vector3(0,0,1)
 
-# Declare member variables here. Examples:
-# var a = 2
-# var b = "text"
+onready var _velocity = Vector3(0,0,0)
 
-
-# Called when the node enters the scene tree for the first time.
 func _ready():
 	pass
 	# print("ball created")
 	
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
-	self.transform.origin = Vector3(self.transform.origin.x, self.transform.origin.y, self.transform.origin.z + BALL_SPEED)
+func _physics_process(delta):
+	_velocity = direction * speed * delta
+	translate(_velocity)
 	
 	if self.transform.origin.z > 1:
 		# print("ball freed")
-		self.free()
-	
+		self.queue_free()
 
-
-
-
-func _on_CollisionShape_gameplay_entered(body):
-	print("wee")
+func _process(delta):
+	pass

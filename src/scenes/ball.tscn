@@ -32,5 +32,3 @@ mesh = SubResource( 1 )
 skin = SubResource( 2 )
 skeleton = NodePath("../..")
 material/0 = SubResource( 3 )
-
-[connection signal="gameplay_entered" from="Ball/CollisionShape" to="." method="_on_CollisionShape_gameplay_entered"]
