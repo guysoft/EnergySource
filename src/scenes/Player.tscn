@@ -35,7 +35,7 @@ material/0 = null
 [node name="Area" type="Area" parent="ARVROrigin/LeftHand"]
 
 [node name="CollisionShape" type="CollisionShape" parent="ARVROrigin/LeftHand/Area"]
-transform = Transform( 0.199892, 0, 0.0065787, 0, 0.2, 0, -0.0065787, 0, 0.199892, 0, 0, 0 )
+transform = Transform( 0.0999459, 0, 0.00328935, 0, 0.1, 0, -0.00328935, 0, 0.0999459, 0, 0, 0 )
 shape = SubResource( 14 )
 
 [node name="RightHand" type="ARVRController" parent="ARVROrigin"]
@@ -53,7 +53,7 @@ material/0 = null
 [node name="Area" type="Area" parent="ARVROrigin/RightHand"]
 
 [node name="CollisionShape" type="CollisionShape" parent="ARVROrigin/RightHand/Area"]
-transform = Transform( 0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 0, 0 )
+transform = Transform( 0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0 )
 shape = SubResource( 13 )
 
 [node name="CollisionShape" type="CollisionShape" parent="."]
@@ -61,4 +61,6 @@ transform = Transform( 0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0 )
 shape = SubResource( 15 )
 
 [connection signal="body_entered" from="ARVROrigin/LeftHand/Area" to="." method="_on_left_hand_body_entered"]
+[connection signal="body_exited" from="ARVROrigin/LeftHand/Area" to="." method="_on_Area_body_exited_left"]
 [connection signal="body_entered" from="ARVROrigin/RightHand/Area" to="." method="_on_right_hand_body_entered"]
+[connection signal="body_exited" from="ARVROrigin/RightHand/Area" to="." method="_on_Area_body_exited_right"]

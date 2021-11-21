@@ -86,6 +86,12 @@ func _on_left_hand_body_entered(body):
 
 func _on_right_hand_body_entered(body):
 	handle_hit(body, "right")
+	
+func _on_Area_body_exited_left(body):
+	handle_hit(body, "left")
+
+func _on_Area_body_exited_right(body):
+	handle_hit(body, "right")
 
 func handle_hit(body, hand):
 	var controller = null
@@ -107,4 +113,3 @@ func handle_hit(body, hand):
 #			if controller.get_rumble() == 0.0:
 #				print("rumble")
 #				controller.set_rumble(1.0)
-	
