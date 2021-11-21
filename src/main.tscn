@@ -1,8 +1,10 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://main.gd" type="Script" id=1]
 [ext_resource path="res://scenes/Player.tscn" type="PackedScene" id=2]
 [ext_resource path="res://scenes/Spawner.tscn" type="PackedScene" id=3]
+[ext_resource path="res://scripts/beat_player.gd" type="Script" id=4]
+[ext_resource path="res://scripts/beat_responder.gd" type="Script" id=5]
 [ext_resource path="res://scenes/Floor.tres" type="Material" id=7]
 
 [sub_resource type="PrismMesh" id=4]
@@ -50,3 +52,12 @@ light_energy = 0.5
 shadow_enabled = true
 
 [node name="Spawner" parent="." instance=ExtResource( 3 )]
+
+[node name="BeatPlayer" type="AudioStreamPlayer" parent="."]
+autoplay = true
+script = ExtResource( 4 )
+bpm = 120.0
+
+[node name="BeatResponder" type="Node" parent="."]
+script = ExtResource( 5 )
+beat_player = NodePath("../BeatPlayer")

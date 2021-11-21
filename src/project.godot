@@ -9,6 +9,16 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "AudioStreamPlayer",
+"class": "BeatPlayer",
+"language": "GDScript",
+"path": "res://scripts/beat_player.gd"
+}, {
+"base": "Node",
+"class": "BeatResponder",
+"language": "GDScript",
+"path": "res://scripts/beat_responder.gd"
+}, {
 "base": "Area",
 "class": "XRToolsInteractableArea",
 "language": "GDScript",
@@ -25,6 +35,8 @@ _global_script_classes=[ {
 "path": "res://addons/godot-xr-tools/objects/Object_pickable.gd"
 } ]
 _global_script_class_icons={
+"BeatPlayer": "",
+"BeatResponder": "",
 "XRToolsInteractableArea": "",
 "XRToolsInteractableBody": "",
 "XRToolsPickable": ""
@@ -51,7 +63,3 @@ autoload=false
 [physics]
 
 common/enable_pause_aware_picking=true
-
-[rendering]
-
-environment/default_environment="res://default_env.tres"
