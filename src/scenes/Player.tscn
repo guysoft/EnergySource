@@ -1,11 +1,9 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://addons/godot-openxr/assets/valve_hand_models/right_hand.glb" type="PackedScene" id=1]
 [ext_resource path="res://addons/godot-xr-tools/assets/LeftHand.tscn" type="PackedScene" id=2]
+[ext_resource path="res://scripts/controller.gd" type="Script" id=3]
 [ext_resource path="res://scripts/player.gd" type="Script" id=4]
-[ext_resource path="res://scripts/RightHand.gd" type="Script" id=5]
-
-[sub_resource type="CubeMesh" id=2]
 
 [sub_resource type="CubeMesh" id=12]
 
@@ -13,7 +11,7 @@
 
 [sub_resource type="SphereShape" id=13]
 
-[sub_resource type="BoxShape" id=6]
+[sub_resource type="BoxShape" id=15]
 
 [node name="Player" type="KinematicBody"]
 script = ExtResource( 4 )
@@ -23,10 +21,8 @@ script = ExtResource( 4 )
 [node name="ARVRCamera" type="ARVRCamera" parent="ARVROrigin"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0 )
 
-[node name="CSGMesh" type="CSGMesh" parent="ARVROrigin"]
-mesh = SubResource( 2 )
-
 [node name="LeftHand" type="ARVRController" parent="ARVROrigin"]
+script = ExtResource( 3 )
 
 [node name="MeshInstance" type="MeshInstance" parent="ARVROrigin/LeftHand"]
 transform = Transform( 0.0999998, -0.000179429, 0.000101316, 0.000179483, 0.0999998, -5.3572e-05, -0.00010122, 5.37534e-05, 0.0999999, 0, 0, 0 )
@@ -39,12 +35,12 @@ material/0 = null
 [node name="Area" type="Area" parent="ARVROrigin/LeftHand"]
 
 [node name="CollisionShape" type="CollisionShape" parent="ARVROrigin/LeftHand/Area"]
-transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0 )
+transform = Transform( 0.199892, 0, 0.0065787, 0, 0.2, 0, -0.0065787, 0, 0.199892, 0, 0, 0 )
 shape = SubResource( 14 )
 
 [node name="RightHand" type="ARVRController" parent="ARVROrigin"]
 controller_id = 2
-script = ExtResource( 5 )
+script = ExtResource( 3 )
 
 [node name="MeshInstance" type="MeshInstance" parent="ARVROrigin/RightHand"]
 transform = Transform( 0.1, 8.67924e-05, -4.89624e-05, -8.67795e-05, 0.1, 2.59732e-05, 4.89852e-05, -2.59302e-05, 0.1, 0, 0, 0 )
@@ -57,11 +53,12 @@ material/0 = null
 [node name="Area" type="Area" parent="ARVROrigin/RightHand"]
 
 [node name="CollisionShape" type="CollisionShape" parent="ARVROrigin/RightHand/Area"]
-transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0 )
+transform = Transform( 0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 0, 0 )
 shape = SubResource( 13 )
 
 [node name="CollisionShape" type="CollisionShape" parent="."]
-shape = SubResource( 6 )
+transform = Transform( 0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0 )
+shape = SubResource( 15 )
 
 [connection signal="body_entered" from="ARVROrigin/LeftHand/Area" to="." method="_on_left_hand_body_entered"]
 [connection signal="body_entered" from="ARVROrigin/RightHand/Area" to="." method="_on_right_hand_body_entered"]

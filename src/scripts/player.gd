@@ -1,5 +1,9 @@
 extends KinematicBody
 
+# Ball mechanics settnings
+var HIT_VELOCITY = 0
+
+# Payer movement in non-vr mode settings
 export var Sensitivity_X = 0.01
 export var Sensitivity_Y = 0.01
 export var Invert_Y_Axis = true
@@ -78,7 +82,29 @@ func _input(event):
 
 
 func _on_left_hand_body_entered(body):
-	print("hit left"  + body.name)
+	handle_hit(body, "left")
 
 func _on_right_hand_body_entered(body):
-	print("hit right"  + body.name)
+	handle_hit(body, "right")
+
+func handle_hit(body, hand):
+	var controller = null
+	if hand == "left":
+		controller = $ARVROrigin/LeftHand
+	else:
+		controller = $ARVROrigin/RightHand
+	
+	print("hit " + hand + " "  + body.name)
+	if body.name == "Ball":
+		velocity = controller.get("velocity")
+		
+		var linear_velocity = sqrt(pow(velocity.x, 2) + pow(velocity.y, 2) + pow(velocity.z, 2))
+		print(linear_velocity)
+		
+		if linear_velocity > HIT_VELOCITY:
+			body.queue_free()
+			
+#			if controller.get_rumble() == 0.0:
+#				print("rumble")
+#				controller.set_rumble(1.0)
+	
