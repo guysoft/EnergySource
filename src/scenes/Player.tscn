@@ -60,7 +60,9 @@ shape = SubResource( 13 )
 transform = Transform( 0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0 )
 shape = SubResource( 15 )
 
+[connection signal="area_entered" from="ARVROrigin/LeftHand/Area" to="." method="_on_Area_area_entered_left"]
 [connection signal="body_entered" from="ARVROrigin/LeftHand/Area" to="." method="_on_left_hand_body_entered"]
 [connection signal="body_exited" from="ARVROrigin/LeftHand/Area" to="." method="_on_Area_body_exited_left"]
+[connection signal="area_entered" from="ARVROrigin/RightHand/Area" to="." method="_on_Area_area_entered_right"]
 [connection signal="body_entered" from="ARVROrigin/RightHand/Area" to="." method="_on_right_hand_body_entered"]
 [connection signal="body_exited" from="ARVROrigin/RightHand/Area" to="." method="_on_Area_body_exited_right"]

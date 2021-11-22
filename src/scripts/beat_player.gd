@@ -113,7 +113,7 @@ func beat_pulse():
 	var beat_pulse = get_beat()
 	if beat_pulse>=last_beat + beat_subdivisions:
 		last_beat = stepify(beat_pulse, beat_subdivisions)
-		print ("beat! ", last_beat)
+		# print ("beat! ", last_beat)
 		emit_signal("beat", last_beat)
 
 func _interpolate_playback_position(delta: float) -> void:

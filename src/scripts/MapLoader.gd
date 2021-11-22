@@ -12,6 +12,7 @@ export(PackedScene) var note_object
 export(NodePath) onready var beat_player = get_node(beat_player) as BeatPlayer
 
 
+
 const BS_LEVELS = ["Easy", "NormalStandard", "Normal", "HardStandard", "Hard", "Expert", "ExpertStandard", "ExpertPlusStandard", "ExpertPlus"]
 
 var path = null
@@ -21,6 +22,13 @@ var notes = null
 var next_beat_event
 var note_offset = 0
 
+
+# Spawning stuff TODO move to its own place
+
+onready var bounding_box = bounding_box
+
+#Does this need be unique? Consider moving to a utility singleton
+onready var _rand = RandomNumberGenerator.new()
 
 func _ready():
 	beat_player.connect("beat", self, "_on_beat_detected")
@@ -59,14 +67,26 @@ func get_notes(difficulty):
 func get_obstacles(difficulty):
 	for obstacle in self.bs_level_data[difficulty]["_obstacles"]:
 		self.add_obstacle(difficulty, obstacle)
-
+	
 func add_note(level, note):
 	#print("Implement me")
 	if not level or not note:
 		return
 		
 	if note_object:
+		
+		_rand.randomize()
+		
+		var wall_size = 1
+		
 		var note_instance = note_object.instance() as Note
+		
+		note_instance.transform.origin = Vector3(
+		_rand.randf_range(-wall_size, wall_size),
+		_rand.randf_range(0.5, 2),
+		- 2
+	)
+	
 		add_child(note_instance)
 		note_instance.setup_note(note)
 	return

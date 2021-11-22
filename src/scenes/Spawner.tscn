@@ -12,5 +12,6 @@ spawn_object = ExtResource( 1 )
 bounding_box = AABB( -1, 0, 0, 1, 1.5, 0 )
 
 [node name="Timer" type="Timer" parent="."]
+autostart = true
 
 [connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]

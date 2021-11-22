@@ -101,7 +101,8 @@ func handle_hit(body, hand):
 		controller = $ARVROrigin/RightHand
 	
 	print("hit " + hand + " "  + body.name)
-	if body.name == "Ball":
+	# body.name == "Ball" TODO, remove the balls
+	if "Note" in body.name:
 		velocity = controller.get("velocity")
 		
 		var linear_velocity = sqrt(pow(velocity.x, 2) + pow(velocity.y, 2) + pow(velocity.z, 2))
@@ -113,3 +114,11 @@ func handle_hit(body, hand):
 #			if controller.get_rumble() == 0.0:
 #				print("rumble")
 #				controller.set_rumble(1.0)
+
+
+func _on_Area_area_entered_right(area):
+	handle_hit(area, "right")
+
+
+func _on_Area_area_entered_left(area):
+	handle_hit(area, "left")

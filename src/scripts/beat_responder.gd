@@ -15,5 +15,5 @@ func _ready():
 
 func _on_beat_detected(beat):
 	if beat>=last_beat + response_frequency:
-		print (beat, " beat response!")
+		# print (beat, " beat response!")
 		last_beat = beat

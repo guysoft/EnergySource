@@ -19,6 +19,16 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://scripts/beat_responder.gd"
 }, {
+"base": "Spatial",
+"class": "Map",
+"language": "GDScript",
+"path": "res://scripts/MapLoader.gd"
+}, {
+"base": "Area",
+"class": "Note",
+"language": "GDScript",
+"path": "res://scripts/note.gd"
+}, {
 "base": "Area",
 "class": "XRToolsInteractableArea",
 "language": "GDScript",
@@ -37,6 +47,8 @@ _global_script_classes=[ {
 _global_script_class_icons={
 "BeatPlayer": "",
 "BeatResponder": "",
+"Map": "",
+"Note": "",
 "XRToolsInteractableArea": "",
 "XRToolsInteractableBody": "",
 "XRToolsPickable": ""
