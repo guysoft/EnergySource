@@ -1,10 +1,12 @@
-extends Node
+extends Spatial
 
+onready var path:String = "res://Levels/test/ExpertPlusStandard.dat"
 
 # References
 onready var _player = $Player
 onready var _left_hand = $Player/ARVROrigin/LeftHand
 onready var _right_hand = $Player/ARVROrigin/RightHand
+onready var _map = $Map
 
 func _ready():
 	if GameVariables.ENABLE_VR:
@@ -13,6 +15,12 @@ func _ready():
 		print("No VR")
 		_left_hand.queue_free()
 		_right_hand.queue_free()
+	
+	setup_map(path)
+
+func setup_map(path:String):
+	_map.load_map(path)
+	_map.get_notes("ExpertPlusStandard")
 
 func _init_vr() -> ARVRInterface:
 	print("Starting vr")
