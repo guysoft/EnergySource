@@ -10,11 +10,11 @@ class_name Map
 const BS_LEVELS = ["Easy", "NormalStandard", "Normal", "HardStandard", "Hard", "Expert", "ExpertStandard", "ExpertPlusStandard", "ExpertPlus"]
 
 # The width from each side in the center (the total width is twice this number)
-const LEVEL_WITH = 1.1
+const LEVEL_WITH = 0.7
 # Lowest point in the game map beneeth your center
-const LEVEL_LOW = -0.5
+const LEVEL_LOW = 0.5
 # Highest point in the map
-const LEVEL_HIGH = 1.0
+const LEVEL_HIGH = 1.2
 
 var path = null
 var bs_level_data = {}
@@ -97,7 +97,7 @@ func add_note(difficulty, note):
 	tmp = line_index_layer_to_position(note)
 	note["x"] = tmp[0]
 	note["y"] = tmp[1]
-	note["offset"] = offset
+	note["offset"] = stepify(offset,0.05) #rounded to nearest 0.05 for timer
 	
 	self.notes[difficulty][beat_number].append(note)
 	return

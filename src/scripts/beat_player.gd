@@ -29,10 +29,10 @@ signal beat
 ##################
 
 func set_beat(beat: float):
-	var beat_per_second: float = (bpm / 60.0)
+	var beat_per_second: float = ((bpm*pitch_scale) / 60.0)
 	self.playback_position = beat / beat_per_second
 func get_beat():
-	var beat_per_second: float = (bpm / 60.0)
+	var beat_per_second: float = ((bpm*pitch_scale) / 60.0)
 	return (self.playback_position) * beat_per_second
 
 # this doesn't set seek
@@ -99,7 +99,7 @@ func _ready() -> void:
 	if error != OK:
 		print_debug(error)
 	
-	set_process(true) # it seems like AudioStreamPlayer automatically sets processing to true
+	#set_process(true) # it seems like AudioStreamPlayer automatically sets processing to true
 
 func _process(delta: float) -> void:
 	_interpolate_playback_position(delta)
@@ -109,12 +109,23 @@ func _process(delta: float) -> void:
 # own methods #
 ###############
 
+#func beat_pulse():
+#	var beat_pulse = get_beat()
+#	var offset = beat_pulse - last_beat
+#	if beat_pulse>=last_beat + (beat_subdivisions-offset):
+#		#last_beat = stepify(beat_pulse, beat_subdivisions)
+#		last_beat=beat_pulse
+#		print ("beat! ", last_beat)
+#		emit_signal("beat", last_beat)
+
 func beat_pulse():
-	var beat_pulse = get_beat()
-	if beat_pulse>=last_beat + beat_subdivisions:
-		last_beat = stepify(beat_pulse, beat_subdivisions)
-		# print ("beat! ", last_beat)
+	var beat_pulse = stepify(get_beat(),beat_subdivisions)
+	if beat_pulse>last_beat:
+		#last_beat = stepify(beat_pulse, beat_subdivisions)
+		last_beat=beat_pulse
+		print ("beat! ", last_beat)
 		emit_signal("beat", last_beat)
+
 
 func _interpolate_playback_position(delta: float) -> void:
 	# update new virtual playback position
