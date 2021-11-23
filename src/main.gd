@@ -74,9 +74,6 @@ func _on_beat_detected(beat):
 		
 		_spawn_location.add_child(note_instance)
 		
-		# TODO calculate offset which should include the speed and bpm
-		# print(note["x"], note["y"], note["offset"])
-		#note_instance.transform.origin = Vector3(note["x"], note["y"], -5 - note["offset"])
 		var note_speed =  map.get_bpm() / 60 * travel_distance / (notes_delay - 1)
 		print(note_speed)
 		note_instance.setup_note(note, note_speed, map.get_bpm())
