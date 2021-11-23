@@ -1,0 +1,34 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://effects/circle_05.png" type="Texture" id=1]
+[ext_resource path="res://effects/environment_particles_material.tres" type="Material" id=2]
+
+[sub_resource type="SpatialMaterial" id=18]
+flags_transparent = true
+flags_unshaded = true
+vertex_color_use_as_albedo = true
+params_billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+albedo_texture = ExtResource( 1 )
+
+[sub_resource type="QuadMesh" id=19]
+material = SubResource( 18 )
+
+[sub_resource type="SphereMesh" id=20]
+radius = 20.0
+height = 40.0
+
+[node name="EnvironmentParticles" type="Particles"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.56195, 0 )
+amount = 50
+lifetime = 3.0
+visibility_aabb = AABB( -12.6138, -4, -12.4749, 25.2276, 8, 24.9499 )
+process_material = ExtResource( 2 )
+draw_pass_1 = SubResource( 19 )
+
+[node name="ParticleEmissionMesh" type="MeshInstance" parent="."]
+visible = false
+mesh = SubResource( 20 )
+material/0 = null
