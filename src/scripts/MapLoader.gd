@@ -35,14 +35,13 @@ func _init(path):
 	file.open(info_path, File.READ)
 	self.bs_info_data = parse_json(file.get_as_text())
 	file.close()
-	print(self.bs_info_dataself.bs_info_data)
 
 
 func get_bpm():
 	return self.bs_data["_beatsPerMinute"]
 
 func get_offset():
-	return self.bs_data["_songTimeOffset"] + self.bs_data["_shufflePeriod"]
+	return self.bs_info_data["_songTimeOffset"] # + self.bs_data["_shufflePeriod"] * self.get_bpm()
 
 func _on_beat_detected(difficulty, beat:int):
 	# assert(typeof(beat) == TYPE_INT)

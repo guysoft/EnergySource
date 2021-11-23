@@ -32,6 +32,7 @@ func _ready():
 		_right_hand.queue_free()
 
 	setup_map(path)
+	$BeatPlayer.offset = map.get_offset()
 	$BeatPlayer.connect("beat", self, "_on_beat_detected")
 	$BeatPlayer.play()
 
