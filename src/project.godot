@@ -19,7 +19,7 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://scripts/beat_responder.gd"
 }, {
-"base": "Spatial",
+"base": "Reference",
 "class": "Map",
 "language": "GDScript",
 "path": "res://scripts/MapLoader.gd"

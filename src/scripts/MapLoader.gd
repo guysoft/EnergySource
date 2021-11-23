@@ -1,4 +1,3 @@
-extends Spatial
 class_name Map
 
 # Map loader
@@ -8,42 +7,26 @@ class_name Map
 # 	var map = Map.new(path)
 # 	map.get_notes("ExpertPlus")
 
-export(PackedScene) var note_object
-export(NodePath) onready var beat_player = get_node(beat_player) as BeatPlayer
-
-
-
 const BS_LEVELS = ["Easy", "NormalStandard", "Normal", "HardStandard", "Hard", "Expert", "ExpertStandard", "ExpertPlusStandard", "ExpertPlus"]
+
+# The width from each side in the center (the total width is twice this number)
+const LEVEL_WITH = 1.1
+# Lowest point in the game map beneeth your center
+const LEVEL_LOW = -0.5
+# Highest point in the map
+const LEVEL_HIGH = 1.0
 
 var path = null
 var bs_level_data = {}
 
-var notes = null
+var notes = {}
 var next_beat_event
 var note_offset = 0
 
 
 # Spawning stuff TODO move to its own place
 
-onready var bounding_box = bounding_box
-
-#Does this need be unique? Consider moving to a utility singleton
-onready var _rand = RandomNumberGenerator.new()
-
-func _ready():
-	beat_player.connect("beat", self, "_on_beat_detected")
-
-func _on_beat_detected(beat):
-	if not notes:
-		return
-	if note_offset>notes.size():
-		return
-	
-	if notes[note_offset]._time<=beat:
-		notes[note_offset].activate()
-		note_offset+=1
-
-func load_map(path):
+func _init(path):
 	print ("loading map")
 	self.path = path
 	var file = File.new()
@@ -53,44 +36,91 @@ func load_map(path):
 	var level = parse_json(file.get_as_text())
 	var difficulty = self.path.get_basename().get_file()
 	self.bs_level_data[difficulty] = level
-	print (level)
+	# print(level)
+
+func _on_beat_detected(difficulty, beat:int):
+	# assert(typeof(beat) == TYPE_INT)
+	
+	# print(self.notes[difficulty])
+	var return_value = []
+	if self.notes.has(difficulty):
+		if self.notes[difficulty].has(int(beat)):
+			return self.notes[difficulty][int(beat)]
+	
+	return return_value
 
 func get_notes(difficulty):
 	for note in self.bs_level_data[difficulty]["_notes"]:
-		print ("adding note: ", note)
-		print ("note time:", note["_time"])
+		# print ("adding note: ", note)
+		# print ("note time:", note["_time"])
 		self.add_note(difficulty, note)
-	notes = get_children()
-	
+	# notes = get_children()
 	return
+	
+func obstacle_line_index_layer_to_position(obstacle):
+	# index 0 to 3
+	# width 0-4 (can be negative but it creates bugs in beat saber)
+	# posy = 0.5 - 1.3
+	# posx = -1.3 - 1.3
+	
+	# Left example
+	# position = [-0.976259469985962,-1.29999995231628]
+	var PADDING = 2
+	var WALL_WIDTH = 0.5
+	var position_x = (-LEVEL_WITH  + (2*LEVEL_WITH/3) * obstacle["_lineIndex"]) * PADDING - WALL_WIDTH
+	
+	# 0.65 because the minimal size of -1.3 + 0.65 * 4 = 1.3
+	# position_x2/position_y = position_x + 0.65 * obstacle["_width"]
+	var position_y = -0.976259469985962
+	return [position_x, position_y]
+
+func line_index_layer_to_position(note):
+	# beat saber layer moves between 0-2
+	# beat saber index moves between 0-3
+	# max posy in beat saber = 0.5 - 1.0
+	# max posx in beat saber = -1.3 - 1.3
+	var position_x = -LEVEL_WITH + (2*LEVEL_WITH/3) * note["_lineIndex"]
+	var position_y = LEVEL_LOW + (LEVEL_HIGH - LEVEL_LOW)/2 * note["_lineLayer"]
+	return [position_x, position_y]
+
+func add_note(difficulty, note):
+	if not self.notes.has(difficulty):
+		self.notes[difficulty] = {}
+		
+	var beat_number = int(note["_time"])
+	var offset = note["_time"] - int(note["_time"])
+	if not self.notes[difficulty].has(beat_number):
+		self.notes[difficulty][beat_number] = []
+		
+	# Here we can change the note data to fit our game level
+	var tmp = null
+	tmp = line_index_layer_to_position(note)
+	note["x"] = tmp[0]
+	note["y"] = tmp[1]
+	note["offset"] = offset
+	
+	self.notes[difficulty][beat_number].append(note)
+	return
+
 
 func get_obstacles(difficulty):
 	for obstacle in self.bs_level_data[difficulty]["_obstacles"]:
 		self.add_obstacle(difficulty, obstacle)
-	
-func add_note(level, note):
-	#print("Implement me")
-	if not level or not note:
-		return
-		
-	if note_object:
-		
-		_rand.randomize()
-		
-		var wall_size = 1
-		
-		var note_instance = note_object.instance() as Note
-		
-		note_instance.transform.origin = Vector3(
-		_rand.randf_range(-wall_size, wall_size),
-		_rand.randf_range(0.5, 2),
-		- 2
-	)
-	
-		add_child(note_instance)
-		note_instance.setup_note(note)
-	return
 
-func add_obstacle(level,obstacle):
-	print ("Implement me")
+func add_obstacle(difficulty, obstacle):
+	if not self.notes.has(difficulty):
+		self.notes[difficulty] = {}
+		
+	var beat_number = int(obstacle["_time"])
+	if not self.notes[difficulty].has(beat_number):
+		self.notes[difficulty][beat_number] = []
+		
+	# Here we can change the note data to fit our game level
+	var x = null
+	var y = null
+	[x, y] = obstacle_line_index_layer_to_position(obstacle)
+	obstacle["x"] = x
+	obstacle["y"] = y
+	
+	self.notes[difficulty][beat_number].append(obstacle)
 	return
