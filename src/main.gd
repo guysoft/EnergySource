@@ -21,6 +21,8 @@ onready var _rand = RandomNumberGenerator.new()
 var notescene = load("res://scenes/Note.tscn")
 
 onready var _map = $Map
+var time_begin = null
+var time_delay
 
 func _ready():
 	if GameVariables.ENABLE_VR:
@@ -31,10 +33,28 @@ func _ready():
 		_left_hand.queue_free()
 		_right_hand.queue_free()
 
+
 	setup_map(path)
-	$BeatPlayer.offset = map.get_offset()
+	var song_offset = map.get_offset()
 	$BeatPlayer.connect("beat", self, "_on_beat_detected")
+	$BeatPlayer.bpm = map.get_bpm()
+	
+	time_begin = OS.get_ticks_usec()
+	time_delay = AudioServer.get_time_to_next_mix() + AudioServer.get_output_latency()
+	$BeatPlayer.offset = song_offset + float(time_delay)
+
 	$BeatPlayer.play()
+	
+
+# Perhaps we will need this to handle delay
+#func _process(delta):
+#	# Obtain from ticks.
+#	var time = (OS.get_ticks_usec() - time_begin) / 1000000.0
+#	# Compensate for latency.
+#	time -= time_delay
+#	# May be below 0 (did not begin yet).
+#	time = max(0, time)
+#	print("Time is: ", time)
 
 # export(PackedScene) var note_object
 # export(NodePath) onready var beat_player = get_node(beat_player) as BeatPlayer

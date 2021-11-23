@@ -38,7 +38,7 @@ func _init(path):
 
 
 func get_bpm():
-	return self.bs_data["_beatsPerMinute"]
+	return self.bs_info_data["_beatsPerMinute"]
 
 func get_offset():
 	return self.bs_info_data["_songTimeOffset"] # + self.bs_data["_shufflePeriod"] * self.get_bpm()
