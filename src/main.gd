@@ -9,9 +9,12 @@ var interface : ARVRInterface
 onready var _player = $Player
 onready var _left_hand = $Player/ARVROrigin/LeftHand
 onready var _right_hand = $Player/ARVROrigin/RightHand
+onready var _spawn_location = $SpawnLocation
 
+#FYI if the script has a classname, you don't need to preload it in
+#const Map = preload("scripts/MapLoader.gd")
 onready var map = null
-const Map = preload("scripts/MapLoader.gd")
+
 #Does this need be unique? Consider moving to a utility singleton
 onready var _rand = RandomNumberGenerator.new()
 
@@ -43,9 +46,12 @@ func _on_beat_detected(beat):
 		var note_instance = notescene.instance()
 		# note_instance.get_child(0).visible()
 		
+		_spawn_location.add_child(note_instance)
+		
 		# TODO calculate offset which should include the speed and bpm
 		# print(note["x"], note["y"], note["offset"])
-		note_instance.transform.origin = Vector3(note["x"], note["y"], -2 - note["offset"])
+		#note_instance.transform.origin = Vector3(note["x"], note["y"], -5 - note["offset"])
+		note_instance.setup_note(note)
 		# note_instance.transform.origin = Vector3(-1,-1,-1)
 	#	_rand.randomize()
 	#
