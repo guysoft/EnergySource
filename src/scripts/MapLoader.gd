@@ -109,7 +109,7 @@ func add_note(difficulty, note):
 	tmp = line_index_layer_to_position(note)
 	note["x"] = tmp[0]
 	note["y"] = tmp[1]
-	note["offset"] = stepify(offset,0.05) #rounded to nearest 0.05 for timer
+	note["offset"] = offset
 	
 	self.notes[difficulty][beat_number].append(note)
 	return
