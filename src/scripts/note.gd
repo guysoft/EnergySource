@@ -24,7 +24,7 @@ onready var _spawn_timer = $Timer
 func _ready():
 	deactivate()
 
-func setup_note(note, speed):
+func setup_note(note, speed, bpm):
 	self.speed = speed
 	if not note:
 		return
@@ -33,7 +33,7 @@ func setup_note(note, speed):
 	
 	#if the note has an offset, set up the timer to match
 	if note["offset"] > 0.0:
-		_spawn_timer.wait_time = note["offset"]
+		_spawn_timer.wait_time = note["offset"] * bpm / 60
 	
 	#set the material based on the note type
 	var mat = _mesh.get_active_material(0)
@@ -43,6 +43,9 @@ func setup_note(note, speed):
 	elif note["_type"] == 1:
 		mat.albedo_color = Color.blue
 		mat.emission = Color.blue
+	elif note["_type"] == 3:
+		mat.albedo_color = Color.white
+		mat.emission = Color.white
 
 func activate():
 #	print ("note activated: ", name)

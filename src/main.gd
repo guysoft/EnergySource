@@ -79,7 +79,7 @@ func _on_beat_detected(beat):
 		#note_instance.transform.origin = Vector3(note["x"], note["y"], -5 - note["offset"])
 		var note_speed =  map.get_bpm() / 60 * travel_distance / (notes_delay - 1)
 		print(note_speed)
-		note_instance.setup_note(note, note_speed)
+		note_instance.setup_note(note, note_speed, map.get_bpm())
 		# note_instance.transform.origin = Vector3(-1,-1,-1)
 	#	_rand.randomize()
 	#
