@@ -81,18 +81,6 @@ func _input(event):
 			# rotate_x(-Sensitivity_Y * event.relative.y)
 
 
-func _on_left_hand_body_entered(body):
-	handle_hit(body, "left")
-
-func _on_right_hand_body_entered(body):
-	handle_hit(body, "right")
-	
-func _on_Area_body_exited_left(body):
-	handle_hit(body, "left")
-
-func _on_Area_body_exited_right(body):
-	handle_hit(body, "right")
-
 func handle_hit(body, hand):
 	var controller = null
 	if hand == "left":
@@ -106,14 +94,32 @@ func handle_hit(body, hand):
 		velocity = controller.get("velocity")
 		
 		var linear_velocity = sqrt(pow(velocity.x, 2) + pow(velocity.y, 2) + pow(velocity.z, 2))
-		print(linear_velocity)
+		print ("Controller velocity: ", velocity)
 		
 		if linear_velocity > HIT_VELOCITY:
+			print ("Hit threshold passed!")
 			body.queue_free()
 			
 #			if controller.get_rumble() == 0.0:
 #				print("rumble")
 #				controller.set_rumble(1.0)
+
+#SIGNAL CALLBACKS
+
+func _on_left_hand_body_entered(body):
+	handle_hit(body, "left")
+
+
+func _on_right_hand_body_entered(body):
+	handle_hit(body, "right")
+
+
+func _on_Area_body_exited_left(body):
+	handle_hit(body, "left")
+
+
+func _on_Area_body_exited_right(body):
+	handle_hit(body, "right")
 
 
 func _on_Area_area_entered_right(area):
