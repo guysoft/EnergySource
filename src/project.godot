@@ -64,6 +64,10 @@ config/icon="res://icon.png"
 
 GameVariables="*res://scenes/GameVariables.tscn"
 
+[editor_plugins]
+
+enabled=PoolStringArray( "res://addons/godot-openxr/plugin.cfg" )
+
 [gdnative]
 
 singletons=[ "res://addons/godot-openxr/config/godot_openxr.gdnlib" ]
@@ -71,6 +75,14 @@ singletons=[ "res://addons/godot-openxr/config/godot_openxr.gdnlib" ]
 [global]
 
 autoload=false
+
+[layer_names]
+
+3d_physics/layer_1="Player"
+3d_physics/layer_2="Controller"
+3d_physics/layer_3="Notes"
+3d_physics/layer_4="Environment"
+3d_physics/layer_5="UI"
 
 [physics]
 

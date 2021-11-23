@@ -14,6 +14,7 @@ radius = 0.1
 [sub_resource type="BoxShape" id=15]
 
 [node name="Player" type="KinematicBody"]
+collision_mask = 8
 script = ExtResource( 4 )
 
 [node name="ARVROrigin" type="ARVROrigin" parent="."]
@@ -28,6 +29,8 @@ script = ExtResource( 3 )
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.0667208 )
 
 [node name="Area" type="Area" parent="ARVROrigin/LeftHand"]
+collision_layer = 2
+collision_mask = 20
 
 [node name="CollisionShape" type="CollisionShape" parent="ARVROrigin/LeftHand/Area"]
 shape = SubResource( 14 )
@@ -40,6 +43,8 @@ script = ExtResource( 3 )
 transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0.0667208 )
 
 [node name="Area" type="Area" parent="ARVROrigin/RightHand"]
+collision_layer = 2
+collision_mask = 20
 
 [node name="CollisionShape" type="CollisionShape" parent="ARVROrigin/RightHand/Area"]
 shape = SubResource( 13 )

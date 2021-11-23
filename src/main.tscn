@@ -32,6 +32,7 @@ environment = SubResource( 16 )
 
 [node name="Ground" type="StaticBody" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.121, 0, -3.688 )
+collision_layer = 8
 
 [node name="CollisionShape" type="CollisionShape" parent="Ground"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.121, -1.03845, 3.688 )
