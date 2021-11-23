@@ -2,7 +2,7 @@ extends Area
 
 class_name Note
 
-export(float) var speed = 2
+var speed = 2
 export(Vector3) var direction = Vector3(0,0,1)
 export(float) var despawn_z = 12.0
 
@@ -23,8 +23,9 @@ onready var _spawn_timer = $Timer
 
 func _ready():
 	deactivate()
-	
-func setup_note(note):
+
+func setup_note(note, speed):
+	self.speed = speed
 	if not note:
 		return
 	

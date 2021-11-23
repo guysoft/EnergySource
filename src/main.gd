@@ -3,6 +3,8 @@ extends Spatial
 onready var path:String = "res://Levels/test"
 onready var difficulty = "ExpertPlusStandard"
 
+onready var travel_distance = $Player/ARVROrigin.transform.origin.distance_to($SpawnLocation.transform.origin)
+
 export (NodePath) var viewport = null
 var interface : ARVRInterface
 # References
@@ -14,6 +16,9 @@ onready var _spawn_location = $SpawnLocation
 #FYI if the script has a classname, you don't need to preload it in
 #const Map = preload("scripts/MapLoader.gd")
 onready var map = null
+
+# how many beats does it take the spawned notes to travel to arvr origin
+onready var notes_delay = 2
 
 #Does this need be unique? Consider moving to a utility singleton
 onready var _rand = RandomNumberGenerator.new()
@@ -60,7 +65,7 @@ func _ready():
 # export(NodePath) onready var beat_player = get_node(beat_player) as BeatPlayer
 
 func _on_beat_detected(beat):
-	var notes = map._on_beat_detected(difficulty, beat)
+	var notes = map._on_beat_detected(difficulty, beat + notes_delay)
 	for note in notes:
 		
 		# Spawn note
@@ -72,7 +77,9 @@ func _on_beat_detected(beat):
 		# TODO calculate offset which should include the speed and bpm
 		# print(note["x"], note["y"], note["offset"])
 		#note_instance.transform.origin = Vector3(note["x"], note["y"], -5 - note["offset"])
-		note_instance.setup_note(note)
+		var note_speed =  map.get_bpm() / 60 * travel_distance / (notes_delay - 1)
+		print(note_speed)
+		note_instance.setup_note(note, note_speed)
 		# note_instance.transform.origin = Vector3(-1,-1,-1)
 	#	_rand.randomize()
 	#
