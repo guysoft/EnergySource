@@ -4,6 +4,7 @@ class_name Note
 
 export(float) var speed = 2
 export(Vector3) var direction = Vector3(0,0,1)
+export(float) var despawn_z = 12.0
 
 onready var _velocity = Vector3(0,0,0)
 
@@ -15,9 +16,10 @@ var _cut_direction:int
 var _custom_data = {}
 
 #Refs
-onready var _mesh = $MeshInstance
+onready var _animation_player = $AnimationPlayer
+onready var _mesh = $MeshInstance as MeshInstance
 onready var _collision = $CollisionShape
-
+onready var _spawn_timer = $Timer
 
 func _ready():
 	deactivate()
@@ -26,21 +28,20 @@ func setup_note(note):
 	if not note:
 		return
 	
-#	print ("setting up note")
-#	print (note)
+	transform.origin = Vector3(note["x"], note["y"], 0)
 	
-	if "_time" in note:
-		_time = float(note["_time"])
-	if "_line_index" in note:
-		_line_index = note["_line_index"]
-	if "_line_layer" in note:
-		_line_layer = note["_line_layer"]
-	if "_type" in note:
-		_type = note["_type"]
-	if "_cut_direction" in note:
-		_cut_direction = note["_cut_direction"]
-	if "_custom_data" in note:
-		_custom_data = note["_custom_data"] #Might have to make a copy
+	#if the note has an offset, set up the timer to match
+	if note["offset"] > 0.0:
+		_spawn_timer.wait_time = note["offset"]
+	
+	#set the material based on the note type
+	var mat = _mesh.get_active_material(0)
+	if note["_type"] == 0:
+		mat.albedo_color = Color.red
+		mat.emission = Color.red
+	elif note["_type"] == 1:
+		mat.albedo_color = Color.blue
+		mat.emission = Color.blue
 
 func activate():
 #	print ("note activated: ", name)
@@ -50,20 +51,25 @@ func activate():
 #	print ("type: ", _type)
 #	print ("time: ", _cut_direction)
 #	print ("custom_data: ", _custom_data)
+	
+	#if the spawn timer has been setup with an offset
+	#start the timer and wait until it's done
+	if _spawn_timer.wait_time > 0.001:
+		_spawn_timer.start()
+		yield(_spawn_timer, "timeout")
+	
 	set_physics_process(true)
 	_collision.set_deferred("disabled", false)
-	_mesh.visible=true
+	_animation_player.play("spawn")
 
 func deactivate():
+	_animation_player.play("despawn")
 	set_physics_process(false)
 	_collision.set_deferred("disabled", true)
-	_mesh.visible=false
 	
 func _physics_process(delta):
 	_velocity = direction * speed * delta
 	translate(_velocity)
 	
-	if self.transform.origin.z > 4:
-		# print("ball freed")
-		#self.queue_free()
+	if self.transform.origin.z > despawn_z:
 		self.deactivate()
