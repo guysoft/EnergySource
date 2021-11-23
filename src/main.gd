@@ -1,6 +1,6 @@
 extends Spatial
 
-onready var path:String = "res://Levels/test/ExpertPlusStandard.dat"
+onready var path:String = "res://Levels/test"
 onready var difficulty = "ExpertPlusStandard"
 
 export (NodePath) var viewport = null

@@ -18,6 +18,7 @@ const LEVEL_HIGH = 1.2
 
 var path = null
 var bs_level_data = {}
+var bs_info_data = null
 
 var notes = {}
 var next_beat_event
@@ -29,14 +30,19 @@ var note_offset = 0
 func _init(path):
 	print ("loading map")
 	self.path = path
+	var info_path = self.path + "/info.dat"
 	var file = File.new()
-	# print(OS.get_user_data_dir())
-	
-	file.open(path, File.READ) 
-	var level = parse_json(file.get_as_text())
-	var difficulty = self.path.get_basename().get_file()
-	self.bs_level_data[difficulty] = level
-	# print(level)
+	file.open(info_path, File.READ)
+	self.bs_info_data = parse_json(file.get_as_text())
+	file.close()
+	print(self.bs_info_dataself.bs_info_data)
+
+
+func get_bpm():
+	return self.bs_data["_beatsPerMinute"]
+
+func get_offset():
+	return self.bs_data["_songTimeOffset"] + self.bs_data["_shufflePeriod"]
 
 func _on_beat_detected(difficulty, beat:int):
 	# assert(typeof(beat) == TYPE_INT)
@@ -50,6 +56,13 @@ func _on_beat_detected(difficulty, beat:int):
 	return return_value
 
 func get_notes(difficulty):
+	var difficulty_path = self.path + "/" + difficulty + ".dat"
+	var file = File.new()
+	file.open(difficulty_path, File.READ)
+	var level = parse_json(file.get_as_text())
+	file.close()
+	self.bs_level_data[difficulty] = level
+	
 	for note in self.bs_level_data[difficulty]["_notes"]:
 		# print ("adding note: ", note)
 		# print ("note time:", note["_time"])
