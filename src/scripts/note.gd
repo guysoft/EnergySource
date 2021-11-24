@@ -34,7 +34,9 @@ func setup_note(note, speed, bpm, distance):
 	despawn_z = distance
 	#if the note has an offset, set up the timer to match
 	if note["offset"] > 0.0:
-		_spawn_timer.wait_time = note["offset"] * bpm / 60
+		_spawn_timer.wait_time = note["offset"] * 60 / bpm
+		print ("Note offset: ", note["offset"])
+		print ("wait time: ", _spawn_timer.wait_time)
 	
 	#set the material based on the note type
 	var mat = _mesh.get_active_material(0)
