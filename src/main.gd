@@ -206,13 +206,7 @@ func change_song_speed(speed):
 		note.speed =  map.get_bpm() / 60 * travel_distance / (notes_delay) * speed_multiplier * self.song_speed
 	return
 
-func toggle_speed():
-	
-	var target_speed = 0.1
-	var step = 0.1
-	var duration_stay = 5.0
-	var step_delay = 0.05
-	
+func warp_song(target_speed, step, duration_stay, step_delay):
 	var initial_speed = self.song_speed
 	
 	# this is a lock so we dont do this twice
@@ -233,4 +227,14 @@ func toggle_speed():
 			yield(get_tree().create_timer(step_delay), "timeout")
 			change_song_speed(initial_speed)
 		toggle_speed_lock = false
+
+	return
+	
+	
+func toggle_speed():
+	var target_speed = 0.1
+	var step = 0.1
+	var duration_stay = 5.0
+	var step_delay = 0.05
+	warp_song(target_speed, step, duration_stay, step_delay)
 
