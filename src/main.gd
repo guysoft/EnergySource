@@ -18,14 +18,16 @@ onready var _spawn_location = $SpawnLocation
 onready var map = null
 
 # how many beats does it take the spawned notes to travel to arvr origin
-onready var notes_delay = 2
+onready var notes_delay = 4
+
+#Multiplier
+onready var speed_multiplier = 1
 
 #Does this need be unique? Consider moving to a utility singleton
 onready var _rand = RandomNumberGenerator.new()
 
 var notescene = load("res://scenes/Note.tscn")
 
-onready var _map = $Map
 var time_begin = null
 var time_delay
 
@@ -47,7 +49,9 @@ func _ready():
 	time_begin = OS.get_ticks_usec()
 	time_delay = AudioServer.get_time_to_next_mix() + AudioServer.get_output_latency()
 	$BeatPlayer.offset = song_offset + float(time_delay)
-
+	
+	$BeatPlayer.pitch_scale = speed_multiplier
+	
 	$BeatPlayer.play()
 	
 
@@ -74,8 +78,8 @@ func _on_beat_detected(beat):
 		
 		_spawn_location.add_child(note_instance)
 		
-		var note_speed =  map.get_bpm() / 60 * travel_distance / (notes_delay - 1)
-		print(note_speed)
+		var note_speed =  map.get_bpm() / 60 * travel_distance / (notes_delay) * speed_multiplier
+		#print(note_speed)
 		note_instance.setup_note(note, note_speed, map.get_bpm())
 		# note_instance.transform.origin = Vector3(-1,-1,-1)
 	#	_rand.randomize()
