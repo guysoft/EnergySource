@@ -13,6 +13,9 @@ onready var _left_hand = $Player/ARVROrigin/LeftHand
 onready var _right_hand = $Player/ARVROrigin/RightHand
 onready var _spawn_location = $SpawnLocation
 
+var song_speed = 1.0
+var toggle_speed_lock = false
+
 #FYI if the script has a classname, you don't need to preload it in
 #const Map = preload("scripts/MapLoader.gd")
 onready var map = null
@@ -69,6 +72,9 @@ func _ready():
 # export(NodePath) onready var beat_player = get_node(beat_player) as BeatPlayer
 
 func _on_beat_detected(beat):
+	# song_speed = 0.4
+	$BeatPlayer.pitch_scale = song_speed
+	
 	var notes = map._on_beat_detected(difficulty, beat + notes_delay)
 	for note in notes:
 		
@@ -78,7 +84,7 @@ func _on_beat_detected(beat):
 		
 		_spawn_location.add_child(note_instance)
 		
-		var note_speed =  map.get_bpm() / 60 * travel_distance / (notes_delay) * speed_multiplier
+		var note_speed =  map.get_bpm() / 60 * travel_distance / (notes_delay) * speed_multiplier * song_speed
 		#print(note_speed)
 		note_instance.setup_note(note, note_speed, map.get_bpm(), travel_distance)
 		# note_instance.transform.origin = Vector3(-1,-1,-1)
@@ -176,6 +182,55 @@ func _on_openxr_visible_state():
 
 func _on_openxr_pose_recentered():
 	print("OpenXR pose recentered")
+	
+func rangef(start: float, end: float, step: float):
+	var res = Array()
+	var i = start
+	if step < 0:
+		while i > end:
+			res.push_back(i)
+			i += step
+	elif step > 0:
+		while i < end:
+			res.push_back(i)
+			i += step
+	return res
 
 
+func change_song_speed(speed):
+	self.song_speed = speed
+	$BeatPlayer.pitch_scale = speed
+	
+	var notes = _spawn_location.get_children()
+	for note in notes:
+		note.speed =  map.get_bpm() / 60 * travel_distance / (notes_delay) * speed_multiplier * self.song_speed
+	return
+
+func toggle_speed():
+	
+	var target_speed = 0.1
+	var step = 0.1
+	var duration_stay = 5.0
+	var step_delay = 0.05
+	
+	var initial_speed = self.song_speed
+	
+	# this is a lock so we dont do this twice
+	if not toggle_speed_lock:
+		toggle_speed_lock = true
+		
+		# Slow down
+		print("do the time warp")
+		for i in rangef(self.song_speed, target_speed, -step):
+			change_song_speed(i)
+			yield(get_tree().create_timer(step_delay), "timeout")
+			
+		# Speed up
+		yield(get_tree().create_timer(duration_stay), "timeout")
+		
+		for i in rangef(target_speed, initial_speed, step):
+			change_song_speed(i)
+			yield(get_tree().create_timer(step_delay), "timeout")
+			change_song_speed(initial_speed)
+		toggle_speed_lock = false
 

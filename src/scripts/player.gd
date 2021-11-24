@@ -39,6 +39,9 @@ func _physics_process(delta):
 	if not GameVariables.ENABLE_VR:
 		velocity.y -= GRAVITY
 		
+		if Input.is_key_pressed(KEY_P):
+			self.get_parent().toggle_speed()
+		
 		if Input.is_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP):
 				Walk_Speed += Accelaration
 				if Walk_Speed > Maximum_Walk_Speed:
@@ -133,3 +136,15 @@ func _on_Area_area_entered_right(area):
 
 func _on_Area_area_entered_left(area):
 	handle_hit(area, "left")
+
+
+func _on_LeftHand_button_pressed(button):
+	button_pressed(button, "left")
+
+
+func _on_RightHand_button_pressed(button):
+	button_pressed(button, "right")
+
+func button_pressed(button, hand):
+	if button ==  JOY_VR_TRIGGER:
+		self.get_parent().toggle_speed()
