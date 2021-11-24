@@ -64,6 +64,10 @@ config/icon="res://icon.png"
 
 GameVariables="*res://scenes/GameVariables.tscn"
 
+[display]
+
+window/vsync/use_vsync=false
+
 [editor_plugins]
 
 enabled=PoolStringArray( "res://addons/godot-openxr/plugin.cfg" )
