@@ -76,10 +76,11 @@ func deactivate(delete:bool = true, delete_delay:float=1.0):
 	if delete:
 		yield (get_tree().create_timer(delete_delay), "timeout")
 		queue_free()
-	
+
+#TODO: Take into account the controller position of the hit?
 func on_hit(velocity, linear_velocity):
 	_audio_stream_player.play()
-	direction = velocity.normalize()
+	direction = velocity.normalized()
 	speed = linear_velocity
 	despawn()
 	
