@@ -25,8 +25,6 @@ var next_beat_event
 var note_offset = 0
 
 
-# Spawning stuff TODO move to its own place
-
 func _init(path):
 	print ("loading map")
 	self.path = path
