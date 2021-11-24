@@ -109,19 +109,9 @@ func _process(delta: float) -> void:
 # own methods #
 ###############
 
-#func beat_pulse():
-#	var beat_pulse = get_beat()
-#	var offset = beat_pulse - last_beat
-#	if beat_pulse>=last_beat + (beat_subdivisions-offset):
-#		#last_beat = stepify(beat_pulse, beat_subdivisions)
-#		last_beat=beat_pulse
-#		print ("beat! ", last_beat)
-#		emit_signal("beat", last_beat)
-
 func beat_pulse():
-	var beat_pulse = stepify(get_beat(),beat_subdivisions)
+	var beat_pulse = int(get_beat())
 	if beat_pulse>last_beat:
-		#last_beat = stepify(beat_pulse, beat_subdivisions)
 		last_beat=beat_pulse
 		print ("beat! ", last_beat)
 		emit_signal("beat", last_beat)
