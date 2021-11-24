@@ -15,6 +15,8 @@ var _type:int
 var _cut_direction:int
 var _custom_data = {}
 
+var alive = false
+
 #Refs
 onready var _animation_player = $AnimationPlayer
 onready var _mesh = $MeshInstance as MeshInstance
@@ -22,7 +24,7 @@ onready var _collision = $CollisionShape
 onready var _spawn_timer = $Timer
 
 func _ready():
-	deactivate()
+	deactivate(false)
 
 func setup_note(note, speed, bpm, distance):
 	self.speed = speed
@@ -32,6 +34,7 @@ func setup_note(note, speed, bpm, distance):
 	transform.origin = Vector3(note["x"], note["y"], 0)
 	
 	despawn_z = distance
+	
 	#if the note has an offset, set up the timer to match
 	if note["offset"] > 0.0:
 		_spawn_timer.wait_time = note["offset"] * 60 / bpm
@@ -51,16 +54,13 @@ func setup_note(note, speed, bpm, distance):
 		mat.emission = Color.white
 
 func activate():
-#	print ("note activated: ", name)
-#	print ("time: ", _time)
-#	print ("line index: ", _line_index)
-#	print ("line layer: ", _line_layer)
-#	print ("type: ", _type)
-#	print ("time: ", _cut_direction)
-#	print ("custom_data: ", _custom_data)
-	
 	#if the spawn timer has been setup with an offset
 	#start the timer and wait until it's done
+	if alive:
+		return
+	
+	alive = true
+	
 	if _spawn_timer.wait_time > 0.001:
 		_spawn_timer.start()
 		yield(_spawn_timer, "timeout")
@@ -69,14 +69,26 @@ func activate():
 	_collision.set_deferred("disabled", false)
 	_animation_player.play("spawn")
 
-func deactivate():
-	_animation_player.play("despawn")
+func deactivate(delete:bool = true, delete_delay:float=1.0):
 	set_physics_process(false)
 	_collision.set_deferred("disabled", true)
+	if delete:
+		yield (get_tree().create_timer(delete_delay), "timeout")
+		queue_free()
 	
+func despawn():
+	if not alive:
+		return
+	
+	alive = false
+	
+	_animation_player.play("despawn")
+	yield(_animation_player, "animation_finished")
+	deactivate()
+
 func _physics_process(delta):
 	_velocity = direction * speed * delta
 	translate(_velocity)
 	
 	if self.transform.origin.z > despawn_z:
-		self.deactivate()
+		self.despawn()
