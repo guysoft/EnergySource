@@ -3,7 +3,7 @@ extends Spatial
 onready var path:String = "res://Levels/test"
 onready var difficulty = "ExpertPlusStandard"
 
-onready var travel_distance = $Player/ARVROrigin.transform.origin.distance_to($SpawnLocation.transform.origin)
+onready var travel_distance = $Player/ARVROrigin.global_transform.origin.distance_to($SpawnLocation.global_transform.origin)
 
 export (NodePath) var viewport = null
 var interface : ARVRInterface
@@ -80,7 +80,7 @@ func _on_beat_detected(beat):
 		
 		var note_speed =  map.get_bpm() / 60 * travel_distance / (notes_delay) * speed_multiplier
 		#print(note_speed)
-		note_instance.setup_note(note, note_speed, map.get_bpm())
+		note_instance.setup_note(note, note_speed, map.get_bpm(), travel_distance)
 		# note_instance.transform.origin = Vector3(-1,-1,-1)
 	#	_rand.randomize()
 	#

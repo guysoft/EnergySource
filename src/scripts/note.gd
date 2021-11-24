@@ -24,13 +24,14 @@ onready var _spawn_timer = $Timer
 func _ready():
 	deactivate()
 
-func setup_note(note, speed, bpm):
+func setup_note(note, speed, bpm, distance):
 	self.speed = speed
 	if not note:
 		return
 	
 	transform.origin = Vector3(note["x"], note["y"], 0)
 	
+	despawn_z = distance
 	#if the note has an offset, set up the timer to match
 	if note["offset"] > 0.0:
 		_spawn_timer.wait_time = note["offset"] * bpm / 60
