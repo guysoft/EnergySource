@@ -1,6 +1,7 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://scripts/note.gd" type="Script" id=1]
+[ext_resource path="res://sfx/beep_01.wav" type="AudioStream" id=2]
 
 [sub_resource type="CubeMesh" id=1]
 size = Vector3( 0.25, 0.25, 0.25 )
@@ -144,10 +145,11 @@ tracks/3/keys = {
 "values": [ true ]
 }
 
-[node name="Note" type="Area"]
+[node name="Note" type="Area" groups=["note"]]
 visible = false
 collision_layer = 4
 collision_mask = 2
+monitoring = false
 script = ExtResource( 1 )
 
 [node name="MeshInstance" type="MeshInstance" parent="."]
@@ -167,3 +169,6 @@ autoplay = "RESET"
 anims/RESET = SubResource( 4 )
 anims/despawn = SubResource( 6 )
 anims/spawn = SubResource( 5 )
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 2 )

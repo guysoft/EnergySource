@@ -18,6 +18,7 @@ var _custom_data = {}
 var alive = false
 
 #Refs
+onready var _audio_stream_player = $AudioStreamPlayer3D
 onready var _animation_player = $AnimationPlayer
 onready var _mesh = $MeshInstance as MeshInstance
 onready var _collision = $CollisionShape
@@ -75,6 +76,12 @@ func deactivate(delete:bool = true, delete_delay:float=1.0):
 	if delete:
 		yield (get_tree().create_timer(delete_delay), "timeout")
 		queue_free()
+	
+func on_hit(velocity, linear_velocity):
+	_audio_stream_player.play()
+	direction = velocity.normalize()
+	speed = linear_velocity
+	despawn()
 	
 func despawn():
 	if not alive:

@@ -90,15 +90,20 @@ func handle_hit(body, hand):
 	
 	print("hit " + hand + " "  + body.name)
 	# body.name == "Ball" TODO, remove the balls
-	if "Note" in body.name:
+	if body.is_in_group("note"):
 		velocity = controller.get("velocity")
+	
+		var linear_velocity = velocity.length()
 		
-		var linear_velocity = sqrt(pow(velocity.x, 2) + pow(velocity.y, 2) + pow(velocity.z, 2))
-		print ("Controller velocity: ", velocity)
+		print ("Controller velocity vector: ", velocity)
+		print ("Controller linear velocity: ", linear_velocity)
 		
-		if linear_velocity > HIT_VELOCITY:
+		if linear_velocity >= HIT_VELOCITY:
 			print ("Hit threshold passed!")
-			body.queue_free()
+			if body.has_method("on_hit"):
+				body.on_hit(velocity, linear_velocity)
+			else:
+				body.queue_free()
 			
 #			if controller.get_rumble() == 0.0:
 #				print("rumble")
@@ -114,12 +119,12 @@ func _on_right_hand_body_entered(body):
 	handle_hit(body, "right")
 
 
-func _on_Area_body_exited_left(body):
-	handle_hit(body, "left")
-
-
-func _on_Area_body_exited_right(body):
-	handle_hit(body, "right")
+#func _on_Area_body_exited_left(body):
+#	handle_hit(body, "left")
+#
+#
+#func _on_Area_body_exited_right(body):
+#	handle_hit(body, "right")
 
 
 func _on_Area_area_entered_right(area):
