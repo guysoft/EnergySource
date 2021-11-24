@@ -26,9 +26,10 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0 )
 script = ExtResource( 3 )
 
 [node name="LeftHand" parent="ARVROrigin/LeftHand" instance=ExtResource( 2 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.0667208 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0448227, 0.147459 )
 
 [node name="Area" type="Area" parent="ARVROrigin/LeftHand"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0448227, 0.0541227 )
 collision_layer = 2
 collision_mask = 20
 
@@ -40,9 +41,10 @@ controller_id = 2
 script = ExtResource( 3 )
 
 [node name="HandModel" parent="ARVROrigin/RightHand" instance=ExtResource( 1 )]
-transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0.0667208 )
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, -0.045, 0.147 )
 
 [node name="Area" type="Area" parent="ARVROrigin/RightHand"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.045, 0.054 )
 collision_layer = 2
 collision_mask = 20
 
