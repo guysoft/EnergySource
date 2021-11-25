@@ -40,7 +40,7 @@ func _physics_process(delta):
 		velocity.y -= GRAVITY
 		
 		if Input.is_key_pressed(KEY_P):
-			self.get_parent().toggle_speed()
+			self.get_parent().toggle_speed(0.5, 0.1, 5.0, 0.01)
 		
 		if Input.is_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP):
 				Walk_Speed += Accelaration
@@ -147,4 +147,4 @@ func _on_RightHand_button_pressed(button):
 
 func button_pressed(button, hand):
 	if button ==  JOY_VR_TRIGGER:
-		self.get_parent().toggle_speed()
+		self.get_parent().toggle_speed(0.5, 0.1, 5.0, 0.01)
