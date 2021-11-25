@@ -8,6 +8,8 @@ class_name Map
 # 	map.get_notes("ExpertPlus")
 
 const BS_LEVELS = ["Easy", "NormalStandard", "Normal", "HardStandard", "Hard", "Expert", "ExpertStandard", "ExpertPlusStandard", "ExpertPlus"]
+const NOTE_TYPE = {"BOMB": 3}
+const OBSTACLE_TYPE = {"FULL_HEIGHT": 0, "CROUCH": 1}
 
 # The width from each side in the center (the total width is twice this number)
 const LEVEL_WITH = 0.7
@@ -21,6 +23,7 @@ var bs_level_data = {}
 var bs_info_data = null
 
 var notes = {}
+var obstacles = {}
 var next_beat_event
 var note_offset = 0
 
@@ -45,14 +48,19 @@ func _on_beat_detected(difficulty, beat:int):
 	# assert(typeof(beat) == TYPE_INT)
 	
 	# print(self.notes[difficulty])
-	var return_value = []
+	var return_value_notes = []
+	var return_value_obstacles = []
 	if self.notes.has(difficulty):
 		if self.notes[difficulty].has(int(beat)):
-			return self.notes[difficulty][int(beat)]
+			return_value_notes = self.notes[difficulty][int(beat)]
+			
+	if self.obstacles.has(difficulty):
+		if self.obstacles[difficulty].has(int(beat)):
+			return_value_obstacles = self.obstacles[difficulty][int(beat)]
 	
-	return return_value
+	return [return_value_notes, return_value_obstacles]
 
-func get_notes(difficulty):
+func get_level(difficulty):
 	var difficulty_path = self.path + "/" + difficulty + ".dat"
 	var file = File.new()
 	file.open(difficulty_path, File.READ)
@@ -64,7 +72,12 @@ func get_notes(difficulty):
 		# print ("adding note: ", note)
 		# print ("note time:", note["_time"])
 		self.add_note(difficulty, note)
-	# notes = get_children()
+	
+	for obstacle in self.bs_level_data[difficulty]["_obstacles"]:
+		# print ("adding obstacle: ", obstacle)
+		# print ("obstacle time:", obstacle["_time"])		
+		self.add_obstacle(difficulty, obstacle)
+		
 	return
 	
 func obstacle_line_index_layer_to_position(obstacle):
@@ -77,12 +90,23 @@ func obstacle_line_index_layer_to_position(obstacle):
 	# position = [-0.976259469985962,-1.29999995231628]
 	var PADDING = 2
 	var WALL_WIDTH = 0.5
-	var position_x = (-LEVEL_WITH  + (2*LEVEL_WITH/3) * obstacle["_lineIndex"]) * PADDING - WALL_WIDTH
 	
-	# 0.65 because the minimal size of -1.3 + 0.65 * 4 = 1.3
-	# position_x2/position_y = position_x + 0.65 * obstacle["_width"]
-	var position_y = -0.976259469985962
-	return [position_x, position_y]
+	var position_x1 = null
+	var position_y1 = null
+	var position_x2 = null
+	var position_y2 = null
+	if obstacle["_type"] == OBSTACLE_TYPE["FULL_HEIGHT"]:
+		position_x1 = -LEVEL_WITH + (2*LEVEL_WITH/3) * obstacle["_lineIndex"]
+		position_y1 = LEVEL_HIGH
+		
+		position_x2 = position_x1 + (2*LEVEL_WITH/3) * obstacle["_width"]
+		position_y2 = LEVEL_LOW
+	else:
+		# TODO: Change and see how crouch is set
+		position_x1 = -LEVEL_WITH + (2*LEVEL_WITH/3) * obstacle["_lineIndex"]
+		position_y1 = LEVEL_HIGH
+		
+	return [position_x1, position_y1, position_x2, position_y2]
 
 func line_index_layer_to_position(note):
 	# beat saber layer moves between 0-2
@@ -112,25 +136,41 @@ func add_note(difficulty, note):
 	self.notes[difficulty][beat_number].append(note)
 	return
 
-
-func get_obstacles(difficulty):
-	for obstacle in self.bs_level_data[difficulty]["_obstacles"]:
-		self.add_obstacle(difficulty, obstacle)
-
 func add_obstacle(difficulty, obstacle):
-	if not self.notes.has(difficulty):
-		self.notes[difficulty] = {}
+	if not self.obstacles.has(difficulty):
+		self.obstacles[difficulty] = {}
 		
 	var beat_number = int(obstacle["_time"])
-	if not self.notes[difficulty].has(beat_number):
-		self.notes[difficulty][beat_number] = []
+	var offset = obstacle["_time"] - int(obstacle["_time"])
+	if not self.obstacles[difficulty].has(beat_number):
+		self.obstacles[difficulty][beat_number] = []
 		
-	# Here we can change the note data to fit our game level
+	# Get obstacle data
+	var x_position = obstacle["_lineIndex"]
+	var bs_type = obstacle["_type"]
+	var duration = obstacle["_duration"]
+	var width = obstacle["_width"]
+	
+	# Some levels use for fx and it breaks stuff if not handled
+	if duration == 0:
+		return
+	
+	# Here we can change the obstacle data to fit our game level	
+	if bs_type == OBSTACLE_TYPE["CROUCH"]:
+		obstacle["type"] = "crouch"
+	else:
+		obstacle["type"] = "full_height"
+	
 	var x = null
 	var y = null
-	[x, y] = obstacle_line_index_layer_to_position(obstacle)
-	obstacle["x"] = x
-	obstacle["y"] = y
+	var tmp = obstacle_line_index_layer_to_position(obstacle)
+	obstacle["x1"] = tmp[0]
+	obstacle["y1"] = tmp[1]
+	obstacle["x2"] = tmp[0]
+	obstacle["y2"] = tmp[1]
+	obstacle["duration"] = duration
+	obstacle["width"] = width
+	obstacle["offset"] = offset
 	
-	self.notes[difficulty][beat_number].append(obstacle)
+	self.obstacles[difficulty][beat_number].append(obstacle)
 	return

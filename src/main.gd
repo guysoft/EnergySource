@@ -30,6 +30,7 @@ onready var speed_multiplier = 1
 onready var _rand = RandomNumberGenerator.new()
 
 var notescene = load("res://scenes/Note.tscn")
+var obstaclescene = load("res://scenes/Obstacle.tscn")
 
 var time_begin = null
 var time_delay
@@ -70,42 +71,47 @@ func _ready():
 
 # export(PackedScene) var note_object
 # export(NodePath) onready var beat_player = get_node(beat_player) as BeatPlayer
+func calc_object_speed():
+	return map.get_bpm() / 60 * travel_distance / (notes_delay) * speed_multiplier * self.song_speed
 
 func _on_beat_detected(beat):
 	# song_speed = 0.4
-	$BeatPlayer.pitch_scale = song_speed
+	$BeatPlayer.pitch_scale = self.song_speed
 	
-	var notes = map._on_beat_detected(difficulty, beat + notes_delay)
+	var notes = []
+	var obstacles = []
+	
+	var return_value = map._on_beat_detected(difficulty, beat + notes_delay)
+	notes = return_value[0]
+	obstacles = return_value[1]
+	
 	for note in notes:
 		
 		# Spawn note
 		var note_instance = notescene.instance()
-		# note_instance.get_child(0).visible()
-		
 		_spawn_location.add_child(note_instance)
 		
-		var note_speed =  map.get_bpm() / 60 * travel_distance / (notes_delay) * speed_multiplier * song_speed
+		var note_speed = calc_object_speed()
 		#print(note_speed)
 		note_instance.setup_note(note, note_speed, map.get_bpm(), travel_distance)
-		# note_instance.transform.origin = Vector3(-1,-1,-1)
-	#	_rand.randomize()
-	#
-	#	var wall_size = 1
-	#	note_instance.transform.origin = Vector3(
-	#	_rand.randf_range(-wall_size, wall_size),
-	#	_rand.randf_range(0.5, 2),
-	#	- 2
-	#)
-
-		
-		# add_child(note_instance)
-		# note_instance.setup_note(note)
 		
 		note_instance.activate()
+		
+	for obstacle in obstacles:
+		# Spawn obstacle
+		var obstacle_instance = obstaclescene.instance()
+		_spawn_location.add_child(obstacle_instance)
+		
+		var obstacle_speed = calc_object_speed()
+		#print(note_speed)
+		obstacle_instance.setup_obstacle(obstacle, obstacle_speed, map.get_bpm(), travel_distance)
+		
+		obstacle_instance.activate()
+		
 
 func setup_map(path:String):
 	map = Map.new(path)
-	map.get_notes(difficulty)
+	map.get_level(difficulty)
 
 #func _init_vr() -> ARVRInterface:
 #	print("Starting vr")
@@ -203,7 +209,7 @@ func change_song_speed(speed):
 	
 	var notes = _spawn_location.get_children()
 	for note in notes:
-		note.speed =  map.get_bpm() / 60 * travel_distance / (notes_delay) * speed_multiplier * self.song_speed
+		note.speed = calc_object_speed()
 	return
 
 func warp_song(target_speed, step, duration_stay, step_delay):

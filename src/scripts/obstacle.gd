@@ -1,6 +1,6 @@
 extends Area
 
-class_name Obstacle
+class_name Note
 
 var speed = 2
 export(Vector3) var direction = Vector3(0,0,1)
@@ -17,6 +17,10 @@ var _custom_data = {}
 
 var alive = false
 
+# TODO get this from mesh size
+var size_x = 0.5
+var size_y = 0.5
+
 #Refs
 onready var _audio_stream_player = $AudioStreamPlayer3D
 onready var _animation_player = $AnimationPlayer
@@ -27,21 +31,45 @@ onready var _spawn_timer = $Timer
 func _ready():
 	deactivate(false)
 
-func setup_note(note, speed, bpm, distance):
+func setup_obstacle(obstacle, speed, bpm, distance):
 	self.speed = speed
-	if not note:
+	if not obstacle:
 		return
 	
-	transform.origin = Vector3(note["x"], note["y"], 0)
+	print(obstacle["x1"])
+	print(obstacle["y1"])
+	var scale_x = 0
+	var scale_y = 0
+	var scale_z = 0
+	var padding_x = 0
+	var padding_y = 0
+	
+	if obstacle["type"] == "full_height":
+		scale_x = 3
+		scale_y = obstacle["width"]
+		padding_x = (obstacle["width"] - 1) * size_x / 2.0
+		
+	transform.origin = Vector3(obstacle["x1"] + padding_x, obstacle["y1"], 0)
+	var z = obstacle["duration"] * bpm / 60
+	print("duration!")
+	print(obstacle["duration"])
+	self.scale_object_local(Vector3(obstacle["width"],3,z))
+	
+	
 	
 	despawn_z = distance
 	
 	#if the note has an offset, set up the timer to match
-	if note["offset"] > 0.0:
-		_spawn_timer.wait_time = note["offset"] * 60 / bpm
-		print ("Note offset: ", note["offset"])
+	if obstacle["offset"] > 0.0:
+		_spawn_timer.wait_time = obstacle["offset"] * 60 / bpm
+		print ("Obstacle offset: ", obstacle["offset"])
 		print ("wait time: ", _spawn_timer.wait_time)
-	
+		
+	var mat = _mesh.get_active_material(0)
+	mat.albedo_color = Color.green
+	mat.emission = Color.green
+		
+	""""	
 	#set the material based on the note type
 	var mat = _mesh.get_active_material(0)
 	if note["_type"] == 0:
@@ -53,6 +81,7 @@ func setup_note(note, speed, bpm, distance):
 	elif note["_type"] == 3:
 		mat.albedo_color = Color.white
 		mat.emission = Color.white
+	"""
 
 func activate():
 	#if the spawn timer has been setup with an offset
@@ -96,7 +125,7 @@ func despawn():
 
 func _physics_process(delta):
 	_velocity = direction * speed * delta
-	translate(_velocity)
+	global_translate(_velocity)
 	
 	if self.transform.origin.z > despawn_z:
 		self.despawn()
