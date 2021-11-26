@@ -3,6 +3,12 @@ extends Area
 class_name Note
 
 var speed = 2
+
+export(Array, ShaderMaterial) var materials = []
+
+#TODO add score values as export
+
+
 export(Vector3) var direction = Vector3(0,0,1)
 export(float) var despawn_z = 12.0
 
@@ -41,18 +47,25 @@ func setup_note(note, speed, bpm, distance):
 		_spawn_timer.wait_time = note["offset"] * 60 / bpm
 		print ("Note offset: ", note["offset"])
 		print ("wait time: ", _spawn_timer.wait_time)
-	
+		
 	#set the material based on the note type
-	var mat = _mesh.get_active_material(0)
+	#var mat = _mesh.get_active_material(0) as ShaderMaterial
 	if note["_type"] == 0:
-		mat.albedo_color = Color.red
-		mat.emission = Color.red
+		_mesh.material_override = materials[0]
+		mat.emission = Color.aquamarine * 2.0
 	elif note["_type"] == 1:
-		mat.albedo_color = Color.blue
-		mat.emission = Color.blue
-	elif note["_type"] == 3:
-		mat.albedo_color = Color.white
-		mat.emission = Color.white
+		#Color.
+		_mesh.material_override = materials[1]
+#		mat.set_shader_param("albedo_color", Color.palegreen)
+#		mat.set_shader_param("emission_color", Color.palegreen * 1.0)
+#		mat.set_shader_param("albedo_color", Color.palegreen)
+#		mat.set_shader_param("emission_color", Color.palegreen * 1.0)
+	elif note["_type"] == 3: 
+		_mesh.material_override = materials[2]
+#		mat.set_shader_param("albedo_color", Color.aquamarine)
+#		mat.set_shader_param("emission_color", Color.aquamarine * 1.0)
+#		mat.albedo_color = Color.white
+#		mat.emission = Color.white * 5.0
 
 func activate():
 	#if the spawn timer has been setup with an offset

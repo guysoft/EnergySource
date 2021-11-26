@@ -1,0 +1,68 @@
+[gd_resource type="Shader" format=2]
+
+[resource]
+code = "shader_type spatial;
+render_mode cull_disabled, world_vertex_coords;
+
+uniform vec4 emission_color : hint_color = vec4(1.0,1.0,1.0,1.0) ;
+uniform vec4 albedo_color : hint_color = vec4(1.0,1.0,1.0,1.0);
+
+uniform float displace_scale;
+uniform float mid_level : hint_range(0, 1);
+
+uniform float scale;
+uniform vec2 offset;
+uniform sampler2D noise : hint_albedo;
+
+uniform vec2 scroll;
+
+uniform vec3 object_position;
+uniform float max_distance_clamp;
+uniform float min_displace;
+
+varying vec3 vert_out;
+
+void vertex() {
+	//vec4 world_vertex = CAMERA_MATRIX * vec4(VERTEX,1.0);
+	vec4 world_vertex = vec4(VERTEX,1.0);
+	
+	vec2 uv = UV + offset + (scroll*TIME);
+
+	vec3 norm = NORMAL;
+	
+	vec4 tex= texture(noise,uv);
+	
+	float dist = distance(object_position,world_vertex.xyz);
+	
+	if (dist>max_distance_clamp){
+		dist=max_distance_clamp;
+	}
+	
+	float new_distance = max_distance_clamp + min_displace - dist;
+	
+	//vec4 tex_adjusted = tex*(distance_clamp-dist);
+	vec4 tex_adjusted = (tex - mid_level) * new_distance;
+	vert_out.x = VERTEX.x + (((tex_adjusted.r)*norm.x)*displace_scale);
+	vert_out.y = VERTEX.y + (((tex_adjusted.r)*norm.y)*displace_scale);
+	vert_out.z = VERTEX.z + (((tex_adjusted.r)*norm.z)*displace_scale);
+	
+	VERTEX = vert_out;
+	 
+}
+
+void fragment() {
+	
+//	vec2 uv = UV;
+//
+//	vec4 world_vertex = CAMERA_MATRIX * vec4(VERTEX,1.0);
+//	float dist = distance(object_position,world_vertex.xyz)/scale;
+//	vec3 col = tex.rgb * vec3(1.0f - dist, 1.0f - dist, 1.0f - dist);
+//	float distcol = smoothstep(1.0,0.8,dist);
+	EMISSION = emission_color.rgb/2.0;
+	ALBEDO = albedo_color.rgb;
+	//ALBEDO = col;
+	//ALBEDO = vec3(0.0);
+	//vec2 uv = UV;
+	//vec4 tex= texture(noise,uv);
+	//ALBEDO = tex.rgb;
+}"

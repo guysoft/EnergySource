@@ -1,0 +1,22 @@
+[gd_resource type="ShaderMaterial" load_steps=4 format=2]
+
+[ext_resource path="res://effects/note_displace_shader.tres" type="Shader" id=1]
+
+[sub_resource type="OpenSimplexNoise" id=13]
+
+[sub_resource type="NoiseTexture" id=14]
+noise = SubResource( 13 )
+
+[resource]
+shader = ExtResource( 1 )
+shader_param/emission_color = Color( 0.223529, 0.956863, 0.709804, 1 )
+shader_param/albedo_color = Color( 0.733333, 0.886275, 0.835294, 1 )
+shader_param/displace_scale = 0.148
+shader_param/mid_level = 0.5
+shader_param/scale = 0.0
+shader_param/offset = Vector2( 0, 0 )
+shader_param/scroll = Vector2( 0.1, 0.25 )
+shader_param/object_position = Vector3( 1.35, 0.963, 0.6 )
+shader_param/max_distance_clamp = 0.5
+shader_param/min_displace = 0.564
+shader_param/noise = SubResource( 14 )

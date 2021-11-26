@@ -50,13 +50,18 @@ func _ready():
 	
 	time_begin = OS.get_ticks_usec()
 	time_delay = AudioServer.get_time_to_next_mix() + AudioServer.get_output_latency()
-	$BeatPlayer.offset = song_offset + float(time_delay)
+	print ("time delay:", time_delay)
+	$BeatPlayer.offset = song_offset - float(time_delay)
 	
 	Engine.time_scale = song_speed
 	$BeatPlayer.pitch_scale = song_speed
+
+	$Ground.setup_ground(map.get_bpm(), notes_delay)
+	$EnvironmentParticles.setup_particles(map.get_bpm(), notes_delay)
 	
 	$BeatPlayer.play()
 	
+
 
 # Perhaps we will need this to handle delay
 #func _process(delta):
@@ -84,7 +89,7 @@ func _on_beat_detected(beat):
 		
 		_spawn_location.add_child(note_instance)
 		
-		var note_speed =  map.get_bpm() / 60 * travel_distance / (notes_delay)
+		var note_speed =  map.get_bpm() / 60 * travel_distance / notes_delay
 		#print(note_speed)
 		note_instance.setup_note(note, note_speed, map.get_bpm(), travel_distance)
 		# note_instance.transform.origin = Vector3(-1,-1,-1)
