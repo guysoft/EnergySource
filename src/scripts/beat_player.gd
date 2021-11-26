@@ -29,10 +29,10 @@ signal beat
 ##################
 
 func set_beat(beat: float):
-	var beat_per_second: float = ((bpm*pitch_scale) / 60.0)
+	var beat_per_second: float = ((bpm) / 60.0)
 	self.playback_position = beat / beat_per_second
 func get_beat():
-	var beat_per_second: float = ((bpm*pitch_scale) / 60.0)
+	var beat_per_second: float = ((bpm) / 60.0)
 	return (self.playback_position) * beat_per_second
 
 # this doesn't set seek
@@ -110,7 +110,9 @@ func _process(delta: float) -> void:
 ###############
 
 func beat_pulse():
+
 	var beat_pulse = int(get_beat())
+	#print (beat_pulse)
 	if beat_pulse>last_beat:
 		last_beat=beat_pulse
 		print ("beat! ", last_beat)

@@ -1,0 +1,35 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://scripts/UICanvas.gd" type="Script" id=1]
+
+[sub_resource type="QuadMesh" id=1]
+
+[sub_resource type="ViewportTexture" id=2]
+viewport_path = NodePath("Viewport")
+
+[sub_resource type="SpatialMaterial" id=3]
+resource_local_to_scene = true
+flags_transparent = true
+flags_unshaded = true
+params_cull_mode = 2
+albedo_texture = SubResource( 2 )
+
+[node name="UICanvas" type="Spatial"]
+script = ExtResource( 1 )
+transparent = true
+editor_live_update = true
+
+[node name="Viewport" type="Viewport" parent="."]
+size = Vector2( 128, 128 )
+size_override_stretch = true
+transparent_bg = true
+hdr = false
+disable_3d = true
+keep_3d_linear = true
+usage = 0
+render_target_v_flip = true
+
+[node name="UIMeshInstance" type="MeshInstance" parent="."]
+mesh = SubResource( 1 )
+skeleton = NodePath("../Viewport")
+material/0 = SubResource( 3 )

@@ -1,5 +1,6 @@
 extends Node
 
+const UI_PIXELS_TO_METER = 1.0 / 512
 
 # Declare member variables here. Examples:
 # var a = 2

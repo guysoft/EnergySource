@@ -103,8 +103,10 @@ func obstacle_line_index_layer_to_position(obstacle):
 		position_y2 = LEVEL_LOW
 	else:
 		# TODO: Change and see how crouch is set
-		position_x1 = -LEVEL_WITH + (2*LEVEL_WITH/3) * obstacle["_lineIndex"]
-		position_y1 = LEVEL_HIGH
+		position_x1 = -LEVEL_WITH
+		position_y1 = LEVEL_LOW + (LEVEL_HIGH - LEVEL_LOW)/2 * (obstacle["_lineIndex"] + obstacle["_width"])
+		position_x2 = LEVEL_WITH
+		position_y2 = LEVEL_LOW + (LEVEL_HIGH - LEVEL_LOW)/2 * obstacle["_lineIndex"]
 		
 	return [position_x1, position_y1, position_x2, position_y2]
 

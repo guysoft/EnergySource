@@ -3,6 +3,8 @@ extends KinematicBody
 # Ball mechanics settnings
 var HIT_VELOCITY = 0
 
+export(NodePath) onready var beat_player
+
 # Payer movement in non-vr mode settings
 export var Sensitivity_X = 0.01
 export var Sensitivity_Y = 0.01
@@ -18,9 +20,18 @@ var velocity = Vector3(0,0,0)
 var forward_velocity = 0
 var Walk_Speed = 0.1
 
+var score = 0 setget set_score
+
+func set_score(new_val):
+	score = new_val
+	Events.emit_signal("current_score_updated", score)
+
 func _ready():
 	# TODO Change this not to the global variable
 	# but after checking if vr worked
+	
+	beat_player = get_node(beat_player)
+	
 	if not GameVariables.ENABLE_VR:
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 		forward_velocity = Walk_Speed
@@ -40,7 +51,7 @@ func _physics_process(delta):
 		velocity.y -= GRAVITY
 		
 		if Input.is_key_pressed(KEY_P):
-			self.get_parent().toggle_speed()
+			self.get_parent().toggle_speed(0.5, 0.1, 5.0, 0.01)
 		
 		if Input.is_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP):
 				Walk_Speed += Accelaration
@@ -103,6 +114,13 @@ func handle_hit(body, hand):
 		
 		if linear_velocity >= HIT_VELOCITY:
 			print ("Hit threshold passed!")
+			
+			var beat = 0
+			if beat_player:
+				beat = beat_player.get_beat()
+			
+			self.score += body.calc_score(beat)
+			
 			if body.has_method("on_hit"):
 				body.on_hit(velocity, linear_velocity)
 			else:
@@ -147,4 +165,4 @@ func _on_RightHand_button_pressed(button):
 
 func button_pressed(button, hand):
 	if button ==  JOY_VR_TRIGGER:
-		self.get_parent().toggle_speed()
+		self.get_parent().toggle_speed(0.5, 0.1, 5.0, 0.01)
