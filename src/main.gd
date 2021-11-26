@@ -77,11 +77,17 @@ func _ready():
 # export(PackedScene) var note_object
 # export(NodePath) onready var beat_player = get_node(beat_player) as BeatPlayer
 
+
+func calc_object_speed():
+	return map.get_bpm() / 60 * travel_distance / notes_delay
+
 func _on_beat_detected(beat):
 	# song_speed = 0.4
 	#$BeatPlayer.pitch_scale = song_speed
 	
-	var notes = map._on_beat_detected(difficulty, beat + notes_delay)
+	var tmp = map._on_beat_detected(difficulty, beat + notes_delay)
+	var notes = tmp[0]
+	var obstacles = tmp[1]
 	for note in notes:
 		
 		# Spawn note
@@ -90,7 +96,7 @@ func _on_beat_detected(beat):
 		
 		_spawn_location.add_child(note_instance)
 		
-		var note_speed =  map.get_bpm() / 60 * travel_distance / notes_delay
+		var note_speed = map.get_bpm() / 60 * travel_distance / notes_delay
 		#print(note_speed)
 		note_instance.setup_note(note, note_speed, map.get_bpm(), travel_distance)
 		# note_instance.transform.origin = Vector3(-1,-1,-1)
@@ -108,6 +114,17 @@ func _on_beat_detected(beat):
 		# note_instance.setup_note(note)
 		
 		note_instance.activate()
+		
+	for obstacle in obstacles:
+		# Spawn obstacle
+		var obstacle_instance = obstaclescene.instance()
+		_spawn_location.add_child(obstacle_instance)
+		
+		var obstacle_speed = calc_object_speed()
+		#print(note_speed)
+		obstacle_instance.setup_obstacle(obstacle, obstacle_speed, map.get_bpm(), travel_distance)
+		
+		obstacle_instance.activate()
 
 func setup_map(path:String):
 	map = Map.new(path)
