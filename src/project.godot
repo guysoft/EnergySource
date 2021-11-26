@@ -63,6 +63,7 @@ config/icon="res://icon.png"
 [autoload]
 
 GameVariables="*res://scenes/GameVariables.tscn"
+Events="*res://scripts/events.gd"
 
 [display]
 
