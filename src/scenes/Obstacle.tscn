@@ -145,7 +145,7 @@ tracks/3/keys = {
 "values": [ true ]
 }
 
-[node name="Obstacle" type="Area" groups=["note"]]
+[node name="Obstacle" type="Area" groups=["obstacle"]]
 visible = false
 collision_layer = 4
 collision_mask = 2
