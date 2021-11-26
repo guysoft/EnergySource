@@ -42,6 +42,8 @@ func setup_note(note, speed, bpm, distance):
 	
 	despawn_z = distance
 	
+	_time = note["_time"]
+	
 	#if the note has an offset, set up the timer to match
 	if note["offset"] > 0.0:
 		_spawn_timer.wait_time = note["offset"] * 60 / bpm
@@ -52,7 +54,6 @@ func setup_note(note, speed, bpm, distance):
 	#var mat = _mesh.get_active_material(0) as ShaderMaterial
 	if note["_type"] == 0:
 		_mesh.material_override = materials[0]
-		mat.emission = Color.aquamarine * 2.0
 	elif note["_type"] == 1:
 		#Color.
 		_mesh.material_override = materials[1]
@@ -106,6 +107,17 @@ func despawn():
 	_animation_player.play("despawn")
 	yield(_animation_player, "animation_finished")
 	deactivate()
+
+func calc_score(beat):
+	var difference = abs(_time - beat)
+	var score = 0
+	if is_equal_approx(0, difference):
+		score = 100
+	if difference>0.05:
+		score = 50
+	if difference>0.1:
+		score = 10
+	return score
 
 func _physics_process(delta):
 	_velocity = direction * speed * delta

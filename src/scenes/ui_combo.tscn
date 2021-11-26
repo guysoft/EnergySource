@@ -1,0 +1,25 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://fonts/outward-master/fonts/outward-block.ttf" type="DynamicFontData" id=1]
+
+[sub_resource type="DynamicFont" id=19]
+size = 250
+use_mipmaps = true
+use_filter = true
+font_data = ExtResource( 1 )
+
+[sub_resource type="Theme" id=20]
+Label/fonts/font = SubResource( 19 )
+
+[node name="UICombo" type="Label"]
+margin_top = 219.0
+margin_right = 659.0
+margin_bottom = 434.0
+theme = SubResource( 20 )
+custom_colors/font_color = Color( 0.188235, 0, 0.243137, 1 )
+text = "COMBO X 4"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
