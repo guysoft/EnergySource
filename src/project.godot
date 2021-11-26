@@ -27,7 +27,17 @@ _global_script_classes=[ {
 "base": "Area",
 "class": "Note",
 "language": "GDScript",
+"path": "res://scripts/obstacle.gd"
+}, {
+"base": "Area",
+"class": "Obstacle",
+"language": "GDScript",
 "path": "res://scripts/note.gd"
+}, {
+"base": "Spatial",
+"class": "UICanvas",
+"language": "GDScript",
+"path": "res://scripts/UICanvas.gd"
 }, {
 "base": "Area",
 "class": "XRToolsInteractableArea",
@@ -49,6 +59,8 @@ _global_script_class_icons={
 "BeatResponder": "",
 "Map": "",
 "Note": "",
+"Obstacle": "",
+"UICanvas": "",
 "XRToolsInteractableArea": "",
 "XRToolsInteractableBody": "",
 "XRToolsPickable": ""
