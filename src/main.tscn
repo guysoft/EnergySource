@@ -1,23 +1,26 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=19 format=2]
 
 [ext_resource path="res://main.gd" type="Script" id=1]
 [ext_resource path="res://scenes/Player.tscn" type="PackedScene" id=2]
 [ext_resource path="res://scripts/beat_player.gd" type="Script" id=4]
 [ext_resource path="res://scripts/beat_responder.gd" type="Script" id=5]
 [ext_resource path="res://scenes/environment_particles.tscn" type="PackedScene" id=6]
-[ext_resource path="res://scenes/Floor.tres" type="Material" id=7]
+[ext_resource path="res://scenes/Ground.tscn" type="PackedScene" id=7]
 [ext_resource path="res://Levels/test/song.ogg" type="AudioStream" id=8]
 [ext_resource path="res://addons/godot-openxr/config/OpenXRConfig.gdns" type="Script" id=9]
+[ext_resource path="res://scripts/environment_particles.gd" type="Script" id=10]
+[ext_resource path="res://scenes/UICanvas.tscn" type="PackedScene" id=11]
+[ext_resource path="res://scripts/ui_score.gd" type="Script" id=12]
+[ext_resource path="res://scenes/ui_combo.tscn" type="PackedScene" id=13]
+[ext_resource path="res://effects/sun_bleached_environment.tres" type="Environment" id=15]
+[ext_resource path="res://scenes/ui_score.tscn" type="PackedScene" id=16]
+[ext_resource path="res://effects/note_1_material.tres" type="Material" id=18]
+[ext_resource path="res://effects/note_0_material.tres" type="Material" id=19]
 
-[sub_resource type="Environment" id=16]
-background_mode = 1
-glow_enabled = true
+[sub_resource type="SphereMesh" id=25]
 
-[sub_resource type="BoxShape" id=9]
-extents = Vector3( 7, 1, 8 )
-
-[sub_resource type="CubeMesh" id=10]
-size = Vector3( 4, 2, 4 )
+[sub_resource type="SpatialMaterial" id=26]
+flags_unshaded = true
 
 [node name="MainNode" type="Spatial"]
 script = ExtResource( 1 )
@@ -28,30 +31,18 @@ color_space = 0
 refresh_rate = 0.0
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = SubResource( 16 )
+environment = ExtResource( 15 )
 
-[node name="Ground" type="StaticBody" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.121, 0, -3.688 )
-collision_layer = 8
+[node name="WorldEnvironment" type="WorldEnvironment" parent="WorldEnvironment"]
+environment = ExtResource( 15 )
 
-[node name="CollisionShape" type="CollisionShape" parent="Ground"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.121, -1.03845, 3.688 )
-shape = SubResource( 9 )
-
-[node name="GoundShape" type="MeshInstance" parent="Ground/CollisionShape"]
-transform = Transform( 4, 0, 0, 0, 1, 0, 0, 0, 4, 0, 0, 0 )
-mesh = SubResource( 10 )
-material/0 = ExtResource( 7 )
+[node name="Ground" parent="." instance=ExtResource( 7 )]
 
 [node name="Player" parent="." instance=ExtResource( 2 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4.43244 )
+beat_player = NodePath("../BeatPlayer")
 
 [node name="Lights" type="Spatial" parent="."]
-
-[node name="SpotLight" type="SpotLight" parent="Lights"]
-transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 7.67704, 0 )
-spot_range = 10.0
-spot_angle = 35.0
 
 [node name="DirectionalLight" type="DirectionalLight" parent="Lights"]
 transform = Transform( 0.999997, 0.00201628, -0.00145423, 0.00221225, -0.45489, 0.890545, -0.00113407, 0.890545, 0.454893, 0, 12.9269, 0 )
@@ -59,14 +50,52 @@ visible = false
 light_energy = 0.5
 shadow_enabled = true
 
+[node name="SpotLight" type="SpotLight" parent="Lights"]
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 2.91164, 4.43244 )
+visible = false
+light_color = Color( 1, 0.811765, 0.454902, 1 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Lights"]
+transform = Transform( 3, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0.141918, -34.3526 )
+mesh = SubResource( 25 )
+skeleton = NodePath("../SpotLight2")
+material/0 = SubResource( 26 )
+
+[node name="SpotLight2" type="SpotLight" parent="Lights"]
+transform = Transform( 1, 0, 0, 0, -0.99493, -0.10057, 0, 0.10057, -0.99493, 0, 0.361551, -17.1579 )
+visible = false
+light_color = Color( 1, 0.811765, 0.454902, 1 )
+light_energy = 5.0
+light_specular = 1.0
+spot_range = 15.66
+spot_angle = 69.71
+
+[node name="SpotLight3" type="OmniLight" parent="Lights"]
+transform = Transform( 1, 0, 0, 0, -0.99493, -0.10057, 0, 0.10057, -0.99493, -0.192341, 0.650186, -18.9646 )
+visible = false
+light_color = Color( 1, 0.811765, 0.454902, 1 )
+light_energy = 5.0
+light_indirect_energy = 1.833
+light_specular = 16.0
+omni_range = 13.999
+omni_shadow_mode = 0
+omni_shadow_detail = 0
+
 [node name="EnvironmentParticles" parent="." instance=ExtResource( 6 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.45584, -8.76391 )
+lifetime = 5.0
+script = ExtResource( 10 )
 
 [node name="SpawnLocation" type="Spatial" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -7.98222 )
 
 [node name="BeatResponder" type="Node" parent="."]
 script = ExtResource( 5 )
-disabled = true
+materials = [ ExtResource( 19 ), ExtResource( 18 ) ]
+params = {
+"min_displace": 2.0
+}
+lerp_value = 5.0
 beat_player = NodePath("../BeatPlayer")
 
 [node name="BeatPlayer" type="AudioStreamPlayer" parent="."]
@@ -75,5 +104,32 @@ script = ExtResource( 4 )
 bpm = 138.0
 beat_subdivisions = 1.0
 
-[node name="DirectionalLight" type="DirectionalLight" parent="."]
-transform = Transform( 1, 0, 0, 0, 0.700174, 0.713972, 0, -0.713972, 0.700174, 0, 8.98887, 0 )
+[node name="ScoreCanvas" parent="." instance=ExtResource( 11 )]
+transform = Transform( 6, 0.000309795, 0.000664358, 0, 5.43785, -2.5357, -0.000733038, 2.5357, 5.43785, 0, 5.6238, -7.36162 )
+editor_live_update = false
+
+[node name="ReferenceRect" type="ReferenceRect" parent="ScoreCanvas"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ScoreCanvas/ReferenceRect"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -329.5
+margin_top = -217.0
+margin_right = 329.5
+margin_bottom = 217.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="UIScore" parent="ScoreCanvas/ReferenceRect/VBoxContainer" instance=ExtResource( 16 )]
+text = "SCORE: 0"
+script = ExtResource( 12 )
+
+[node name="UICombo" parent="ScoreCanvas/ReferenceRect/VBoxContainer" instance=ExtResource( 13 )]
