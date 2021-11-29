@@ -24,19 +24,20 @@ jobs:
     - name: Copy in assets
       run: |
         sudo apt-get update
-        sudo apt-get install libopenxr-loader1
+        wget http://archive.ubuntu.com/ubuntu/pool/universe/o/openxr-sdk-source/libopenxr-loader1_1.0.14~dfsg1-1_amd64.deb
+        sudo dpkg -i libopenxr-loader1_1.0.14~dfsg1-1_amd64.deb
         mkdir -p src/addons
         wget https://github.com/GodotVR/godot_openxr/releases/download/1.1.0/godot-openxr.zip
         unzip *.zip
         mv  godot_openxr_1.1.0/addons/godot-openxr src/addons
     - name: export game
       # Use latest version (see releases for all versions)
-      uses: firebelley/godot-export@v3.0.0
+      uses: firebelley/godot-export@v2.8.0
       with:
         # Defining all the required inputs
         # I used the mono version of Godot in this example
-        godot_executable_download_url: https://downloads.tuxfamily.org/godotengine/3.4/Godot_v3.4-stable_linux_headless.64.zip
-        godot_export_templates_download_url: https://downloads.tuxfamily.org/godotengine/3.4/Godot_v3.4-stable_export_templates.tpz
+        godot_executable_download_url: https://downloads.tuxfamily.org/godotengine/3.3/Godot_v3.3-stable_linux_headless.64.zip
+        godot_export_templates_download_url: https://downloads.tuxfamily.org/godotengine/3.3/Godot_v3.3-stable_export_templates.tpz
         relative_project_path: ./src
       env:
         GITHUB_TOKEN: ${{ secrets.AGITHUB_TOKEN }}
