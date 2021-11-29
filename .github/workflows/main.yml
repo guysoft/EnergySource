@@ -23,6 +23,7 @@ jobs:
         fetch-depth: 0
     - name: Copy in assets
       run: |
+        sudo apt-get install libopenxr-loader1
         mkdir -p src/addons
         wget https://github.com/GodotVR/godot_openxr/releases/download/1.1.0/godot-openxr.zip
         unzip *.zip
