@@ -27,6 +27,7 @@ jobs:
         mkdir -p src/addons
         wget https://github.com/GodotVR/godot_openxr/releases/download/1.1.0/godot-openxr.zip
         unzip *.zip
+        mkdir src/build
         mv  godot_openxr_1.1.0/addons/godot-openxr src/addons
     - name: export game
       # Use latest version (see releases for all versions)
