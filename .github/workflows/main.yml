@@ -23,9 +23,6 @@ jobs:
         fetch-depth: 0
     - name: Copy in assets
       run: |
-        sudo apt-get update
-        wget http://archive.ubuntu.com/ubuntu/pool/universe/o/openxr-sdk-source/libopenxr-loader1_1.0.14~dfsg1-1_amd64.deb
-        sudo dpkg -i libopenxr-loader1_1.0.14~dfsg1-1_amd64.deb
         mkdir -p src/addons
         wget https://github.com/GodotVR/godot_openxr/releases/download/1.1.0/godot-openxr.zip
         unzip *.zip
