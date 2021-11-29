@@ -43,7 +43,7 @@ jobs:
         mv src/Levels/test/song.egg src/Levels/test/song.ogg
     - name: export game
       # Use latest version (see releases for all versions)
-      uses: firebelley/godot-export@v2.8.0
+      uses: firebelley/godot-export@v3.0.0
       with:
         # Defining all the required inputs
         # I used the mono version of Godot in this example
