@@ -29,6 +29,10 @@ jobs:
         unzip *.zip
         mkdir src/build
         mv  godot_openxr_1.1.0/addons/godot-openxr src/addons
+        
+        wget https://github.com/GodotVR/godot-xr-tools/archive/96361bbbc6066dc5418d52e8a05dc3d0ca630dcb.zip
+        unzip godot-xr-tools-96361bbbc6066dc5418d52e8a05dc3d0ca630dcb.zip
+        mv godot-xr-tools-96361bbbc6066dc5418d52e8a05dc3d0ca630dcb/addons/godot-xr-tools src/addons
     - name: export game
       # Use latest version (see releases for all versions)
       uses: firebelley/godot-export@v2.8.0
@@ -41,3 +45,10 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.AGITHUB_TOKEN }}
         LANG: "en_US.UTF-8"
+    - name: "⬆ Upload build artifact"
+      uses: actions/upload-artifact@v2
+      if: github.event_name == 'push'
+      with:
+        name: Energy-source-linux.x86_64
+        path: src/build/Energy-source-linux.x86_64
+
