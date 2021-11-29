@@ -21,9 +21,6 @@ jobs:
       # Ensure that you get the entire project history
       with:
         fetch-depth: 0
-    - name: Build only exports in export_presets.cfg.build
-      # run: |
-      #   cp src/export_presets.cfg.build src/export_presets.cfg
     - name: export game
       # Use latest version (see releases for all versions)
       uses: firebelley/godot-export@v2.8.0
