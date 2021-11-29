@@ -2,7 +2,7 @@ extends Label
 
 export var lerp_amount = 0.1
 
-var step = 0.01
+var time_step = 0.01
 var target_value = 0
 var value = 0
 var updating = false
@@ -21,6 +21,6 @@ func _on_current_score_updated(new_score):
 	while (not is_equal_approx(value, target_value)):
 		value = int(lerp(value, target_value, lerp_amount))
 		text = "SCORE: " + String(value)
-		yield (get_tree().create_timer(step),"timeout")
+		yield (get_tree().create_timer(time_step),"timeout")
 	
 	updating = false
