@@ -74,9 +74,9 @@ func setup_obstacle(obstacle, speed, bpm, distance):
 		print ("Obstacle offset: ", obstacle["offset"])
 		print ("wait time: ", _spawn_timer.wait_time)
 		
-	var mat = _mesh.get_active_material(0)
-	mat.albedo_color = Color.green
-	mat.emission = Color.green
+#	var mat = _mesh.get_active_material(0)
+#	mat.albedo_color = Color.green
+#	mat.emission = Color.green
 		
 	""""	
 	#set the material based on the note type
