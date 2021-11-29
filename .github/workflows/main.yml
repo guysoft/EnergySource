@@ -39,5 +39,5 @@ jobs:
         godot_export_templates_download_url: https://downloads.tuxfamily.org/godotengine/3.3/Godot_v3.3-stable_export_templates.tpz
         relative_project_path: ./src
       env:
-        # GITHUB_TOKEN: ${{ secrets.AGITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.AGITHUB_TOKEN }}
         LANG: "en_US.UTF-8"
