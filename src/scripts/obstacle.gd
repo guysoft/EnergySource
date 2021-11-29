@@ -39,30 +39,32 @@ func setup_obstacle(obstacle, speed, bpm, distance):
 	if not obstacle:
 		return
 	
-	print(obstacle["x1"])
-	print(obstacle["y1"])
 	var scale_x = 0
 	var scale_y = 0
 	var scale_z = 0
-	var padding_x = 0
-	var padding_y = 0
+	var x = -90
+	var y = -90
 	
 	if obstacle["type"] == "full_height":
-		scale_x = obstacle["width"]
-		scale_y = bs_level_height
-		padding_x = (obstacle["width"] - 1) * size_x / 2.0
+		scale_x = 2*Map.LEVEL_WIDTH/4 * obstacle["width"]
+		scale_y = Map.LEVEL_HIGH - Map.LEVEL_LOW
+		x = -Map.LEVEL_WIDTH + 0.25 * float(obstacle["width"]) + 0.5 * float(obstacle["_lineIndex"]) * Map.LEVEL_WIDTH
+		y = Map.LEVEL_HIGH - Map.LEVEL_LOW/2
+		
 	elif obstacle["type"] == "crouch":
-		scale_x = bs_level_width
-		scale_y = obstacle["width"]
-		padding_y = (obstacle["width"] - 1) * size_x / 2.0
-		padding_x = (bs_level_width - 3) / 2.0 + 0.25
+		scale_x = 2*Map.LEVEL_WIDTH/4 * obstacle["width"]
+		scale_y = (Map.LEVEL_HIGH - Map.LEVEL_LOW) / 2
+		x = -Map.LEVEL_WIDTH + 0.25 * float(obstacle["width"]) + 0.5 * float(obstacle["_lineIndex"]) * Map.LEVEL_WIDTH
+		y = Map.LEVEL_LOW + (Map.LEVEL_HIGH - Map.LEVEL_LOW) * 0.75 + scale_y/2
+
 	print("got: " + obstacle["type"])
 	print("width: " + str(obstacle["width"]))
 	print("index: " + str(obstacle["_lineIndex"]))
 		
-	var z = obstacle["duration"] * bpm / 60 * (1/size_z)
-	transform.origin = Vector3(obstacle["x1"] + padding_x, obstacle["y1"] + padding_y, -z)
+	var z = obstacle["duration"] * bpm / 60 * (1/size_z) / 2
 	self.scale_object_local(Vector3(scale_x, scale_y, z))
+	transform.origin = Vector3(x, y, -z)
+	
 	
 	
 	
