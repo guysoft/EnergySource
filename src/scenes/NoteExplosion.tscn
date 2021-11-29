@@ -1,0 +1,122 @@
+[gd_scene load_steps=18 format=2]
+
+[ext_resource path="res://effects/kenney_particle_pack/star_04.png" type="Texture" id=1]
+[ext_resource path="res://scenes/NoteExplosion.gd" type="Script" id=2]
+[ext_resource path="res://effects/kenney_particle_pack/star_08.png" type="Texture" id=3]
+
+[sub_resource type="Gradient" id=12]
+offsets = PoolRealArray( 0, 0.490446, 1 )
+colors = PoolColorArray( 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1 )
+
+[sub_resource type="GradientTexture" id=13]
+gradient = SubResource( 12 )
+
+[sub_resource type="Curve" id=14]
+_data = [ Vector2( 0, 0 ), 0.0, 0.0, 0, 0, Vector2( 0.0979228, 0.969318 ), -4.12413, -4.12413, 0, 0, Vector2( 1, 0 ), 0.0, 0.0, 0, 0 ]
+
+[sub_resource type="CurveTexture" id=15]
+curve = SubResource( 14 )
+
+[sub_resource type="ParticlesMaterial" id=10]
+emission_ring_axis = Vector3( 0, 0, 0 )
+gravity = Vector3( 0, 0, 0 )
+angular_velocity = 436.86
+angular_velocity_random = 1.0
+angle = 720.0
+angle_random = 1.0
+scale = 2.5
+scale_random = 0.3
+scale_curve = SubResource( 15 )
+color = Color( 0.207843, 0.933333, 1, 1 )
+color_ramp = SubResource( 13 )
+
+[sub_resource type="SpatialMaterial" id=16]
+flags_transparent = true
+flags_unshaded = true
+vertex_color_use_as_albedo = true
+params_blend_mode = 1
+params_billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+albedo_texture = ExtResource( 3 )
+
+[sub_resource type="QuadMesh" id=11]
+material = SubResource( 16 )
+size = Vector2( 0.5, 0.5 )
+
+[sub_resource type="Gradient" id=4]
+offsets = PoolRealArray( 0, 0.0285714, 0.691083 )
+colors = PoolColorArray( 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0 )
+
+[sub_resource type="GradientTexture" id=5]
+gradient = SubResource( 4 )
+
+[sub_resource type="Curve" id=6]
+_data = [ Vector2( 0, 1 ), 0.0, 0.0, 0, 0, Vector2( 1, 0 ), -2.21794, 0.0, 0, 0 ]
+
+[sub_resource type="CurveTexture" id=7]
+curve = SubResource( 6 )
+
+[sub_resource type="ParticlesMaterial" id=1]
+lifetime_randomness = 0.16
+emission_shape = 1
+emission_sphere_radius = 0.05
+emission_ring_axis = Vector3( 0, 0, 0 )
+flag_align_y = true
+direction = Vector3( 0, 1, 0 )
+spread = 65.05
+gravity = Vector3( 0, 1, 0 )
+initial_velocity = 2.0
+initial_velocity_random = 0.49
+radial_accel = -5.62
+radial_accel_random = 1.0
+tangential_accel = 2.25
+angle = 720.0
+angle_random = 1.0
+scale = 0.15
+scale_random = 0.23
+scale_curve = SubResource( 7 )
+color = Color( 0.72, 1.48, 1.9, 1 )
+color_ramp = SubResource( 5 )
+hue_variation = 0.03
+hue_variation_random = 1.0
+
+[sub_resource type="SpatialMaterial" id=8]
+flags_transparent = true
+flags_unshaded = true
+vertex_color_use_as_albedo = true
+params_blend_mode = 1
+params_cull_mode = 2
+params_billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+albedo_texture = ExtResource( 1 )
+
+[sub_resource type="QuadMesh" id=9]
+material = SubResource( 8 )
+size = Vector2( 0.5, 0.5 )
+
+[node name="Spatial" type="Spatial"]
+script = ExtResource( 2 )
+
+[node name="CenterSpark" type="Particles" parent="."]
+transform = Transform( -4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0, 0 )
+emitting = false
+amount = 6
+lifetime = 0.5
+one_shot = true
+explosiveness = 1.0
+process_material = SubResource( 10 )
+draw_pass_1 = SubResource( 11 )
+
+[node name="Sparks" type="Particles" parent="."]
+emitting = false
+amount = 50
+lifetime = 0.8
+one_shot = true
+explosiveness = 0.81
+local_coords = false
+process_material = SubResource( 1 )
+draw_pass_1 = SubResource( 9 )

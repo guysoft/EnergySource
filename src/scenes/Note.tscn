@@ -1,10 +1,13 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://scripts/note.gd" type="Script" id=1]
 [ext_resource path="res://sfx/beep_01.wav" type="AudioStream" id=2]
 [ext_resource path="res://models/note/note.obj" type="ArrayMesh" id=3]
 [ext_resource path="res://effects/note_1_material.tres" type="Material" id=4]
 [ext_resource path="res://effects/note_0_material.tres" type="Material" id=5]
+[ext_resource path="res://effects/note_3_material.tres" type="Material" id=6]
+[ext_resource path="res://scenes/NoteExplosion.tscn" type="PackedScene" id=7]
+[ext_resource path="res://scenes/NoteFeedback.tscn" type="PackedScene" id=8]
 
 [sub_resource type="BoxShape" id=3]
 extents = Vector3( 0.125, 0.125, 0.125 )
@@ -90,7 +93,8 @@ tracks/1/keys = {
 
 [sub_resource type="Animation" id=5]
 resource_name = "spawn"
-length = 0.5
+length = 0.3
+step = 0.05
 tracks/0/type = "value"
 tracks/0/path = NodePath("MeshInstance:rotation_degrees")
 tracks/0/interp = 2
@@ -98,10 +102,10 @@ tracks/0/loop_wrap = true
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/keys = {
-"times": PoolRealArray( 0, 0.2 ),
+"times": PoolRealArray( 0.05, 0.3 ),
 "transitions": PoolRealArray( 1, 1 ),
 "update": 0,
-"values": [ Vector3( 45, 45, 45 ), Vector3( 0, 0, 0 ) ]
+"values": [ Vector3( 150, 150, 150 ), Vector3( 0, 0, 0 ) ]
 }
 tracks/1/type = "value"
 tracks/1/path = NodePath("MeshInstance:translation")
@@ -110,10 +114,10 @@ tracks/1/loop_wrap = true
 tracks/1/imported = false
 tracks/1/enabled = true
 tracks/1/keys = {
-"times": PoolRealArray( 0, 0.2 ),
-"transitions": PoolRealArray( 1, 1 ),
+"times": PoolRealArray( 0.05, 0.3 ),
+"transitions": PoolRealArray( 0.203063, 1 ),
 "update": 0,
-"values": [ Vector3( 0, 3.08304, 0 ), Vector3( 0, 0, 0 ) ]
+"values": [ Vector3( 0, 0, -25 ), Vector3( 0, 0, 0 ) ]
 }
 tracks/2/type = "value"
 tracks/2/path = NodePath("MeshInstance:scale")
@@ -122,7 +126,7 @@ tracks/2/loop_wrap = true
 tracks/2/imported = false
 tracks/2/enabled = true
 tracks/2/keys = {
-"times": PoolRealArray( 0, 0.2 ),
+"times": PoolRealArray( 0.05, 0.3 ),
 "transitions": PoolRealArray( 1, 1 ),
 "update": 0,
 "values": [ Vector3( 0, 0, 0 ), Vector3( 1, 1, 1 ) ]
@@ -146,11 +150,13 @@ collision_layer = 4
 collision_mask = 2
 monitoring = false
 script = ExtResource( 1 )
-materials = [ ExtResource( 5 ), ExtResource( 4 ), null ]
+materials = [ ExtResource( 5 ), ExtResource( 4 ), ExtResource( 6 ) ]
+hit_effect = ExtResource( 7 )
+feedback_effect = ExtResource( 8 )
 
 [node name="MeshInstance" type="MeshInstance" parent="."]
 transform = Transform( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3.08304, 0 )
-material_override = ExtResource( 5 )
+material_override = ExtResource( 4 )
 mesh = ExtResource( 3 )
 material/0 = null
 

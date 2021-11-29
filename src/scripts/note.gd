@@ -2,17 +2,23 @@ extends Area
 
 class_name Obstacle
 
+enum {HIT, MISS}
+
 var speed = 2
 
 export(Array, ShaderMaterial) var materials = []
-
-#TODO add score values as export
-
-
+export(PackedScene) var hit_effect
+export(PackedScene) var feedback_effect
 export(Vector3) var direction = Vector3(0,0,1)
 export(float) var despawn_z = 12.0
 
 onready var _velocity = Vector3(0,0,0)
+
+#Values used for note bounce
+var _bpm
+var _bounce_time = 0
+var bounce_freq = 0
+var _y_offset = 0
 
 var _time:float
 var _line_index:int
@@ -40,15 +46,23 @@ func setup_note(note, speed, bpm, distance):
 	
 	transform.origin = Vector3(note["x"], note["y"], 0)
 	
+	_y_offset = note["y"]
+	
 	despawn_z = distance
+	
+	_bpm = bpm
+	
+	bounce_freq = (_bpm/60) * speed
 	
 	_time = note["_time"]
 	
 	#if the note has an offset, set up the timer to match
-	if note["offset"] > 0.0:
-		_spawn_timer.wait_time = note["offset"] * 60 / bpm
-		print ("Note offset: ", note["offset"])
-		print ("wait time: ", _spawn_timer.wait_time)
+	if not is_equal_approx(note["offset"],0.0):
+		var calc_offset = note["offset"] * 60 / bpm
+		_bounce_time = calc_offset
+		_spawn_timer.wait_time = calc_offset
+		#print ("Note offset: ", note["offset"])
+		#print ("wait time: ", _spawn_timer.wait_time)
 		
 	#set the material based on the note type
 	#var mat = _mesh.get_active_material(0) as ShaderMaterial
@@ -92,36 +106,60 @@ func deactivate(delete:bool = true, delete_delay:float=1.0):
 		queue_free()
 
 #TODO: Take into account the controller position of the hit?
-func on_hit(velocity, linear_velocity):
-	_audio_stream_player.play()
+func on_hit(velocity, linear_velocity, accuracy):
+	#_audio_stream_player.play()
 	direction = velocity.normalized()
 	speed = linear_velocity
-	despawn()
 	
-func despawn():
+	var hit_effect_instance = hit_effect.instance()
+	get_tree().current_scene.add_child(hit_effect_instance)
+	hit_effect_instance.setup_effect(global_transform.origin, speed)
+	
+	spawn_feedback(accuracy)
+	
+	_collision.set_deferred("disabled", true)
+	
+	despawn(HIT)
+
+func spawn_feedback(accuracy):
+	var feedback_instance = feedback_effect.instance()
+	get_tree().current_scene.add_child(feedback_instance)
+	feedback_instance.show_feedback(global_transform.origin, accuracy)
+
+func despawn(type):
 	if not alive:
 		return
 	
 	alive = false
 	
 	_animation_player.play("despawn")
+	
+	if type==HIT:
+		print ("hit")
+		
+	elif type==MISS:
+		print ("miss")
+		_collision.set_deferred("disabled", true)
+		spawn_feedback(-1)
+		
 	yield(_animation_player, "animation_finished")
 	deactivate()
 
-func calc_score(beat):
-	var difference = abs(_time - beat)
-	var score = 0
-	if is_equal_approx(0, difference):
-		score = 100
-	if difference>0.05:
-		score = 50
-	if difference>0.1:
-		score = 10
-	return score
+func calc_accuracy(beat):
+	return _time-beat
+
+#DISABLED AS IT DOESN'T WORK
+#func bounce_note():
+	#var bounce = cos(_bounce_time*bounce_freq)*0.05
+	#transform.origin.y = _y_offset - bounce
+	#_bounce_time+=delta
 
 func _physics_process(delta):
-	_velocity = direction * speed * delta
+	_velocity = direction * speed * delta #consider moving to setup if it doesn't change
+	
+	#bounce_note()
+	
 	translate(_velocity)
 	
-	if self.transform.origin.z > despawn_z:
-		self.despawn()
+	if self.transform.origin.z > despawn_z+0.25:
+		self.despawn(MISS)
