@@ -50,5 +50,5 @@ jobs:
       if: github.event_name == 'push'
       with:
         name: Energy-source-linux.x86_64
-        path: src/build/Energy-source-linux.x86_64
+        path: src/build/linux
 
