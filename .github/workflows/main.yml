@@ -21,6 +21,12 @@ jobs:
       # Ensure that you get the entire project history
       with:
         fetch-depth: 0
+    - name: Copy in assets
+      run: |
+        mkdir -p src/addons
+        wget https://github.com/GodotVR/godot_openxr/releases/download/1.1.0/godot-openxr.zip
+        unzip *.zip
+        mv  godot_openxr_1.1.0/addons/godot-openxr src/addons
     - name: export game
       # Use latest version (see releases for all versions)
       uses: firebelley/godot-export@v2.8.0
