@@ -42,6 +42,7 @@ func _ready():
 	if GameVariables.ENABLE_VR:
 		if not initialise_VR():
 			print ("failed to init VR")
+			GameVariables.ENABLE_VR = false #temp, disable on final build
 	else:
 		print("No VR")
 		_left_hand.queue_free()
@@ -51,6 +52,7 @@ func _ready():
 	setup_map(path)
 	var song_offset = map.get_offset()
 	$BeatPlayer.connect("beat", self, "_on_beat_detected")
+	$BeatPlayer.stream = load(path + "/song.ogg")
 	$BeatPlayer.bpm = map.get_bpm()
 	
 	time_begin = OS.get_ticks_usec()
@@ -114,7 +116,7 @@ func _on_beat_detected(beat):
 		
 		_spawn_location.add_child(note_instance)
 		
-		var note_speed = map.get_bpm() / 60 * travel_distance / notes_delay
+		var note_speed = calc_object_speed()
 		#print(note_speed)
 		note_instance.setup_note(note, note_speed, map.get_bpm(), travel_distance)
 		# note_instance.transform.origin = Vector3(-1,-1,-1)
