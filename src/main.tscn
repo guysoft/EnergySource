@@ -138,6 +138,7 @@ script = ExtResource( 12 )
 
 [node name="Grid" type="Spatial" parent="."]
 transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 1, -0.783735, 0.667172, 2.12579 )
+visible = false
 
 [node name="cube_prefab" type="MeshInstance" parent="Grid"]
 transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0 )
@@ -222,3 +223,13 @@ material_override = ExtResource( 3 )
 mesh = ExtResource( 14 )
 skeleton = NodePath("../..")
 material/0 = null
+
+[node name="Button" type="Button" parent="."]
+margin_left = 483.0
+margin_top = 275.0
+margin_right = 548.0
+margin_bottom = 295.0
+text = "Enter VR"
+__meta__ = {
+"_edit_use_anchors_": false
+}
