@@ -21,10 +21,17 @@ var forward_velocity = 0
 var Walk_Speed = 0.1
 
 var score = 0 setget set_score
+var energy = 0 setget set_energy
 
 func set_score(new_val):
 	score = new_val
 	Events.emit_signal("current_score_updated", score)
+	
+func set_energy(new_val):
+	energy = new_val
+	if energy>100: energy = 100
+	if energy<0: energy = 0
+	Events.emit_signal("current_energy_updated", energy)
 
 func _ready():
 	# TODO Change this not to the global variable
@@ -164,5 +171,8 @@ func _on_RightHand_button_pressed(button):
 	button_pressed(button, "right")
 
 func button_pressed(button, hand):
-	if button ==  JOY_VR_TRIGGER:
+	if button ==  JOY_VR_TRIGGER and energy>10:
+		self.energy -= 10
+	if button == JOY_VR_GRIP and energy>10:
 		self.get_parent().toggle_speed(0.5, 0.1, 5.0, 0.01)
+		self.energy -=10
