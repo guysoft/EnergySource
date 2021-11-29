@@ -24,6 +24,7 @@ var bs_info_data = null
 
 var notes = {}
 var obstacles = {}
+var events = {}
 var next_beat_event
 var note_offset = 0
 
@@ -50,6 +51,7 @@ func _on_beat_detected(difficulty, beat:int):
 	# print(self.notes[difficulty])
 	var return_value_notes = []
 	var return_value_obstacles = []
+	var return_value_events = []
 	if self.notes.has(difficulty):
 		if self.notes[difficulty].has(int(beat)):
 			return_value_notes = self.notes[difficulty][int(beat)]
@@ -58,7 +60,11 @@ func _on_beat_detected(difficulty, beat:int):
 		if self.obstacles[difficulty].has(int(beat)):
 			return_value_obstacles = self.obstacles[difficulty][int(beat)]
 	
-	return [return_value_notes, return_value_obstacles]
+	if self.events.has(difficulty):
+		if self.events[difficulty].has(int(beat)):
+			return_value_events = self.events[difficulty][int(beat)]
+	
+	return [return_value_notes, return_value_obstacles, return_value_events]
 
 func get_level(difficulty):
 	var difficulty_path = self.path + "/" + difficulty + ".dat"
@@ -77,7 +83,10 @@ func get_level(difficulty):
 		# print ("adding obstacle: ", obstacle)
 		# print ("obstacle time:", obstacle["_time"])		
 		self.add_obstacle(difficulty, obstacle)
-		
+	
+	for event in self.bs_level_data[difficulty]["_events"]:
+		self.add_event(difficulty,event)
+	
 	return
 	
 func obstacle_line_index_layer_to_position(obstacle):
@@ -175,4 +184,23 @@ func add_obstacle(difficulty, obstacle):
 	obstacle["offset"] = offset
 	
 	self.obstacles[difficulty][beat_number].append(obstacle)
+	return
+
+func add_event(difficulty, event):
+	if not self.events.has(difficulty):
+		self.events[difficulty] = {}
+		
+	var beat_number = int(event["_time"])
+	var offset = event["_time"] - int(event["_time"])
+	if not self.events[difficulty].has(beat_number):
+		self.events[difficulty][beat_number] = []
+		
+	# Here we can change the note data to fit our game level
+#	var tmp = null
+#	tmp = line_index_layer_to_position(note)
+#	note["x"] = tmp[0]
+#	note["y"] = tmp[1]
+	event["offset"] = offset
+	
+	self.events[difficulty][beat_number].append(event)
 	return

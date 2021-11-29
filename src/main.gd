@@ -125,6 +125,49 @@ func _on_beat_detected(beat):
 		obstacle_instance.setup_obstacle(obstacle, obstacle_speed, map.get_bpm(), travel_distance)
 		
 		obstacle_instance.activate()
+	
+	for event in events:
+		#back laser
+		var type = event["_type"]
+		var lights = [$Lasers/BackLaser,$Lasers/RingLights,$Lasers/LeftLasers,$Lasers/RightLasers,$Lasers/CenterLights]
+		var brightness = 1.5
+		#if event type is a light event
+		if type <=4:
+			var light = type
+			var material = lights[light].get_child(0).get_surface_material(0) as SpatialMaterial
+			#turn off
+			if event["_value"] == 0:
+				lights[light].visible = false
+			#turn on blue
+			if event["_value"] == 1:
+				#material change to blue
+				lights[light].visible = true
+				material.albedo_color = Color.aqua * brightness 
+			#flash brightly blue, return to previous state
+			if event["_value"] == 2:
+				lights[light].visible = true
+				material.albedo_color = Color.aqua* brightness 
+			#flash brightly blue, fade to black
+			if event["_value"] == 3:
+				lights[light].visible = true
+				material.albedo_color = Color.aqua * brightness 
+			#Unused
+			#if event["_value"] == 4:
+			#turn on red
+			if event["_value"] == 5:
+				lights[light].visible = true
+				material.albedo_color = Color.greenyellow * brightness 
+			#flash bright red, return to previous
+			if event["_value"] == 6:
+				lights[light].visible = true
+				material.albedo_color = Color.greenyellow * brightness 
+			#flash bright red, fade to black
+			if event["_value"] == 7:
+				lights[light].visible = true
+				material.albedo_color = Color.greenyellow * brightness 
+		#ring spin, remapped to ground displacement
+		elif type == 8:
+			$GroundBeatResponse.disabled=false
 
 func setup_map(path:String):
 	map = Map.new(path)
