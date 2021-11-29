@@ -18,6 +18,10 @@ var toggle_speed_lock = false
 
 var speed_decay = 0.1
 
+var _bounce_time = 0
+var _bounce_freq = 0
+var _bounce_amp = 0.025
+
 #FYI if the script has a classname, you don't need to preload it in
 #const Map = preload("scripts/MapLoader.gd")
 onready var map = null
@@ -62,7 +66,8 @@ func _ready():
 	
 	$BeatPlayer.play()
 	
-
+	_bounce_time-=song_offset - float(time_delay)
+	_bounce_freq =  60/map.get_bpm() * calc_object_speed()
 
 # Perhaps we will need this to handle delay
 #func _process(delta):
@@ -81,6 +86,17 @@ func _ready():
 func calc_object_speed():
 	return map.get_bpm() / 60 * travel_distance / notes_delay
 
+
+func bounce_notes(delta):
+	var bounce = cos(_bounce_time*_bounce_freq)*0.15
+	_bounce_time+=delta
+	for child in $SpawnLocation.get_children():
+		if child.is_in_group("note"):
+			child.transform.origin.y = child._y_offset + bounce
+
+#func _physics_process(delta):
+	#bounce_notes(delta)
+
 func _on_beat_detected(beat):
 	# song_speed = 0.4
 	#$BeatPlayer.pitch_scale = song_speed
@@ -88,6 +104,8 @@ func _on_beat_detected(beat):
 	var tmp = map._on_beat_detected(difficulty, beat + notes_delay)
 	var notes = tmp[0]
 	var obstacles = tmp[1]
+	var events = tmp[2]
+	
 	for note in notes:
 		
 		# Spawn note
