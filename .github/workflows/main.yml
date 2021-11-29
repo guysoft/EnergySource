@@ -40,6 +40,7 @@ jobs:
         wget https://as.cdn.beatsaver.com/9d9092a6d2a70bb0a2b3f1b71fb97c6d6db046ab.zip
         unzip 9d9092a6d2a70bb0a2b3f1b71fb97c6d6db046ab.zip -d src/Levels/test
         cp src/Levels/test/Expert.dat src/Levels/test/ExpertPlusStandard.dat
+        mv src/Levels/test/Info.dat src/Levels/test/info.dat
         mv src/Levels/test/song.egg src/Levels/test/song.ogg
     - name: export game
       # Use latest version (see releases for all versions)
