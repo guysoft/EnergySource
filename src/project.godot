@@ -70,6 +70,7 @@ _global_script_class_icons={
 
 config/name="gsaber"
 run/main_scene="res://main.tscn"
+run/delta_sync_after_draw=true
 config/icon="res://icon.png"
 
 [autoload]
