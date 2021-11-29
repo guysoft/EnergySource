@@ -1,0 +1,28 @@
+[gd_resource type="Theme" load_steps=5 format=2]
+
+[ext_resource path="res://fonts/anthony-master/fonts/Anthony.otf" type="DynamicFontData" id=1]
+
+[sub_resource type="DynamicFont" id=19]
+size = 150
+use_mipmaps = true
+use_filter = true
+font_data = ExtResource( 1 )
+
+[sub_resource type="StyleBoxFlat" id=20]
+bg_color = Color( 0, 0, 0, 0.0980392 )
+corner_radius_top_left = 32
+corner_radius_top_right = 32
+corner_radius_bottom_right = 32
+corner_radius_bottom_left = 23
+
+[sub_resource type="StyleBoxFlat" id=21]
+bg_color = Color( 0.254902, 0.603922, 0.882353, 1 )
+corner_radius_top_left = 32
+corner_radius_top_right = 32
+corner_radius_bottom_right = 32
+corner_radius_bottom_left = 32
+
+[resource]
+Label/fonts/font = SubResource( 19 )
+ProgressBar/styles/bg = SubResource( 20 )
+ProgressBar/styles/fg = SubResource( 21 )
