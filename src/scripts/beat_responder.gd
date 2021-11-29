@@ -6,12 +6,12 @@ export(Array,ShaderMaterial) var materials = []
 export(Dictionary) var params
 export(float) var lerp_value = 0.5
 export(bool) var disabled:=false
-
+export(float) var set_value = 10.0
 export(float) var response_frequency = 1.0
 export(NodePath) onready var beat_player = get_node(beat_player) as BeatPlayer
 
 var last_beat = 0 
-var set_value
+
 
 
 func _ready():
@@ -31,7 +31,7 @@ func _process(delta):
 			for key in params.keys():
 				if material.shader.has_param(key):
 					var current_value = material.get_shader_param(key)
-					material.set_shader_param(key, lerp(current_value, 0, lerp_value*delta))
+					material.set_shader_param(key, lerp(current_value, set_value, lerp_value*delta))
 
 
 func _on_beat_detected(beat):
