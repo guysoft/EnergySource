@@ -126,10 +126,21 @@ func handle_hit(body, hand):
 			if beat_player:
 				beat = beat_player.get_beat()
 			
-			self.score += body.calc_score(beat)
+			
+			self.energy += 1
+			
+			var hit_accuracy = body.calc_accuracy(beat)
+			
+			var score_value = 0
+			
+			if hit_accuracy > 0.5 and hit_accuracy<=1.0:
+				score_value = 100 -(100*(hit_accuracy*6.6))
+			
+			self.score += score_value
+	
 			
 			if body.has_method("on_hit"):
-				body.on_hit(velocity, linear_velocity)
+				body.on_hit(velocity, linear_velocity, hit_accuracy)
 			else:
 				body.queue_free()
 			
@@ -172,6 +183,7 @@ func _on_RightHand_button_pressed(button):
 
 func button_pressed(button, hand):
 	if button ==  JOY_VR_TRIGGER and energy>10:
+		self.get_parent().toggle_speed(1.5, 0.1, 5.0, 0.01)
 		self.energy -= 10
 	if button == JOY_VR_GRIP and energy>10:
 		self.get_parent().toggle_speed(0.5, 0.1, 5.0, 0.01)
