@@ -3,7 +3,7 @@ extends Spatial
 onready var path:String = "res://Levels/test"
 onready var difficulty = "ExpertPlusStandard"
 
-onready var travel_distance = $Player/ARVROrigin.global_transform.origin.distance_to($SpawnLocation.global_transform.origin)
+onready var travel_distance = $HitMarker.global_transform.origin.distance_to($SpawnLocation.global_transform.origin)
 
 export (NodePath) var viewport = null
 var interface : ARVRInterface
@@ -62,8 +62,8 @@ func _ready():
 	
 	Engine.time_scale = song_speed
 	$BeatPlayer.pitch_scale = song_speed
-
-	$Ground.setup_ground(map.get_bpm(), notes_delay)
+	
+	$Ground.setup_ground(map.get_bpm(), notes_delay, Color.chocolate)
 	$EnvironmentParticles.setup_particles(map.get_bpm(), notes_delay)
 	
 	$BeatPlayer.play()

@@ -1,8 +1,8 @@
-[gd_scene load_steps=21 format=2]
+[gd_scene load_steps=26 format=2]
 
 [ext_resource path="res://main.gd" type="Script" id=1]
 [ext_resource path="res://scenes/Player.tscn" type="PackedScene" id=2]
-[ext_resource path="res://addons/godot-wireframe/cyan.material" type="Material" id=3]
+[ext_resource path="res://effects/Dark_environment.tres" type="Environment" id=3]
 [ext_resource path="res://scripts/beat_player.gd" type="Script" id=4]
 [ext_resource path="res://scripts/beat_responder.gd" type="Script" id=5]
 [ext_resource path="res://scenes/environment_particles.tscn" type="PackedScene" id=6]
@@ -13,16 +13,20 @@
 [ext_resource path="res://scenes/UICanvas.tscn" type="PackedScene" id=11]
 [ext_resource path="res://scripts/ui_score.gd" type="Script" id=12]
 [ext_resource path="res://scenes/ui_combo.tscn" type="PackedScene" id=13]
-[ext_resource path="res://addons/godot-wireframe/cube_basic.mesh" type="ArrayMesh" id=14]
-[ext_resource path="res://effects/sun_bleached_environment.tres" type="Environment" id=15]
+[ext_resource path="res://effects/wall_material.tres" type="Material" id=14]
+[ext_resource path="res://effects/note_3_material.tres" type="Material" id=15]
 [ext_resource path="res://scenes/ui_score.tscn" type="PackedScene" id=16]
+[ext_resource path="res://scenes/ui_energy_bar.tscn" type="PackedScene" id=17]
 [ext_resource path="res://effects/note_1_material.tres" type="Material" id=18]
 [ext_resource path="res://effects/note_0_material.tres" type="Material" id=19]
+[ext_resource path="res://scenes/ui_time_left.tscn" type="PackedScene" id=20]
+[ext_resource path="res://ui_theme.tres" type="Theme" id=21]
+[ext_resource path="res://effects/Ground.tres" type="Material" id=22]
+[ext_resource path="res://scenes/Lasers.tscn" type="PackedScene" id=23]
+[ext_resource path="res://effects/center_lights_material.tres" type="Material" id=27]
 
-[sub_resource type="SphereMesh" id=25]
-
-[sub_resource type="SpatialMaterial" id=26]
-flags_unshaded = true
+[sub_resource type="QuadMesh" id=5]
+size = Vector2( 0.25, 500 )
 
 [node name="MainNode" type="Spatial"]
 script = ExtResource( 1 )
@@ -33,55 +37,12 @@ color_space = 0
 refresh_rate = 0.0
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = ExtResource( 15 )
-
-[node name="WorldEnvironment" type="WorldEnvironment" parent="WorldEnvironment"]
-environment = ExtResource( 15 )
+environment = ExtResource( 3 )
 
 [node name="Ground" parent="." instance=ExtResource( 7 )]
 
 [node name="Player" parent="." instance=ExtResource( 2 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4.43244 )
 beat_player = NodePath("../BeatPlayer")
-
-[node name="Lights" type="Spatial" parent="."]
-
-[node name="DirectionalLight" type="DirectionalLight" parent="Lights"]
-transform = Transform( 0.999997, 0.00201628, -0.00145423, 0.00221225, -0.45489, 0.890545, -0.00113407, 0.890545, 0.454893, 0, 12.9269, 0 )
-visible = false
-light_energy = 0.5
-shadow_enabled = true
-
-[node name="SpotLight" type="SpotLight" parent="Lights"]
-transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 2.91164, 4.43244 )
-visible = false
-light_color = Color( 1, 0.811765, 0.454902, 1 )
-
-[node name="MeshInstance" type="MeshInstance" parent="Lights"]
-transform = Transform( 3, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0.141918, -34.3526 )
-mesh = SubResource( 25 )
-skeleton = NodePath("../SpotLight2")
-material/0 = SubResource( 26 )
-
-[node name="SpotLight2" type="SpotLight" parent="Lights"]
-transform = Transform( 1, 0, 0, 0, -0.99493, -0.10057, 0, 0.10057, -0.99493, 0, 0.361551, -17.1579 )
-visible = false
-light_color = Color( 1, 0.811765, 0.454902, 1 )
-light_energy = 5.0
-light_specular = 1.0
-spot_range = 15.66
-spot_angle = 69.71
-
-[node name="SpotLight3" type="OmniLight" parent="Lights"]
-transform = Transform( 1, 0, 0, 0, -0.99493, -0.10057, 0, 0.10057, -0.99493, -0.192341, 0.650186, -18.9646 )
-visible = false
-light_color = Color( 1, 0.811765, 0.454902, 1 )
-light_energy = 5.0
-light_indirect_energy = 1.833
-light_specular = 16.0
-omni_range = 13.999
-omni_shadow_mode = 0
-omni_shadow_detail = 0
 
 [node name="EnvironmentParticles" parent="." instance=ExtResource( 6 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.45584, -8.76391 )
@@ -89,15 +50,26 @@ lifetime = 5.0
 script = ExtResource( 10 )
 
 [node name="SpawnLocation" type="Spatial" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -7.98222 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -12 )
 
 [node name="BeatResponder" type="Node" parent="."]
 script = ExtResource( 5 )
-materials = [ ExtResource( 19 ), ExtResource( 18 ) ]
+materials = [ ExtResource( 19 ), ExtResource( 18 ), ExtResource( 15 ), ExtResource( 14 ) ]
 params = {
-"min_displace": 2.0
+"min_displace": 2.5
 }
-lerp_value = 5.0
+lerp_value = 10.0
+set_value = 0.0
+beat_player = NodePath("../BeatPlayer")
+
+[node name="GroundBeatResponse" type="Node" parent="."]
+script = ExtResource( 5 )
+materials = [ ExtResource( 22 ) ]
+params = {
+"displace_amount": 15.0
+}
+lerp_value = 1.0
+response_frequency = 2.0
 beat_player = NodePath("../BeatPlayer")
 
 [node name="BeatPlayer" type="AudioStreamPlayer" parent="."]
@@ -106,119 +78,113 @@ script = ExtResource( 4 )
 bpm = 138.0
 beat_subdivisions = 1.0
 
+[node name="HitMarker" type="Position3D" parent="."]
+transform = Transform( 1, -3.63798e-12, 1.45519e-11, 3.63798e-12, 1, 2.98024e-08, -1.45519e-11, -2.98024e-08, 1, 0, 0, -0.5 )
+
+[node name="MeshInstance" type="MeshInstance" parent="HitMarker"]
+transform = Transform( -2.62268e-08, 0.015, -4.37114e-08, 0, -6.55671e-10, -1, -0.6, -6.55671e-10, 1.91069e-15, 0, 0.5, 0 )
+mesh = SubResource( 5 )
+skeleton = NodePath("../..")
+material/0 = ExtResource( 27 )
+
 [node name="ScoreCanvas" parent="." instance=ExtResource( 11 )]
-transform = Transform( 6, 0.000309795, 0.000664358, 0, 5.43785, -2.5357, -0.000733038, 2.5357, 5.43785, 0, 5.6238, -7.36162 )
+transform = Transform( 1.22873, 0.363606, 0.0779755, 0, 1.35946, -0.0633927, -0.860365, 0.519283, 0.111361, -2.56726, 2.41427, -6.60775 )
 editor_live_update = false
 
 [node name="ReferenceRect" type="ReferenceRect" parent="ScoreCanvas"]
 anchor_right = 1.0
 anchor_bottom = 1.0
+theme = ExtResource( 21 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="VBoxContainer" type="VBoxContainer" parent="ScoreCanvas/ReferenceRect"]
+[node name="CenterContainer" type="CenterContainer" parent="ScoreCanvas/ReferenceRect"]
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -329.5
-margin_top = -217.0
-margin_right = 329.5
-margin_bottom = 217.0
+margin_left = -317.5
+margin_top = -302.5
+margin_right = 317.5
+margin_bottom = 302.5
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="UIScore" parent="ScoreCanvas/ReferenceRect/VBoxContainer" instance=ExtResource( 16 )]
+[node name="VBoxContainer" type="VBoxContainer" parent="ScoreCanvas/ReferenceRect/CenterContainer"]
+margin_right = 635.0
+margin_bottom = 605.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="UITimeLeft" parent="ScoreCanvas/ReferenceRect/CenterContainer/VBoxContainer" instance=ExtResource( 20 )]
+
+[node name="UIScore" parent="ScoreCanvas/ReferenceRect/CenterContainer/VBoxContainer" instance=ExtResource( 16 )]
+margin_top = 185.0
+margin_right = 635.0
+margin_bottom = 366.0
 text = "SCORE: 0"
 script = ExtResource( 12 )
 
-[node name="UICombo" parent="ScoreCanvas/ReferenceRect/VBoxContainer" instance=ExtResource( 13 )]
+[node name="UICombo" parent="ScoreCanvas/ReferenceRect/CenterContainer/VBoxContainer" instance=ExtResource( 13 )]
+margin_top = 370.0
+margin_right = 635.0
+margin_bottom = 551.0
+text = "X4"
+
+[node name="EnergyBar" parent="ScoreCanvas/ReferenceRect/CenterContainer/VBoxContainer" instance=ExtResource( 17 )]
 
 [node name="Grid" type="Spatial" parent="."]
-transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 1, -0.783735, 0.667172, 2.12579 )
+transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 1, 0, 0.667, -1.89364 )
 
 [node name="cube_prefab" type="MeshInstance" parent="Grid"]
 transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0 )
-material_override = ExtResource( 3 )
-mesh = ExtResource( 14 )
 skeleton = NodePath("../..")
-material/0 = null
 
 [node name="cube_prefab2" type="MeshInstance" parent="Grid"]
 transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 1, 0, 0 )
-material_override = ExtResource( 3 )
-mesh = ExtResource( 14 )
 skeleton = NodePath("../..")
-material/0 = null
 
 [node name="cube_prefab3" type="MeshInstance" parent="Grid"]
 transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 2, 0, 0 )
-material_override = ExtResource( 3 )
-mesh = ExtResource( 14 )
 skeleton = NodePath("../..")
-material/0 = null
 
 [node name="cube_prefab4" type="MeshInstance" parent="Grid"]
 transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 3, 0, 0 )
-material_override = ExtResource( 3 )
-mesh = ExtResource( 14 )
 skeleton = NodePath("../..")
-material/0 = null
 
 [node name="cube_prefab5" type="MeshInstance" parent="Grid"]
 transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 1, 0 )
-material_override = ExtResource( 3 )
-mesh = ExtResource( 14 )
 skeleton = NodePath("../..")
-material/0 = null
 
 [node name="cube_prefab6" type="MeshInstance" parent="Grid"]
 transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 1, 1, 0 )
-material_override = ExtResource( 3 )
-mesh = ExtResource( 14 )
 skeleton = NodePath("../..")
-material/0 = null
 
 [node name="cube_prefab7" type="MeshInstance" parent="Grid"]
 transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 2, 1, 0 )
-material_override = ExtResource( 3 )
-mesh = ExtResource( 14 )
 skeleton = NodePath("../..")
-material/0 = null
 
 [node name="cube_prefab8" type="MeshInstance" parent="Grid"]
 transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 3, 1, 0 )
-material_override = ExtResource( 3 )
-mesh = ExtResource( 14 )
 skeleton = NodePath("../..")
-material/0 = null
 
 [node name="cube_prefab9" type="MeshInstance" parent="Grid"]
 transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 2, 0 )
-material_override = ExtResource( 3 )
-mesh = ExtResource( 14 )
 skeleton = NodePath("../..")
-material/0 = null
 
 [node name="cube_prefab10" type="MeshInstance" parent="Grid"]
 transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 1, 2, 0 )
-material_override = ExtResource( 3 )
-mesh = ExtResource( 14 )
 skeleton = NodePath("../..")
-material/0 = null
 
 [node name="cube_prefab11" type="MeshInstance" parent="Grid"]
 transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 2, 2, 0 )
-material_override = ExtResource( 3 )
-mesh = ExtResource( 14 )
 skeleton = NodePath("../..")
-material/0 = null
 
 [node name="cube_prefab12" type="MeshInstance" parent="Grid"]
 transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 3, 2, 0 )
-material_override = ExtResource( 3 )
-mesh = ExtResource( 14 )
 skeleton = NodePath("../..")
-material/0 = null
+
+[node name="Lasers" parent="." instance=ExtResource( 23 )]
