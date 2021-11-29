@@ -2,7 +2,7 @@
 
 [resource]
 code = "shader_type spatial;
-render_mode cull_disabled, world_vertex_coords;
+render_mode depth_draw_opaque, cull_back,world_vertex_coords;
 
 uniform vec4 emission_color : hint_color = vec4(1.0,1.0,1.0,1.0) ;
 uniform vec4 albedo_color : hint_color = vec4(1.0,1.0,1.0,1.0);
@@ -60,6 +60,7 @@ void fragment() {
 //	float distcol = smoothstep(1.0,0.8,dist);
 	EMISSION = emission_color.rgb/2.0;
 	ALBEDO = albedo_color.rgb;
+	ALPHA = albedo_color.a;
 	//ALBEDO = col;
 	//ALBEDO = vec3(0.0);
 	//vec2 uv = UV;

@@ -27,6 +27,7 @@ uniform vec3 uv1_offset;
 uniform vec3 uv2_scale;
 uniform vec3 uv2_offset;
 
+uniform float displace_amount = 10.0;
 uniform sampler2D noise;
 varying vec3 noise_triplanar_pos;
 uniform float speed_mult = 1.0;
@@ -40,6 +41,21 @@ vec4 triplanar_texture(sampler2D p_sampler,vec3 p_weights,vec3 p_triplanar_pos) 
 	return samp;
 }
 
+vec3 filterNormal(vec2 uv, int texelSize, float terrainSize, float _Displacement)
+        {
+            vec4 h;
+            h[0] = textureLod(noise, uv + float(texelSize)*vec2(0,-1),0).r * _Displacement;
+            h[1] = textureLod(noise, uv + float(texelSize)*vec2(-1,0),0).r * _Displacement;
+            h[2] = textureLod(noise, uv + float(texelSize)*vec2(1,0),0).r * _Displacement;
+            h[3] = textureLod(noise, uv + float(texelSize)*vec2(0,1),0).r * _Displacement;
+ 
+            vec3 n;
+            n.z = -(h[0] - h[3]);
+            n.x = (h[1] - h[2]);
+            n.y = 2.0 * float(texelSize) * terrainSize; // pixel space -> uv space -> world space
+ 
+            return normalize(n);
+        }
 
 void vertex() {
 	TANGENT = vec3(0.0,0.0,-1.0) * abs(NORMAL.x);
@@ -64,7 +80,22 @@ void vertex() {
 	grad = smoothstep(0.0,0.3,grad);
 	float heightmap = texture(noise, UV+vec2(0.0,-offset)/(uv1_scale.x*uv1_scale.z)).r;
 	heightmap = smoothstep(0.35,1.0, heightmap+(grad*0.2));
-	VERTEX = VERTEX + (vec3(0,heightmap*grad,0)*10.0);
+	
+	vec3 modified_pos = VERTEX + (vec3(0,heightmap*grad,0)*displace_amount);
+	
+	VERTEX = modified_pos;
+	
+	vec3 posPlusTangent = VERTEX + TANGENT * 0.01;
+	vec3 bitangent = cross(NORMAL, TANGENT);
+	vec3 posPlusBitangent = VERTEX + bitangent * 0.01;
+
+    vec3 modifiedTangent = posPlusTangent - modified_pos;
+    vec3 modifiedBitangent = posPlusBitangent - modified_pos;
+
+    vec3 modifiedNormal = cross(modifiedTangent, modifiedBitangent);
+    
+	//NORMAL = normalize(modifiedNormal);
+	NORMAL = filterNormal(UV+vec2(0.0,-offset)/(uv1_scale.x*uv1_scale.z), textureSize(noise,0).x, 8.0, heightmap);
 }
 
 
@@ -75,7 +106,7 @@ void fragment() {
 	float noise_tex = smoothstep(0.2,0.9,triplanar_texture(noise,uv1_power_normal,noise_triplanar_pos).r);
 	
 	ALBEDO = albedo.rgb * albedo_tex.rgb * noise_tex;
-	EMISSION = albedo.rgb * albedo_tex.rgb * 3.0 * noise_tex;
+	EMISSION = ALBEDO * 5.0;
 	METALLIC = metallic;
 	float roughness_tex = dot(triplanar_texture(texture_roughness,uv1_power_normal,uv1_triplanar_pos),roughness_texture_channel);
 	ROUGHNESS = roughness_tex * roughness;
@@ -107,6 +138,7 @@ shader_param/uv1_scale = Vector3( 4, 4, 4 )
 shader_param/uv1_offset = Vector3( 0, 0, 0 )
 shader_param/uv2_scale = Vector3( 1, 1, 1 )
 shader_param/uv2_offset = Vector3( 0, 0, 0 )
+shader_param/displace_amount = 10.0
 shader_param/speed_mult = 0.1
 shader_param/emission_mult = 3.0
 shader_param/texture_albedo = ExtResource( 1 )
