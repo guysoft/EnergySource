@@ -1,5 +1,7 @@
 extends ARVRController
 
+var track_velocity := true
+
 var velocity = Vector3(0,0,0)
 var old_velocity = Vector3(0,0,0)
 var points = []
@@ -11,15 +13,74 @@ const TIME_CIRCLE = 500000
 
 const TRACK_LENGTH = 30
 
+var _rumble_intensity = 0.0;
+var _rumble_duration = -128.0; #-1 means deactivated so applications can also set their own rumble
+
+var _buttons_pressed       = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+var _buttons_just_pressed  = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+var _buttons_just_released = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+
+signal activated
+signal deactivated
+
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	pass
 
+func _process(delta):
+	if get_is_active():
+		if !visible:
+			visible = true
+			print("Activated " + name)
+			emit_signal("activated")
+	elif visible:
+		visible = false
+		print("Deactivated " + name)
+		emit_signal("deactivated")
+	
+	_update_buttons_and_sticks()
+	_update_rumble(delta)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _physics_process(delta):
 	#calc_velocity_old()
-	calc_velocity(delta)
+	if track_velocity:
+		calc_velocity(delta)
+
+func _update_buttons_and_sticks():
+	for i in range(0,16):
+		
+		var b = is_button_pressed(i)
+		
+		if b != _buttons_pressed[i] :
+			_buttons_pressed[i] = b
+			print (i, " pressed")
+			if b==1:
+				_buttons_just_pressed[i]=1
+				print (i, " just pressed")
+			else:
+				_buttons_just_released[i]=1
+				print (i, " just released")
+		else:
+			_buttons_just_pressed[i]=0
+			_buttons_just_released[i]=0
+
+
+func simple_rumble(intensity, duration):
+	_rumble_intensity = intensity;
+	_rumble_duration = duration;
+	
+func is_simple_rumbling():
+	return (_rumble_duration > 0.0);
+	
+func _update_rumble(dt):
+	if (_rumble_duration < - 100): return;
+	set_rumble(_rumble_intensity);
+	_rumble_duration -= dt;
+	if (_rumble_duration <= 0.0):
+		_rumble_duration = -128.0;
+		set_rumble(0.0);
 
 func calc_velocity(delta):
 	velocity = Vector3(0, 0, 0)
