@@ -5,6 +5,10 @@ export(Texture) var early_texture
 export(Texture) var perfect_texture
 export(Texture) var late_texture
 
+var hit_range = Vector2(-0.25, 0.25)
+#var increment = 17.0
+var increment = (hit_range.x + hit_range.y) / 3
+
 func show_feedback(position, accuracy):
 	
 	print ("accuracy: ", accuracy)
@@ -14,25 +18,25 @@ func show_feedback(position, accuracy):
 	
 	
 	#LATE
-	if accuracy>-0.1 and accuracy<-0.03:
+	if accuracy>hit_range.x and accuracy < (hit_range.x + increment):
 		print ("LATE")
 		mat.albedo_texture = late_texture
 		#$AnimationPlayer.play("Late")
 	
 	#PERFECT
-	if accuracy>-0.03 and accuracy<0.08:
+	if accuracy>(hit_range.x+increment) and accuracy<(hit_range.y-increment):
 		print ("PERFECT")
 		mat.albedo_texture = perfect_texture
 		#$AnimationPlayer.play("Perfect")
 	
 	#EARLY
-	if accuracy>0.08 and accuracy<0.15:
+	if accuracy>(hit_range.y-increment) and accuracy<hit_range.y:
 		print ("EARLY")
 		mat.albedo_texture = early_texture
 		#$AnimationPlayer.play("Early")
 	
 	#MISS
-	if accuracy<-0.15 or accuracy>0.15:
+	if accuracy<hit_range.x or accuracy>hit_range.y:
 		print ("MISS")
 		mat.albedo_texture = miss_texture
 		#$AnimationPlayer.play("Miss")
