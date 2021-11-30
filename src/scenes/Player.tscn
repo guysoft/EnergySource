@@ -1,10 +1,11 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://addons/godot-openxr/assets/valve_hand_models/right_hand.glb" type="PackedScene" id=1]
 [ext_resource path="res://addons/godot-xr-tools/assets/LeftHand.tscn" type="PackedScene" id=2]
 [ext_resource path="res://scripts/controller.gd" type="Script" id=3]
 [ext_resource path="res://scripts/player.gd" type="Script" id=4]
 [ext_resource path="res://scenes/Feature_UIRayCast.tscn" type="PackedScene" id=5]
+[ext_resource path="res://sfx/RhySD-BackButton.wav" type="AudioStream" id=6]
 
 [sub_resource type="CapsuleMesh" id=17]
 radius = 0.01
@@ -48,22 +49,18 @@ transform = Transform( 1, 0, 0, 0, 0.819152, -0.573577, 0, 0.573577, 0.819152, 0
 transform = Transform( 1, 0, 0, 0, 1, -2.98023e-08, 0, 2.98023e-08, 1, 0, 0, -0.377 )
 
 [node name="MeshInstance" type="MeshInstance" parent="ARVROrigin/LeftHand/Position3D2/Position3D"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 mesh = SubResource( 17 )
 skeleton = NodePath("../..")
 material/0 = SubResource( 19 )
 
 [node name="Area" type="Area" parent="ARVROrigin/LeftHand/Position3D2/Position3D"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 collision_layer = 2
 collision_mask = 20
 
 [node name="CollisionShape3" type="CollisionShape" parent="ARVROrigin/LeftHand/Position3D2/Position3D/Area"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 shape = SubResource( 16 )
 
 [node name="Feature_UIRayCast" parent="ARVROrigin/LeftHand/Position3D2/Position3D" instance=ExtResource( 5 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 controller = NodePath("../../..")
 
 [node name="RightHand" type="ARVRController" parent="ARVROrigin"]
@@ -81,13 +78,11 @@ transform = Transform( 1, 0, 0, 0, 0.819152, -0.573577, 0, 0.573577, 0.819152, 0
 transform = Transform( 1, 0, 0, 0, 1, -2.98023e-08, 0, 2.98023e-08, 1, 0, 0, -0.377 )
 
 [node name="MeshInstance" type="MeshInstance" parent="ARVROrigin/RightHand/Position3D/Position3D"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 mesh = SubResource( 17 )
 skeleton = NodePath("../..")
 material/0 = SubResource( 18 )
 
 [node name="Area" type="Area" parent="ARVROrigin/RightHand/Position3D/Position3D"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 collision_layer = 2
 collision_mask = 20
 
@@ -95,12 +90,14 @@ collision_mask = 20
 shape = SubResource( 16 )
 
 [node name="Feature_UIRayCast" parent="ARVROrigin/RightHand/Position3D/Position3D" instance=ExtResource( 5 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 controller = NodePath("../../..")
 
 [node name="CollisionShape" type="CollisionShape" parent="."]
 transform = Transform( 0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0 )
 shape = SubResource( 15 )
+
+[node name="BombSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 6 )
 
 [connection signal="button_pressed" from="ARVROrigin/LeftHand" to="." method="_on_LeftHand_button_pressed"]
 [connection signal="area_entered" from="ARVROrigin/LeftHand/Position3D2/Position3D/Area" to="." method="_on_Area_area_entered_left"]
