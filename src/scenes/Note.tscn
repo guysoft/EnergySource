@@ -9,8 +9,9 @@
 [ext_resource path="res://scenes/NoteExplosion.tscn" type="PackedScene" id=7]
 [ext_resource path="res://scenes/NoteFeedback.tscn" type="PackedScene" id=8]
 
-[sub_resource type="BoxShape" id=3]
-extents = Vector3( 0.125, 0.125, 0.125 )
+[sub_resource type="SphereShape" id=7]
+margin = 0.01
+radius = 0.15
 
 [sub_resource type="Animation" id=4]
 length = 0.001
@@ -161,7 +162,7 @@ mesh = ExtResource( 3 )
 material/0 = null
 
 [node name="CollisionShape" type="CollisionShape" parent="."]
-shape = SubResource( 3 )
+shape = SubResource( 7 )
 
 [node name="Timer" type="Timer" parent="."]
 wait_time = 0.001
