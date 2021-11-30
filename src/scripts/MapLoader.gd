@@ -12,7 +12,7 @@ const NOTE_TYPE = {"BOMB": 3}
 const OBSTACLE_TYPE = {"FULL_HEIGHT": 0, "CROUCH": 1}
 
 # The width from each side in the center (the total width is twice this number)
-const LEVEL_WIDTH = 0.7
+const LEVEL_WIDTH = 1.2
 # Lowest point in the game map beneeth your center
 const LEVEL_LOW = 0.5
 # Highest point in the map
@@ -94,8 +94,19 @@ func line_index_layer_to_position(note):
 	# beat saber index moves between 0-3
 	# max posy in beat saber = 0.5 - 1.0
 	# max posx in beat saber = -1.3 - 1.3
-	var position_x = -LEVEL_WIDTH + (2*LEVEL_WIDTH/3) * note["_lineIndex"]
-	var position_y = LEVEL_LOW + (LEVEL_HIGH - LEVEL_LOW)/2 * note["_lineLayer"]
+	var index_to_position_x = {
+		0: -LEVEL_WIDTH,
+		1: -LEVEL_WIDTH*0.5,
+		2: LEVEL_WIDTH*0.5,
+		3: LEVEL_WIDTH
+	}
+	var layer_to_position_y = {
+		0: -LEVEL_LOW,
+		1: (LEVEL_HIGH + LEVEL_LOW)/2,
+		2: LEVEL_HIGH*0.5
+	}
+	var position_x = index_to_position_x[int(note["_lineIndex"])]
+	var position_y = layer_to_position_y[int(note["_lineLayer"])]
 	return [position_x, position_y]
 
 func add_note(difficulty, note):
