@@ -1,6 +1,6 @@
 extends Node
 
-const GameManager = preload("res://src/Utility/game_manager.gd");
+const GameManager = preload("res://scripts/GameManager.gd");
 
 var _game_manager : GameManager = null;
 

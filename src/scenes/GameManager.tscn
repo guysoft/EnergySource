@@ -10,11 +10,12 @@
 
 [node name="GameManager" type="Node"]
 script = ExtResource( 1 )
-debug_start_scene = "Menu"
+debug_start_scene = "Game"
 
 [node name="Player" parent="." instance=ExtResource( 2 )]
 
 [node name="UITransition" parent="Player/ARVROrigin/ARVRCamera" index="0" instance=ExtResource( 4 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.4 )
 
 [node name="PlayerCenter" parent="Player" instance=ExtResource( 5 )]
 

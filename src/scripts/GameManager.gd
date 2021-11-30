@@ -3,7 +3,7 @@ extends Node
 # DEVELOPMENT CONSTS
 export (String, "Menu","Game") var debug_start_scene
 var menu_path = "res://scenes/Menu.tscn"
-var game_path = "res://main.tscn"
+var game_path = "res://scenes/Game.tscn"
 
 # Scene loader variables
 var scenes_holder : Node;
@@ -22,11 +22,8 @@ var interface : ARVRInterface
 onready var _player = $Player
 onready var _left_hand = $Player/ARVROrigin/LeftHand
 onready var _right_hand = $Player/ARVROrigin/RightHand
-
 onready var _transition = $Player/ARVROrigin/ARVRCamera/UITransition
-
-onready var _environment = $EnvironmentManager
-
+onready var _environment_manager = $EnvironmentManager
 onready var _beatplayer = $BeatPlayer
 
 #var _scorecard = $
@@ -107,7 +104,7 @@ func add_scene(scene, unique_id: String) -> bool:
 # to the resource or a PackedScene. Returns true on success, false otherwise.
 func load_scene(scene, unique_id: String, additive = false) -> bool:
 	
-	_transition.get_node("AnimationPlayer").play_backwards("fade")
+	_transition.get_node("AnimationPlayer").play("fade")
 	yield(_transition.get_node("AnimationPlayer"), "animation_finished")
 	
 	var to_load : PackedScene;
@@ -135,7 +132,7 @@ func load_scene(scene, unique_id: String, additive = false) -> bool:
 	scenes_holder.add_child(new_scene, true)
 	print("Memory: " + str(OS.get_static_memory_peak_usage()))
 	yield(get_tree().create_timer(1.0), "timeout")
-	_transition.get_node("AnimationPlayer").play("fade")
+	_transition.get_node("AnimationPlayer").play_backwards("fade")
 	#yield(transition.get_node("AnimationPlayer"), "animation_finished")
 	
 	return true

@@ -69,7 +69,7 @@ tracks/0/keys = {
 "times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
 "update": 0,
-"values": [ false ]
+"values": [ true ]
 }
 tracks/1/type = "value"
 tracks/1/path = NodePath(".:material/0:shader_param/dissolve_amount")
@@ -139,11 +139,11 @@ tracks/2/keys = {
 resource_name = "fade_out"
 
 [node name="UITransition" type="MeshInstance"]
-visible = false
 mesh = SubResource( 2 )
 material/0 = SubResource( 6 )
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+autoplay = "RESET"
 anims/RESET = SubResource( 7 )
 anims/fade = SubResource( 1 )
 anims/fade_out = SubResource( 8 )

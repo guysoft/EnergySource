@@ -3,8 +3,6 @@ extends KinematicBody
 # Ball mechanics settnings
 var HIT_VELOCITY = 0
 
-export(NodePath) onready var beat_player
-
 # Payer movement in non-vr mode settings
 export var Sensitivity_X = 0.01
 export var Sensitivity_Y = 0.01
@@ -16,6 +14,9 @@ export var Maximum_Walk_Speed = 10
 export var Jump_Speed = 2
 
 var in_game = false
+var game_node #reference to game node
+
+var _beat_player
 
 const GRAVITY = 0 #0.098
 var velocity = Vector3(0,0,0)
@@ -62,7 +63,7 @@ func _ready():
 	# TODO Change this not to the global variable
 	# but after checking if vr worked
 	
-	beat_player = get_node(beat_player)
+	_beat_player = Global.manager()._beatplayer
 	
 	if not GameVariables.ENABLE_VR:
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
@@ -76,22 +77,22 @@ func _process(delta):
 	process_controller_input("left", delta)
 	process_controller_input("right", delta)
 	
-	if in_game:
+	if in_game and game_node:
 		if time_direction == FASTER:
 			#print ("Faster:", get_parent().song_speed)
-			self.get_parent().set_song_speed(get_parent().song_speed + song_acceleration*delta)
+			game_node.set_song_speed(game_node.song_speed + song_acceleration*delta)
 		elif time_direction == SLOWER:
 			#print ("Slower:", get_parent().song_speed)
-			self.get_parent().set_song_speed(get_parent().song_speed - song_acceleration*delta)
+			game_node.set_song_speed(game_node.song_speed - song_acceleration*delta)
 		elif time_direction == NEUTRAL:
 			#print ("Neutral:", get_parent().song_speed)
-			if not is_equal_approx(get_parent().song_speed,1.0):
-				if get_parent().song_speed > 1.0:
-					self.get_parent().set_song_speed(get_parent().song_speed-song_deceleration * delta)
-				elif get_parent().song_speed <1.0:
-					self.get_parent().set_song_speed(get_parent().song_speed+song_deceleration * delta)
+			if not is_equal_approx(game_node.song_speed,1.0):
+				if game_node.song_speed > 1.0:
+					game_node.set_song_speed(game_node.song_speed-song_deceleration * delta)
+				elif game_node.song_speed <1.0:
+					game_node.set_song_speed(game_node.song_speed+song_deceleration * delta)
 			else:
-				get_parent().song_speed = 1.0
+				game_node.song_speed = 1.0
 	
 	if not GameVariables.ENABLE_VR:
 		if Exit_On_Escape:
@@ -105,8 +106,9 @@ func _physics_process(delta):
 	if not GameVariables.ENABLE_VR:
 		velocity.y -= GRAVITY
 		
-		if Input.is_key_pressed(KEY_P):
-			self.get_parent().toggle_speed(0.5, 0.1, 5.0, 0.01)
+		if game_node:
+			if Input.is_key_pressed(KEY_P):
+				game_node.toggle_speed(0.5, 0.1, 5.0, 0.01)
 		
 		if Input.is_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP):
 				Walk_Speed += Accelaration
@@ -171,8 +173,8 @@ func handle_hit(body, hand):
 			print ("Hit threshold passed!")
 			
 			var beat = 0
-			if beat_player:
-				beat = beat_player.get_beat()
+			if _beat_player:
+				beat = _beat_player.get_beat()
 			
 			
 			self.energy += 1
