@@ -1,4 +1,4 @@
-# Energy Source
+# TempoVR
 
 Work in progress, game jam entry for Go Godot 2.
 
