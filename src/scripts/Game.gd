@@ -24,7 +24,7 @@ var vr_web_supported = false
 var interface : ARVRInterface
 
 # how many beats does it take the spawned notes to travel to arvr origin
-onready var notes_delay = 8
+onready var notes_delay = 4
 
 var song_speed = 1
 var toggle_speed_lock = false
