@@ -91,7 +91,7 @@ func _ready():
 	time_begin = OS.get_ticks_usec()
 	time_delay = AudioServer.get_time_to_next_mix() + AudioServer.get_output_latency()
 	print ("time delay:", time_delay)
-	$BeatPlayer.offset = song_offset - float(time_delay)
+	$BeatPlayer.offset = song_offset + float(time_delay)
 	
 	Engine.time_scale = song_speed
 	$BeatPlayer.pitch_scale = song_speed
@@ -289,21 +289,22 @@ func setup_map(path:String):
 #	return
 
 
-func set_song_speed(newval):
+func set_song_speed(newval, do_lerp = false, lerp_step = 0.05, lerp_delay= 0.05):
 	song_speed = newval
 	if song_speed <= 0.5: 
 		song_speed = 0.5
-	if song_speed >= 1.0:
-		song_speed = 1.0
+	if song_speed >= 1.5:
+		song_speed = 1.5
 	
 	print ("adjusting song_speed: ", song_speed)
 	
-	if is_equal_approx(Engine.time_scale,song_speed):
-		return
-	else:
-		$BeatPlayer.pitch_scale = lerp($BeatPlayer.pitch_scale, song_speed, 0.1)
-		Engine.time_scale = lerp(Engine.time_scale, song_speed, 0.1)
-		yield (get_tree().create_timer(0.05),"timeout")
+	if do_lerp:
+		if is_equal_approx(Engine.time_scale,song_speed):
+			return
+		else:
+			$BeatPlayer.pitch_scale = lerp($BeatPlayer.pitch_scale, song_speed, lerp_step)
+			Engine.time_scale = lerp(Engine.time_scale, song_speed, lerp_step)
+			yield (get_tree().create_timer(lerp_delay),"timeout")
 	
 	$BeatPlayer.pitch_scale = song_speed
 	Engine.time_scale = song_speed

@@ -1,0 +1,51 @@
+[gd_scene load_steps=9 format=2]
+
+[ext_resource path="res://scripts/GameManager.gd" type="Script" id=1]
+[ext_resource path="res://scenes/Player.tscn" type="PackedScene" id=2]
+[ext_resource path="res://scripts/beat_player.gd" type="Script" id=3]
+[ext_resource path="res://scenes/UITransition.tscn" type="PackedScene" id=4]
+[ext_resource path="res://scenes/player_center.tscn" type="PackedScene" id=5]
+[ext_resource path="res://addons/godot-openxr/config/OpenXRConfig.gdns" type="Script" id=6]
+[ext_resource path="res://effects/menu_environment.tres" type="Environment" id=7]
+[ext_resource path="res://scripts/EnvironmentManager.gd" type="Script" id=8]
+
+[node name="GameManager" type="Node"]
+script = ExtResource( 1 )
+debug_start_scene = "Menu"
+
+[node name="Player" parent="." instance=ExtResource( 2 )]
+
+[node name="UITransition" parent="Player/ARVROrigin/ARVRCamera" index="0" instance=ExtResource( 4 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.4 )
+
+[node name="PlayerCenter" parent="Player" instance=ExtResource( 5 )]
+
+[node name="BeatPlayer" type="AudioStreamPlayer" parent="."]
+script = ExtResource( 3 )
+bpm = 128.0
+beat_subdivisions = 1.0
+
+[node name="EnvironmentManager" type="WorldEnvironment" parent="."]
+environment = ExtResource( 7 )
+script = ExtResource( 8 )
+
+[node name="MaterialCache" type="Spatial" parent="."]
+
+[node name="PlayerStats" type="Node" parent="."]
+
+[node name="Configuration" type="Node" parent="."]
+script = ExtResource( 6 )
+color_space = 0
+refresh_rate = 0.0
+
+[node name="Button" type="Button" parent="."]
+margin_left = 23.0
+margin_top = 17.0
+margin_right = 88.0
+margin_bottom = 37.0
+text = "Enter VR"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[editable path="Player"]

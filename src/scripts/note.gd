@@ -28,6 +28,7 @@ var _cut_direction:int
 var _custom_data = {}
 
 var alive = false
+var been_hit = false
 
 #Refs
 onready var _audio_stream_player = $AudioStreamPlayer3D
@@ -55,6 +56,7 @@ func setup_note(note, speed, bpm, distance):
 	bounce_freq = (_bpm/60) * speed
 	
 	_time = note["_time"]
+	_type = note["_type"]
 	
 	#if the note has an offset, set up the timer to match
 	if not is_equal_approx(note["offset"],0.0):
@@ -106,20 +108,33 @@ func deactivate(delete:bool = true, delete_delay:float=1.0):
 		queue_free()
 
 #TODO: Take into account the controller position of the hit?
-func on_hit(velocity, linear_velocity, accuracy):
+func on_hit(velocity, linear_velocity, hit_accuracy):
+	if been_hit:
+		return
+	
+	been_hit = true
+	
 	#_audio_stream_player.play()
-	direction = velocity.normalized()
-	speed = linear_velocity
+	if velocity:
+		direction = velocity.normalized()
+	if linear_velocity:
+		speed = linear_velocity
 	
-	var hit_effect_instance = hit_effect.instance()
-	get_tree().current_scene.add_child(hit_effect_instance)
-	hit_effect_instance.setup_effect(global_transform.origin, speed)
+	spawn_feedback(hit_accuracy)
 	
-	spawn_feedback(accuracy)
+	if hit_accuracy>0.0 and hit_accuracy<3.0:
+		spawn_hit_effect()
+	#if hit_accuracy==25:
+		#spawn_bomb_effect()
 	
 	_collision.set_deferred("disabled", true)
 	
 	despawn(HIT)
+
+func spawn_hit_effect():
+	var hit_effect_instance = hit_effect.instance()
+	get_tree().current_scene.add_child(hit_effect_instance)
+	hit_effect_instance.setup_effect(global_transform.origin, speed)
 
 func spawn_feedback(accuracy):
 	var feedback_instance = feedback_effect.instance()
@@ -134,19 +149,19 @@ func despawn(type):
 	
 	_animation_player.play("despawn")
 	
+	_collision.set_deferred("disabled", true)
+	
 	if type==HIT:
 		print ("hit")
 		
 	elif type==MISS:
 		print ("miss")
-		_collision.set_deferred("disabled", true)
-		spawn_feedback(-1)
+		spawn_feedback(-10) #sufficiently high value to ensure a miss
+		#bad reference, replace with signal
+		Global.manager()._player.combo = 0
 		
 	yield(_animation_player, "animation_finished")
 	deactivate()
-
-func calc_accuracy(beat):
-	return _time-beat
 
 #DISABLED AS IT DOESN'T WORK
 #func bounce_note():
