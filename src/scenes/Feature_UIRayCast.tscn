@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://scripts/Feature_UIRayCast.gd" type="Script" id=1]
 
@@ -11,6 +11,9 @@ flags_unshaded = true
 [sub_resource type="SphereMesh" id=2]
 radius = 0.01
 height = 0.02
+
+[sub_resource type="SpatialMaterial" id=4]
+flags_unshaded = true
 
 [node name="Feature_UIRayCast" type="Spatial"]
 script = ExtResource( 1 )
@@ -31,4 +34,4 @@ material/0 = SubResource( 3 )
 
 [node name="RayCastHitMarker" type="MeshInstance" parent="RayCastPosition"]
 mesh = SubResource( 2 )
-material/0 = null
+material/0 = SubResource( 4 )
