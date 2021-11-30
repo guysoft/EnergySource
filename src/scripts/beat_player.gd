@@ -99,6 +99,8 @@ func _ready() -> void:
 	if error != OK:
 		print_debug(error)
 	
+	_prevent_loop()
+	
 	#set_process(true) # it seems like AudioStreamPlayer automatically sets processing to true
 
 func _process(delta: float) -> void:
