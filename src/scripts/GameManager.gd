@@ -2,7 +2,7 @@ extends Node
 
 # DEVELOPMENT CONSTS
 export (String, "Menu","Game") var debug_start_scene
-var menu_path = "res://scenes/Menu.tscn"
+var menu_path = "res://scenes/MainMenu.tscn"
 var game_path = "res://scenes/Game.tscn"
 
 # Scene loader variables
