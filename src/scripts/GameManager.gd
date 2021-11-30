@@ -41,6 +41,10 @@ func _enter_tree():
 	add_child(scenes_holder)
 
 func _ready():
+
+#	yield(SilentWolf.Scores.get_high_scores(), "sw_scores_received")
+#	print("Scores: " + str(SilentWolf.Scores.scores))
+	
 	print ("ready begin")
 	if GameVariables.ENABLE_VR:
 		if not initialise_VR():
