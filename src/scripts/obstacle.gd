@@ -20,9 +20,9 @@ var _custom_data = {}
 var alive = false
 
 # TODO get this from mesh size
-var size_x = 0.5
-var size_y = 0.5
-var size_z = 0.5
+var size_x = 1.0
+var size_y = 1.0
+var size_z = 1.0
 
 #Refs
 onready var _audio_stream_player = $AudioStreamPlayer3D
@@ -46,15 +46,28 @@ func setup_obstacle(obstacle, speed, bpm, distance):
 	var y = -90
 	
 	if obstacle["type"] == "full_height":
+		var index_to_position_x = {
+			0: -Map.LEVEL_WIDTH,
+			1: -Map.LEVEL_WIDTH*0.5,
+			2: Map.LEVEL_WIDTH*0.5,
+			3: Map.LEVEL_WIDTH
+		}
+	
 		scale_x = 2*Map.LEVEL_WIDTH/4 * obstacle["width"]
 		scale_y = Map.LEVEL_HIGH - Map.LEVEL_LOW
-		x = -Map.LEVEL_WIDTH + 0.25 * float(obstacle["width"]) + 0.5 * float(obstacle["_lineIndex"]) * Map.LEVEL_WIDTH
-		y = Map.LEVEL_HIGH - Map.LEVEL_LOW/2
+		x = index_to_position_x[int(obstacle["_lineIndex"])] + 0.5 * scale_x
+		y = (Map.LEVEL_HIGH + Map.LEVEL_LOW)/2
 		
 	elif obstacle["type"] == "crouch":
+		var index_to_position_x = {
+			0: -Map.LEVEL_WIDTH,
+			1: -Map.LEVEL_WIDTH*0.5,
+			2: Map.LEVEL_WIDTH*0.5,
+			3: Map.LEVEL_WIDTH
+		}
 		scale_x = 2*Map.LEVEL_WIDTH/4 * obstacle["width"]
 		scale_y = (Map.LEVEL_HIGH - Map.LEVEL_LOW) / 2
-		x = -Map.LEVEL_WIDTH + 0.25 * float(obstacle["width"]) + 0.5 * float(obstacle["_lineIndex"]) * Map.LEVEL_WIDTH
+		x = index_to_position_x[int(obstacle["_lineIndex"])] + 0.5 * scale_x
 		y = Map.LEVEL_LOW + (Map.LEVEL_HIGH - Map.LEVEL_LOW) * 0.75 + scale_y/2
 
 	print("got: " + obstacle["type"])

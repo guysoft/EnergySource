@@ -1,17 +1,12 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://scripts/obstacle.gd" type="Script" id=1]
 [ext_resource path="res://sfx/beep_01.wav" type="AudioStream" id=2]
 [ext_resource path="res://effects/obstacle_material.tres" type="Material" id=3]
 
-[sub_resource type="CubeMesh" id=1]
-size = Vector3( 0.5, 0.5, 0.5 )
-subdivide_width = 8
-subdivide_height = 8
-subdivide_depth = 8
+[sub_resource type="CubeMesh" id=7]
 
-[sub_resource type="BoxShape" id=3]
-extents = Vector3( 0.125, 0.125, 0.125 )
+[sub_resource type="BoxShape" id=8]
 
 [sub_resource type="Animation" id=4]
 length = 0.001
@@ -205,6 +200,8 @@ tracks/5/keys = {
 "values": [ 0.0, 1.0 ]
 }
 
+[sub_resource type="CubeMesh" id=9]
+
 [node name="Obstacle" type="Area" groups=["obstacle"]]
 visible = false
 collision_layer = 4
@@ -213,11 +210,11 @@ monitoring = false
 script = ExtResource( 1 )
 
 [node name="MeshInstance" type="MeshInstance" parent="."]
-mesh = SubResource( 1 )
+mesh = SubResource( 7 )
 material/0 = ExtResource( 3 )
 
 [node name="CollisionShape" type="CollisionShape" parent="."]
-shape = SubResource( 3 )
+shape = SubResource( 8 )
 
 [node name="Timer" type="Timer" parent="."]
 wait_time = 0.001
@@ -231,3 +228,7 @@ anims/spawn = SubResource( 5 )
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 2 )
+
+[node name="MeshInstance2" type="MeshInstance" parent="."]
+mesh = SubResource( 9 )
+material/0 = null
