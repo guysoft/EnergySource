@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=14 format=2]
 
 [ext_resource path="res://addons/godot-openxr/assets/valve_hand_models/right_hand.glb" type="PackedScene" id=1]
 [ext_resource path="res://addons/godot-xr-tools/assets/LeftHand.tscn" type="PackedScene" id=2]
@@ -6,6 +6,16 @@
 [ext_resource path="res://scripts/player.gd" type="Script" id=4]
 [ext_resource path="res://scenes/Feature_UIRayCast.tscn" type="PackedScene" id=5]
 [ext_resource path="res://sfx/RhySD-BackButton.wav" type="AudioStream" id=6]
+
+[sub_resource type="CylinderMesh" id=20]
+top_radius = 0.02
+bottom_radius = 0.015
+height = 0.17
+
+[sub_resource type="SpatialMaterial" id=21]
+albedo_color = Color( 0.180392, 0.180392, 0.180392, 1 )
+metallic = 1.0
+roughness = 0.38
 
 [sub_resource type="CapsuleMesh" id=17]
 radius = 0.01
@@ -37,6 +47,7 @@ far = 200.0
 
 [node name="LeftHand" type="ARVRController" parent="ARVROrigin"]
 script = ExtResource( 3 )
+velocity_track_point = NodePath("Position3D2/Position3D/EndTracker")
 
 [node name="LeftHand" parent="ARVROrigin/LeftHand" instance=ExtResource( 2 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0448227, 0.147459 )
@@ -48,10 +59,17 @@ transform = Transform( 1, 0, 0, 0, 0.819152, -0.573577, 0, 0.573577, 0.819152, 0
 [node name="Position3D" type="Position3D" parent="ARVROrigin/LeftHand/Position3D2"]
 transform = Transform( 1, 0, 0, 0, 1, -2.98023e-08, 0, 2.98023e-08, 1, 0, 0, -0.377 )
 
-[node name="MeshInstance" type="MeshInstance" parent="ARVROrigin/LeftHand/Position3D2/Position3D"]
+[node name="Handle" type="MeshInstance" parent="ARVROrigin/LeftHand/Position3D2/Position3D"]
+transform = Transform( 1, 0, 0, 0, -8.9407e-08, -1, 0, 1, -8.9407e-08, 0, 1.11759e-08, 0.45 )
+mesh = SubResource( 20 )
+material/0 = SubResource( 21 )
+
+[node name="Blade" type="MeshInstance" parent="ARVROrigin/LeftHand/Position3D2/Position3D"]
 mesh = SubResource( 17 )
-skeleton = NodePath("../..")
 material/0 = SubResource( 19 )
+
+[node name="EndTracker" type="Position3D" parent="ARVROrigin/LeftHand/Position3D2/Position3D"]
+transform = Transform( 1, 0, 0, 0, 1, -2.98023e-08, 0, 2.98023e-08, 1, 0, 0, -0.37 )
 
 [node name="Area" type="Area" parent="ARVROrigin/LeftHand/Position3D2/Position3D"]
 collision_layer = 2
@@ -66,6 +84,7 @@ controller = NodePath("../../..")
 [node name="RightHand" type="ARVRController" parent="ARVROrigin"]
 controller_id = 2
 script = ExtResource( 3 )
+velocity_track_point = NodePath("Position3D/Position3D/EndTracker")
 
 [node name="HandModel" parent="ARVROrigin/RightHand" instance=ExtResource( 1 )]
 transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, -0.045, 0.147 )
@@ -77,10 +96,19 @@ transform = Transform( 1, 0, 0, 0, 0.819152, -0.573577, 0, 0.573577, 0.819152, 0
 [node name="Position3D" type="Position3D" parent="ARVROrigin/RightHand/Position3D"]
 transform = Transform( 1, 0, 0, 0, 1, -2.98023e-08, 0, 2.98023e-08, 1, 0, 0, -0.377 )
 
-[node name="MeshInstance" type="MeshInstance" parent="ARVROrigin/RightHand/Position3D/Position3D"]
+[node name="Handle" type="MeshInstance" parent="ARVROrigin/RightHand/Position3D/Position3D"]
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0.45 )
+mesh = SubResource( 20 )
+skeleton = NodePath("../Blade")
+material/0 = SubResource( 21 )
+
+[node name="Blade" type="MeshInstance" parent="ARVROrigin/RightHand/Position3D/Position3D"]
 mesh = SubResource( 17 )
 skeleton = NodePath("../..")
 material/0 = SubResource( 18 )
+
+[node name="EndTracker" type="Position3D" parent="ARVROrigin/RightHand/Position3D/Position3D"]
+transform = Transform( 1, 0, 0, 0, 1, -2.98023e-08, 0, 2.98023e-08, 1, 0, 5.96046e-08, -0.37 )
 
 [node name="Area" type="Area" parent="ARVROrigin/RightHand/Position3D/Position3D"]
 collision_layer = 2
