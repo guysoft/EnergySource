@@ -1,5 +1,7 @@
 extends ARVRController
 
+export(NodePath) var velocity_track_point
+
 var track_velocity := true
 
 var velocity = Vector3(0,0,0)
@@ -26,7 +28,8 @@ signal deactivated
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	pass
+	if velocity_track_point:
+		velocity_track_point = get_node(velocity_track_point) as Position3D
 
 func _process(delta):
 	if get_is_active():
@@ -92,10 +95,10 @@ func calc_velocity(delta):
 		# Get the average velocity, instead of just adding them together.
 		velocity = velocity / points.size()
 
-	points.append((global_transform.origin - prior_controller_position) / delta)
+	points.append((velocity_track_point.global_transform.origin - prior_controller_position) / delta)
 
-	velocity += (global_transform.origin - prior_controller_position) / delta
-	prior_controller_position = global_transform.origin
+	velocity += (velocity_track_point.global_transform.origin - prior_controller_position) / delta
+	prior_controller_position = velocity_track_point.global_transform.origin
 
 	if points.size() > TRACK_LENGTH:
 		points.remove(0)
