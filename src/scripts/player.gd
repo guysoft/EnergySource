@@ -1,7 +1,7 @@
 extends KinematicBody
 
 # velocity mechanics settnings
-const HIT_VELOCITY = 0
+const HIT_VELOCITY = 0.2
 const BOMB_SCORE_VALUE = 100 
 const BOMB_ENERGY_VALUE = 25
 const MAX_COMBO = 8
@@ -41,7 +41,7 @@ var score = 0 setget set_score
 var energy = 0 setget set_energy
 var combo = 0 setget set_combo
 
-var energy_decay_rate = 10
+var energy_decay_rate = 7
 
 func reset_player():
 	self.score = 0
@@ -91,6 +91,8 @@ func _ready():
 
 func _process(delta):
 	
+	#increase energy passively
+	self.energy += energy*delta
 	
 	process_controller_input("left", delta)
 	process_controller_input("right", delta)
