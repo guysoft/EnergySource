@@ -2,6 +2,7 @@ extends KinematicBody
 
 # Ball mechanics settnings
 var HIT_VELOCITY = 0
+const MAX_COMBO = 8
 
 # Payer movement in non-vr mode settings
 export var Sensitivity_X = 0.01
@@ -33,6 +34,7 @@ var acceleration_rate = 0.25
 
 var score = 0 setget set_score
 var energy = 0 setget set_energy
+var combo = 0 setget set_combo
 
 var energy_decay_rate = 10
 
@@ -52,8 +54,16 @@ func set_song_acceleration(newval):
 	if song_acceleration<=MIN_ACCELERATION:
 		song_acceleration = MIN_ACCELERATION
 
+func set_combo(new_val):
+	combo = new_val
+	if combo>=MAX_COMBO:
+		combo = MAX_COMBO
+	Events.emit_signal("current_combo_updated", combo)
+	
 func set_score(new_val):
 	score = new_val
+	if score<0:
+		score=0
 	Events.emit_signal("current_score_updated", score)
 
 func set_energy(new_val):
@@ -192,11 +202,15 @@ func handle_hit(body, hand):
 			var hit_accuracy = remap_value(hit_offset, hit_range, accuracy_range)
 			print ("accuracy:", hit_accuracy)
 			
-			controller.simple_rumble(1.0, 0.01)
-			
-			#calculate score value based on accuracy
-			#if the value is outside the range, it's a miss!
-			var score_value = 0
+				
+				
+				#calculate score value based on accuracy
+				#if the value is outside the range, it's a miss!
+				var score_value = 0
+				
+				if hit_accuracy<0.0 and hit_accuracy>3.0:
+					self.combo = 0
+					score_value = -50
 			#note is early
 			if hit_accuracy>0.0 and hit_accuracy<1.0:
 				score_value = 50
@@ -207,9 +221,9 @@ func handle_hit(body, hand):
 			if hit_accuracy>2.0 and hit_accuracy<3.0:
 				score_value = 50
 			
-			#score_value *= combo
-			
-			self.score += score_value
+				score_value *= combo
+				
+				self.score += score_value
 
 			if body.has_method("on_hit"):
 				body.on_hit(velocity, linear_velocity, hit_accuracy)
