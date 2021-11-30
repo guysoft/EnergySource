@@ -69,15 +69,16 @@ func _ready():
 	$Ground.setup_ground(map.get_bpm(), notes_delay, Color.chocolate)
 	$EnvironmentParticles.setup_particles(map.get_bpm(), notes_delay)
 	
-	_beat_player.play()
-	
-
+	_beat_player.connect("finished", self, "_on_music_finished")
+	$StartTimer.start()
 	
 	_bounce_time-=song_offset - float(time_delay)
 	_bounce_freq =  60/map.get_bpm() * calc_object_speed()
 
 
 func _process(delta: float) -> void:
+	
+	
 	if GameVariables.ENABLE_VR:
 		# Web XR processs
 		var left_controller_id = 100
@@ -262,3 +263,14 @@ func rangef(start: float, end: float, step: float):
 			i += step
 	return res
 
+
+func _on_music_finished():
+	$EndTimer.start()
+
+func _on_StartTimer_timeout():
+	_beat_player.play()
+
+
+func _on_EndTimer_timeout():
+	#show scorecard with options to restart or return to menu
+	pass
