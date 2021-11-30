@@ -154,7 +154,7 @@ func despawn(type):
 	if type==HIT:
 		print ("hit")
 		
-	elif type==MISS:
+	elif type==MISS and not been_hit:
 		print ("miss")
 		spawn_feedback(-10) #sufficiently high value to ensure a miss
 		#bad reference, replace with signal
@@ -176,5 +176,5 @@ func _physics_process(delta):
 	
 	translate(_velocity)
 	
-	if self.transform.origin.z > despawn_z+0.25:
+	if self.transform.origin.z > despawn_z+(speed*0.25):
 		self.despawn(MISS)
