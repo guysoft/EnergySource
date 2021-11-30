@@ -4,6 +4,8 @@ export(Texture) var miss_texture
 export(Texture) var early_texture
 export(Texture) var perfect_texture
 export(Texture) var late_texture
+export(Texture) var bomb_texture
+
 
 #var hit_range = Vector2(-0.25, 0.25)
 #var increment = 17.0
@@ -41,6 +43,10 @@ func show_feedback(position, accuracy):
 		mat.albedo_texture = miss_texture
 		#$AnimationPlayer.play("Miss")
 
+	#special case for bombs
+	if accuracy==25:
+		print ("BOMB")
+		mat.albedo_texture = bomb_texture
 	
 	$AnimationPlayer.play("show")
 	

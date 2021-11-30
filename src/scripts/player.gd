@@ -1,7 +1,9 @@
 extends KinematicBody
 
-# Ball mechanics settnings
-var HIT_VELOCITY = 0
+# velocity mechanics settnings
+const HIT_VELOCITY = 0
+const BOMB_SCORE_VALUE = 100 
+const BOMB_ENERGY_VALUE = 25
 const MAX_COMBO = 8
 
 # Payer movement in non-vr mode settings
@@ -31,6 +33,9 @@ var time_direction = NEUTRAL
 var song_acceleration = 0.00 setget set_song_acceleration
 var song_deceleration = 1.0 #rate at which we return to zero
 var acceleration_rate = 0.25
+
+var hit_range = Vector2(-0.25, 0.25)
+var accuracy_range = Vector2(0.0, 3.0)
 
 var score = 0 setget set_score
 var energy = 0 setget set_energy
@@ -175,34 +180,40 @@ func handle_hit(body, hand):
 	
 	
 	if body.is_in_group("note"):
-		velocity = controller.get("velocity")
-	
-		var linear_velocity = velocity.length()
 		
-		print ("Controller velocity vector: ", velocity)
-		print ("Controller linear velocity: ", linear_velocity)
+		#if it's a bomb
+		if body._type == 3:
+			$BombSound.play()
+			self.score -= BOMB_SCORE_VALUE
+			self.energy -= BOMB_ENERGY_VALUE
+			self.combo = 0
+			if body.has_method("on_hit"):
+				body.on_hit(0, 0, 25) #sufficiently high accuracy value to trigger bomb 
+			else:
+				body.queue_free()
+		else:
+			velocity = controller.get("velocity")
 		
-		if linear_velocity >= HIT_VELOCITY:
-			print ("Hit threshold passed!")
+			var linear_velocity = velocity.length()
 			
-			var beat = 0
-			if _beat_player:
-				beat = _beat_player.get_beat()
+			print ("Controller velocity vector: ", velocity)
+			print ("Controller linear velocity: ", linear_velocity)
 			
-			
-			self.energy += 1
-			
-			var hit_range = Vector2(-0.25, 0.25)
-			var accuracy_range = Vector2(0.0, 3.0)
-			#var increment = (abs(hit_range.x) + abs(hit_range.y)) / 3
-			
-			
-			#var hit_accuracy = body.calc_accuracy(beat, hit_range, increment)
-			var hit_offset = beat - body._time
-			var hit_accuracy = remap_value(hit_offset, hit_range, accuracy_range)
-			print ("accuracy:", hit_accuracy)
-			
+			if linear_velocity >= HIT_VELOCITY:
+				print ("Hit threshold passed!")
 				
+				var beat = 0
+				if _beat_player:
+					beat = _beat_player.get_beat()
+				
+				self.energy += 1
+				
+				var hit_offset = beat - body._time
+				var hit_accuracy = remap_value(hit_offset, hit_range, accuracy_range)
+				print ("accuracy:", hit_accuracy)
+				
+				
+				self.combo+=1
 				
 				#calculate score value based on accuracy
 				#if the value is outside the range, it's a miss!
@@ -211,25 +222,32 @@ func handle_hit(body, hand):
 				if hit_accuracy<0.0 and hit_accuracy>3.0:
 					self.combo = 0
 					score_value = -50
-			#note is early
-			if hit_accuracy>0.0 and hit_accuracy<1.0:
-				score_value = 50
-			#note is perfect
-			if hit_accuracy>1.0 and hit_accuracy<2.0:
-				score_value = 100
-			#note is late
-			if hit_accuracy>2.0 and hit_accuracy<3.0:
-				score_value = 50
-			
+				else:
+					
+					if controller.is_simple_rumbling():
+						controller._rumble_duration = 0.25
+					else:
+						controller.simple_rumble(0.5, 0.25)
+					
+					#note is early
+					if hit_accuracy>0.0 and hit_accuracy<1.0:
+						score_value = 50
+					#note is perfect
+					if hit_accuracy>1.0 and hit_accuracy<2.0:
+						score_value = 100
+					#note is late
+					if hit_accuracy>2.0 and hit_accuracy<3.0:
+						score_value = 50
+	
 				score_value *= combo
 				
 				self.score += score_value
 
-			if body.has_method("on_hit"):
-				body.on_hit(velocity, linear_velocity, hit_accuracy)
-			else:
-				body.queue_free()
-			
+				if body.has_method("on_hit"):
+					body.on_hit(velocity, linear_velocity, hit_accuracy)
+				else:
+					body.queue_free()
+		
 #			if controller.get_rumble() == 0.0:
 #				print("rumble")
 #				controller.set_rumble(1.0)
@@ -274,9 +292,9 @@ func _on_RightHand_button_pressed(button):
 func process_controller_input(hand, delta):
 	var hand_object = null
 	if hand=="left":
-		hand_object = $ARVROrigin/LeftHand
+		hand_object = Global.manager()._left_hand
 	elif hand=="right":
-		hand_object = $ARVROrigin/RightHand
+		hand_object = Global.manager()._right_hand
 	
 	if not hand_object:
 		print ("not a hand")
@@ -284,13 +302,13 @@ func process_controller_input(hand, delta):
 	
 	time_direction = NEUTRAL
 	
-	if hand_object._buttons_pressed[JOY_VR_TRIGGER] and energy>energy_decay_rate:
+	if hand_object._buttons_pressed[JOY_VR_TRIGGER] and energy>energy_decay_rate*delta:
 		print ("joy button pressed")
 		#self.get_parent().toggle_speed(1.5, 0.1, 5.0, 0.01)
 		self.song_acceleration+=acceleration_rate * delta
 		time_direction = FASTER
 		self.energy -= energy_decay_rate * delta
-	if hand_object._buttons_pressed[JOY_VR_GRIP] and energy>energy_decay_rate:
+	if hand_object._buttons_pressed[JOY_VR_GRIP] and energy>energy_decay_rate*delta:
 		print ("joy grip pressed")
 		#self.get_parent().toggle_speed(0.5, 0.1, 5.0, 0.01)
 		self.song_acceleration+=acceleration_rate * delta
