@@ -41,6 +41,9 @@ func reset_player():
 	self.energy = 0
 	self.song_acceleration = 0.0
 	self.time_direction = NEUTRAL
+	
+	if not _beat_player:
+		_beat_player = Global.manager()._beatplayer
 
 func set_song_acceleration(newval):
 	song_acceleration = newval
@@ -155,9 +158,9 @@ func _input(event):
 func handle_hit(body, hand):
 	var controller = null
 	if hand == "left":
-		controller = $ARVROrigin/LeftHand
+		controller = Global.manager()._left_hand
 	else:
-		controller = $ARVROrigin/RightHand
+		controller = Global.manager()._right_hand
 	print("hit " + hand + " "  + body.name)
 	
 	
