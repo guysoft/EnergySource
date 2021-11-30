@@ -126,13 +126,3 @@ text = "X4"
 margin_right = 187.0
 
 [node name="Lasers" parent="." instance=ExtResource( 23 )]
-
-[node name="Button" type="Button" parent="."]
-margin_left = 273.0
-margin_top = 167.0
-margin_right = 338.0
-margin_bottom = 187.0
-text = "Enter VR"
-__meta__ = {
-"_edit_use_anchors_": false
-}

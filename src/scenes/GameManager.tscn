@@ -36,4 +36,14 @@ script = ExtResource( 6 )
 color_space = 0
 refresh_rate = 0.0
 
+[node name="Button" type="Button" parent="."]
+margin_left = 23.0
+margin_top = 17.0
+margin_right = 88.0
+margin_bottom = 37.0
+text = "Enter VR"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [editable path="Player"]
