@@ -26,6 +26,9 @@ onready var _transition = $Player/ARVROrigin/ARVRCamera/UITransition
 onready var _environment_manager = $EnvironmentManager
 onready var _beatplayer = $BeatPlayer
 
+var first = true
+
+
 #var _scorecard = $
 
 func _enter_tree():
@@ -104,8 +107,9 @@ func add_scene(scene, unique_id: String) -> bool:
 # to the resource or a PackedScene. Returns true on success, false otherwise.
 func load_scene(scene, unique_id: String, additive = false) -> bool:
 	
-	_transition.get_node("AnimationPlayer").play("fade")
-	yield(_transition.get_node("AnimationPlayer"), "animation_finished")
+	if not first==true:
+		_transition.get_node("AnimationPlayer").play("fade")
+		yield(_transition.get_node("AnimationPlayer"), "animation_finished")
 	
 	var to_load : PackedScene;
 	
@@ -131,9 +135,12 @@ func load_scene(scene, unique_id: String, additive = false) -> bool:
 	
 	scenes_holder.add_child(new_scene, true)
 	print("Memory: " + str(OS.get_static_memory_peak_usage()))
+	#if not first==true:
 	yield(get_tree().create_timer(1.0), "timeout")
 	_transition.get_node("AnimationPlayer").play_backwards("fade")
 	#yield(transition.get_node("AnimationPlayer"), "animation_finished")
+	
+	first=false
 	
 	return true
 
