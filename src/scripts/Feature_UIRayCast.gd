@@ -1,13 +1,14 @@
 extends Spatial
 
 export var active := true;
+export(NodePath) var controller
 export var ui_raycast_length := 3.0;
 export var ui_mesh_length := 1.0;
 
 export var adjust_left_right := true;
 
 
-var controller : ARVRController = null;
+#var controller : ARVRController = null;
 onready var ui_raycast_position : Spatial = $RayCastPosition;
 onready var ui_raycast : RayCast = $RayCastPosition/RayCast;
 onready var ui_raycast_mesh : MeshInstance = $RayCastPosition/RayCastMesh;
@@ -16,7 +17,7 @@ onready var ui_raycast_hitmarker : MeshInstance = $RayCastPosition/RayCastHitMar
 var is_colliding := false;
 
 func _ready():
-	controller = get_parent();
+	if controller: controller = get_node(controller) as ARVRController
 	if (not controller is ARVRController):
 		pass
 		#vr.log_error(" in Feature_UIRayCast: parent not ARVRController.");
@@ -28,7 +29,7 @@ func _ready():
 	ui_raycast_mesh.translation.z = -ui_mesh_length * 0.5;
 	
 	ui_raycast_hitmarker.visible = false;
-	ui_raycast_mesh.visible = false;
+	ui_raycast_mesh.visible = false
 
 # we use the physics process here be in sync with the controller position
 func _physics_process(_dt):
@@ -52,8 +53,8 @@ func _update_raycasts():
 		var click = false;
 		var release = false;
 		
-		click = controller._button_just_pressed(JOY_VR_TRIGGER);
-		release = controller._button_just_released(JOY_VR_TRIGGER);
+		click = controller._buttons_just_pressed[JOY_VR_TRIGGER]
+		release = controller._buttons_just_released[JOY_VR_TRIGGER]
 		
 		var position = ui_raycast.get_collision_point();
 		ui_raycast_hitmarker.visible = true;
