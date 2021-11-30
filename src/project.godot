@@ -94,6 +94,13 @@ singletons=[ "res://addons/godot-openxr/config/godot_openxr.gdnlib" ]
 
 autoload=false
 
+[importer_defaults]
+
+ogg_vorbis={
+"loop": false,
+"loop_offset": 0
+}
+
 [layer_names]
 
 3d_physics/layer_1="Player"
