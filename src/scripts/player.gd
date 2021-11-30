@@ -129,16 +129,35 @@ func handle_hit(body, hand):
 			
 			self.energy += 1
 			
-			var hit_accuracy = body.calc_accuracy(beat)
+			var hit_range = Vector2(-0.25, 0.25)
+			var accuracy_range = Vector2(0.0, 3.0)
+			#var increment = (abs(hit_range.x) + abs(hit_range.y)) / 3
 			
+			
+			#var hit_accuracy = body.calc_accuracy(beat, hit_range, increment)
+			var hit_offset = beat - body._time
+			var hit_accuracy = remap_value(hit_offset, hit_range, accuracy_range)
+			print ("accuracy:", hit_accuracy)
+			
+			controller.simple_rumble(1.0, 0.01)
+			
+			#calculate score value based on accuracy
+			#if the value is outside the range, it's a miss!
 			var score_value = 0
+			#note is early
+			if hit_accuracy>0.0 and hit_accuracy<1.0:
+				score_value = 50
+			#note is perfect
+			if hit_accuracy>1.0 and hit_accuracy<2.0:
+				score_value = 100
+			#note is late
+			if hit_accuracy>2.0 and hit_accuracy<3.0:
+				score_value = 50
 			
-			if hit_accuracy > 0.5 and hit_accuracy<=1.0:
-				score_value = 100 -(100*(hit_accuracy*6.6))
+			#score_value *= combo
 			
 			self.score += score_value
-	
-			
+
 			if body.has_method("on_hit"):
 				body.on_hit(velocity, linear_velocity, hit_accuracy)
 			else:
@@ -147,6 +166,10 @@ func handle_hit(body, hand):
 #			if controller.get_rumble() == 0.0:
 #				print("rumble")
 #				controller.set_rumble(1.0)
+
+#remaps a value from input range to output range
+func remap_value(value, input_range:Vector2, output_range:Vector2)->float:
+	return (value-input_range.x) / (input_range.y - input_range.x) * (output_range.y - output_range.x) + output_range.x
 
 #SIGNAL CALLBACKS
 

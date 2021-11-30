@@ -1,15 +1,18 @@
 extends Label
 
-export var lerp_amount = 0.1
+export var lerp_amount = 0.5
 
 var time_step = 0.01
 var target_value = 0
 var value = 0
 var updating = false
 
+#var prefix = "SCORE: "
+var prefix = ""
+
 func _ready():
 	#move to main
-	text = "SCORE: " + String(value)
+	text = prefix + String(value)
 	Events.connect("current_score_updated", self, "_on_current_score_updated")
 
 func _on_current_score_updated(new_score):
@@ -19,8 +22,11 @@ func _on_current_score_updated(new_score):
 		return
 	updating = true
 	while (not is_equal_approx(value, target_value)):
-		value = int(lerp(value, target_value, lerp_amount))
-		text = "SCORE: " + String(value)
+		value = lerp(value, target_value, lerp_amount)
+		text = prefix + String(int(value))
 		yield (get_tree().create_timer(time_step),"timeout")
+	
+	value = target_value
+	text = prefix + String(int(value))
 	
 	updating = false

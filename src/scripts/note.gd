@@ -111,15 +111,17 @@ func on_hit(velocity, linear_velocity, accuracy):
 	direction = velocity.normalized()
 	speed = linear_velocity
 	
-	var hit_effect_instance = hit_effect.instance()
-	get_tree().current_scene.add_child(hit_effect_instance)
-	hit_effect_instance.setup_effect(global_transform.origin, speed)
-	
 	spawn_feedback(accuracy)
+	spawn_hit_effect()
 	
 	_collision.set_deferred("disabled", true)
 	
 	despawn(HIT)
+
+func spawn_hit_effect():
+	var hit_effect_instance = hit_effect.instance()
+	get_tree().current_scene.add_child(hit_effect_instance)
+	hit_effect_instance.setup_effect(global_transform.origin, speed)
 
 func spawn_feedback(accuracy):
 	var feedback_instance = feedback_effect.instance()
@@ -140,13 +142,10 @@ func despawn(type):
 	elif type==MISS:
 		print ("miss")
 		_collision.set_deferred("disabled", true)
-		spawn_feedback(-1)
+		spawn_feedback(-10) #sufficiently high value to ensure a miss
 		
 	yield(_animation_player, "animation_finished")
 	deactivate()
-
-func calc_accuracy(beat):
-	return _time-beat
 
 #DISABLED AS IT DOESN'T WORK
 #func bounce_note():
