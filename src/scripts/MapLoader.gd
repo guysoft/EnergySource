@@ -101,9 +101,9 @@ func line_index_layer_to_position(note):
 		3: LEVEL_WIDTH
 	}
 	var layer_to_position_y = {
-		0: -LEVEL_LOW,
+		0: LEVEL_LOW,
 		1: (LEVEL_HIGH + LEVEL_LOW)/2,
-		2: LEVEL_HIGH*0.5
+		2: LEVEL_HIGH*2
 	}
 	var position_x = index_to_position_x[int(note["_lineIndex"])]
 	var position_y = layer_to_position_y[int(note["_lineLayer"])]
