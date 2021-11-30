@@ -1,11 +1,10 @@
-[gd_scene load_steps=23 format=2]
+[gd_scene load_steps=22 format=2]
 
 [ext_resource path="res://scripts/Game.gd" type="Script" id=1]
-[ext_resource path="res://scripts/beat_player.gd" type="Script" id=4]
+[ext_resource path="res://effects/Dark_environment.tres" type="Environment" id=2]
 [ext_resource path="res://scripts/beat_responder.gd" type="Script" id=5]
 [ext_resource path="res://scenes/environment_particles.tscn" type="PackedScene" id=6]
 [ext_resource path="res://scenes/Ground.tscn" type="PackedScene" id=7]
-[ext_resource path="res://Levels/test/song.ogg" type="AudioStream" id=8]
 [ext_resource path="res://scripts/environment_particles.gd" type="Script" id=10]
 [ext_resource path="res://scenes/UICanvas.tscn" type="PackedScene" id=11]
 [ext_resource path="res://scripts/ui_score.gd" type="Script" id=12]
@@ -27,6 +26,7 @@ size = Vector2( 0.25, 500 )
 
 [node name="Game" type="Spatial"]
 script = ExtResource( 1 )
+environment = ExtResource( 2 )
 
 [node name="Ground" parent="." instance=ExtResource( 7 )]
 
@@ -36,7 +36,7 @@ lifetime = 5.0
 script = ExtResource( 10 )
 
 [node name="SpawnLocation" type="Spatial" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -12 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -14 )
 
 [node name="BeatResponder" type="Node" parent="."]
 script = ExtResource( 5 )
@@ -46,7 +46,6 @@ params = {
 }
 lerp_value = 10.0
 set_value = 0.0
-beat_player = NodePath("../BeatPlayer")
 
 [node name="GroundBeatResponse" type="Node" parent="."]
 script = ExtResource( 5 )
@@ -55,17 +54,11 @@ params = {
 "displace_amount": 15.0
 }
 lerp_value = 1.0
+disabled = true
 response_frequency = 2.0
-beat_player = NodePath("../BeatPlayer")
-
-[node name="BeatPlayer" type="AudioStreamPlayer" parent="."]
-stream = ExtResource( 8 )
-script = ExtResource( 4 )
-bpm = 138.0
-beat_subdivisions = 1.0
 
 [node name="HitMarker" type="Position3D" parent="."]
-transform = Transform( 1, -3.63798e-12, 1.45519e-11, 3.63798e-12, 1, 2.98024e-08, -1.45519e-11, -2.98024e-08, 1, 0, 0, -0.75 )
+transform = Transform( 1, -3.63798e-12, 1.45519e-11, 3.63798e-12, 1, 2.98024e-08, -1.45519e-11, -2.98024e-08, 1, 0, 0, -1.1 )
 
 [node name="MeshInstance" type="MeshInstance" parent="HitMarker"]
 transform = Transform( -2.62268e-08, 0.015, -4.37114e-08, 0, -6.55671e-10, -1, -0.6, -6.55671e-10, 3.55271e-15, 0, 0.5, 0.12 )
