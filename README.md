@@ -5,12 +5,6 @@ Work in progress, game jam entry for Go Godot 2.
 This is a rhythm game that works in vr using OpenXR, and supports WebXR.
 It has a cool mechanic where you can slow down the music inside a level.
 
-
-# Known issues
-
-## Linux
-For linux builds you need to copy to the game folder libopenxr_loader.so.1 which comes with your distirbution. 
-
 ## Developer setup
 1. Import the godot project and install the following addons:
     * [godot-openxr](https://godotengine.org/asset-library/asset/986)
@@ -26,6 +20,11 @@ mv src/Levels/test/song.egg src/Levels/test/song.ogg
 ## Developer settings in editor
 In order to run in non-vr mode for debugging set ``ENABLE_VR`` to ``false`` in ``scripts/GameVariables.gd``
 
+
+# Known issues
+
+## Linux
+For linux builds you need to copy to the game folder libopenxr_loader.so.1 which comes with your distirbution. 
 
 ## Credits
 Developers:
