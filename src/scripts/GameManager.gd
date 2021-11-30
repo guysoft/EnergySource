@@ -115,6 +115,8 @@ func load_scene(scene, unique_id: String, additive = false) -> bool:
 		_transition.get_node("AnimationPlayer").play("fade")
 		yield(_transition.get_node("AnimationPlayer"), "animation_finished")
 	
+	_beatplayer.stop()
+	
 	var to_load : PackedScene;
 	
 	if scene is String:

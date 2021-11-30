@@ -66,6 +66,13 @@ mesh = SubResource( 5 )
 skeleton = NodePath("../..")
 material/0 = ExtResource( 27 )
 
+[node name="BigScore" parent="." instance=ExtResource( 11 )]
+transform = Transform( 5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 2.10498, -4.21181 )
+visible = false
+
+[node name="Score" parent="BigScore" instance=ExtResource( 16 )]
+theme = ExtResource( 21 )
+
 [node name="ScoreCanvas" parent="." instance=ExtResource( 11 )]
 transform = Transform( 1.22873, 0.363606, 0.0779755, 0, 1.35946, -0.0633927, -0.860365, 0.519283, 0.111361, -2.56726, 2.41427, -6.60775 )
 editor_live_update = false

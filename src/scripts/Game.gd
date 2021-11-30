@@ -69,7 +69,6 @@ func _ready():
 	$Ground.setup_ground(map.get_bpm(), notes_delay, Color.chocolate)
 	$EnvironmentParticles.setup_particles(map.get_bpm(), notes_delay)
 	
-	_beat_player.connect("finished", self, "_on_music_finished")
 	$StartTimer.start()
 	
 	_bounce_time-=song_offset - float(time_delay)
@@ -77,7 +76,6 @@ func _ready():
 
 
 func _process(delta: float) -> void:
-	
 	
 	if GameVariables.ENABLE_VR:
 		# Web XR processs
@@ -269,8 +267,13 @@ func _on_music_finished():
 
 func _on_StartTimer_timeout():
 	_beat_player.play()
+	_beat_player.connect("finished", self, "_on_music_finished")
 
 
 func _on_EndTimer_timeout():
-	#show scorecard with options to restart or return to menu
-	pass
+	$BigScore.visible = true
+	yield(get_tree().create_timer(4),"timeout")
+	_player.in_game = false
+	Global.manager().load_scene(Global.manager().menu_path,"menu")
+	#log_score("gravebud", _player.score)
+	#$Leaderboard.visible = true
