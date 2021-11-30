@@ -79,10 +79,10 @@ bpm = 138.0
 beat_subdivisions = 1.0
 
 [node name="HitMarker" type="Position3D" parent="."]
-transform = Transform( 1, -3.63798e-12, 1.45519e-11, 3.63798e-12, 1, 2.98024e-08, -1.45519e-11, -2.98024e-08, 1, 0, 0, -0.5 )
+transform = Transform( 1, -3.63798e-12, 1.45519e-11, 3.63798e-12, 1, 2.98024e-08, -1.45519e-11, -2.98024e-08, 1, 0, 0, -0.75 )
 
 [node name="MeshInstance" type="MeshInstance" parent="HitMarker"]
-transform = Transform( -2.62268e-08, 0.015, -4.37114e-08, 0, -6.55671e-10, -1, -0.6, -6.55671e-10, 3.55271e-15, -6.57426e-13, 0.5, 0.045178 )
+transform = Transform( -2.62268e-08, 0.015, -4.37114e-08, 0, -6.55671e-10, -1, -0.6, -6.55671e-10, 3.55271e-15, 0, 0.5, 0.12 )
 mesh = SubResource( 5 )
 skeleton = NodePath("../..")
 material/0 = ExtResource( 27 )
@@ -113,28 +113,31 @@ __meta__ = {
 }
 
 [node name="VBoxContainer" type="VBoxContainer" parent="ScoreCanvas/ReferenceRect/CenterContainer"]
-margin_right = 635.0
+margin_left = 224.0
+margin_right = 411.0
 margin_bottom = 605.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="UITimeLeft" parent="ScoreCanvas/ReferenceRect/CenterContainer/VBoxContainer" instance=ExtResource( 20 )]
+margin_right = 187.0
 
 [node name="UIScore" parent="ScoreCanvas/ReferenceRect/CenterContainer/VBoxContainer" instance=ExtResource( 16 )]
 margin_top = 185.0
-margin_right = 635.0
+margin_right = 187.0
 margin_bottom = 366.0
-text = "SCORE: 0"
+text = "0"
 script = ExtResource( 12 )
 
 [node name="UICombo" parent="ScoreCanvas/ReferenceRect/CenterContainer/VBoxContainer" instance=ExtResource( 13 )]
 margin_top = 370.0
-margin_right = 635.0
+margin_right = 187.0
 margin_bottom = 551.0
 text = "X4"
 
 [node name="EnergyBar" parent="ScoreCanvas/ReferenceRect/CenterContainer/VBoxContainer" instance=ExtResource( 17 )]
+margin_right = 187.0
 
 [node name="Grid" type="Spatial" parent="."]
 transform = Transform( 0.5, 0, 0, 0, 0.5, 0, 0, 0, 1, 0, 0.667, -1.89364 )
