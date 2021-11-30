@@ -15,18 +15,43 @@ export var Accelaration = 5
 export var Maximum_Walk_Speed = 10
 export var Jump_Speed = 2
 
+var in_game = false
+
 const GRAVITY = 0 #0.098
 var velocity = Vector3(0,0,0)
 var forward_velocity = 0
 var Walk_Speed = 0.1
 
+enum {FASTER, NEUTRAL, SLOWER}
+const MAX_ACCELERATION = 1
+const MIN_ACCELERATION = 0
+var time_direction = NEUTRAL
+var song_acceleration = 0.00 setget set_song_acceleration
+var song_deceleration = 1.0 #rate at which we return to zero
+var acceleration_rate = 0.25
+
 var score = 0 setget set_score
 var energy = 0 setget set_energy
+
+var energy_decay_rate = 10
+
+func reset_player():
+	self.score = 0
+	self.energy = 0
+	self.song_acceleration = 0.0
+	self.time_direction = NEUTRAL
+
+func set_song_acceleration(newval):
+	song_acceleration = newval
+	if song_acceleration>MAX_ACCELERATION:
+		song_acceleration = MAX_ACCELERATION
+	if song_acceleration<=MIN_ACCELERATION:
+		song_acceleration = MIN_ACCELERATION
 
 func set_score(new_val):
 	score = new_val
 	Events.emit_signal("current_score_updated", score)
-	
+
 func set_energy(new_val):
 	energy = new_val
 	if energy>100: energy = 100
@@ -46,6 +71,28 @@ func _ready():
 	
 
 func _process(delta):
+	
+	
+	process_controller_input("left", delta)
+	process_controller_input("right", delta)
+	
+	if in_game:
+		if time_direction == FASTER:
+			#print ("Faster:", get_parent().song_speed)
+			self.get_parent().set_song_speed(get_parent().song_speed + song_acceleration*delta)
+		elif time_direction == SLOWER:
+			#print ("Slower:", get_parent().song_speed)
+			self.get_parent().set_song_speed(get_parent().song_speed - song_acceleration*delta)
+		elif time_direction == NEUTRAL:
+			#print ("Neutral:", get_parent().song_speed)
+			if not is_equal_approx(get_parent().song_speed,1.0):
+				if get_parent().song_speed > 1.0:
+					self.get_parent().set_song_speed(get_parent().song_speed-song_deceleration * delta)
+				elif get_parent().song_speed <1.0:
+					self.get_parent().set_song_speed(get_parent().song_speed+song_deceleration * delta)
+			else:
+				get_parent().song_speed = 1.0
+	
 	if not GameVariables.ENABLE_VR:
 		if Exit_On_Escape:
 				if Input.is_key_pressed(KEY_ESCAPE):
@@ -54,6 +101,7 @@ func _process(delta):
 	
 	
 func _physics_process(delta):
+	
 	if not GameVariables.ENABLE_VR:
 		velocity.y -= GRAVITY
 		
@@ -108,9 +156,9 @@ func handle_hit(body, hand):
 		controller = $ARVROrigin/LeftHand
 	else:
 		controller = $ARVROrigin/RightHand
-	
 	print("hit " + hand + " "  + body.name)
-	# body.name == "Ball" TODO, remove the balls
+	
+	
 	if body.is_in_group("note"):
 		velocity = controller.get("velocity")
 	
@@ -204,10 +252,31 @@ func _on_LeftHand_button_pressed(button):
 func _on_RightHand_button_pressed(button):
 	button_pressed(button, "right")
 
+func process_controller_input(hand, delta):
+	var hand_object = null
+	if hand=="left":
+		hand_object = $ARVROrigin/LeftHand
+	elif hand=="right":
+		hand_object = $ARVROrigin/RightHand
+	
+	if not hand_object:
+		print ("not a hand")
+		return
+	
+	time_direction = NEUTRAL
+	
+	if hand_object._buttons_pressed[JOY_VR_TRIGGER] and energy>energy_decay_rate:
+		print ("joy button pressed")
+		#self.get_parent().toggle_speed(1.5, 0.1, 5.0, 0.01)
+		self.song_acceleration+=acceleration_rate * delta
+		time_direction = FASTER
+		self.energy -= energy_decay_rate * delta
+	if hand_object._buttons_pressed[JOY_VR_GRIP] and energy>energy_decay_rate:
+		print ("joy grip pressed")
+		#self.get_parent().toggle_speed(0.5, 0.1, 5.0, 0.01)
+		self.song_acceleration+=acceleration_rate * delta
+		time_direction = SLOWER
+		self.energy -= energy_decay_rate * delta
+
 func button_pressed(button, hand):
-	if button ==  JOY_VR_TRIGGER and energy>10:
-		self.get_parent().toggle_speed(1.5, 0.1, 5.0, 0.01)
-		self.energy -= 10
-	if button == JOY_VR_GRIP and energy>10:
-		self.get_parent().toggle_speed(0.5, 0.1, 5.0, 0.01)
-		self.energy -=10
+	pass
