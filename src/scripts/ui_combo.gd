@@ -13,6 +13,6 @@ func _ready():
 
 func _on_current_combo_updated(new_combo):
 	value = new_combo
-	print ("updating combo:", value)
+	#print ("updating combo:", value)
 
 	text = prefix + String(int(value))
