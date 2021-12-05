@@ -18,6 +18,8 @@ const TRACK_LENGTH = 30
 var _rumble_intensity = 0.0;
 var _rumble_duration = -128.0; #-1 means deactivated so applications can also set their own rumble
 
+var _simulation_buttons_pressed       = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+
 var _buttons_pressed       = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 var _buttons_just_pressed  = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 var _buttons_just_released = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
@@ -25,22 +27,53 @@ var _buttons_just_released = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 signal activated
 signal deactivated
 
+onready var webxr_interface = Global.manager().webxr_interface
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	if velocity_track_point:
 		velocity_track_point = get_node(velocity_track_point) as Position3D
 
+func _on_button_released(button:int):
+#	var btn
+#	if webxr_btn==0:
+#		btn=JOY_VR_TRIGGER
+#	if webxr_btn==1:
+#		btn=JOY_VR_GRIP
+#	check_button(0, btn)
+	print ("release signal: ", button)
+	_simulation_buttons_pressed[button]=0
+	#check_button(button,0)
+	
+func _on_button_pressed(button:int):
+	print ("pressed signal: ", button)
+	_simulation_buttons_pressed[button]=1
+	#check_button(button,1)
+#	var btn
+#	if webxr_btn==0:
+#		btn=JOY_VR_TRIGGER
+#	if webxr_btn==1:
+#		btn=JOY_VR_GRIP
+#	check_button(1,btn)
+
 func _process(delta):
+	if Global.manager().webxr_interface:
+		webxr_interface = Global.manager().webxr_interface
 	if get_is_active():
 		if !visible:
 			visible = true
 			print("Activated " + name)
 			emit_signal("activated")
+			if webxr_interface:
+				connect("button_pressed", self, "_on_button_pressed")
+				connect("button_release", self, "_on_button_released")
 	elif visible:
 		visible = false
 		print("Deactivated " + name)
 		emit_signal("deactivated")
+		if webxr_interface:
+			disconnect("button_pressed", self, "_on_button_pressed")
+			disconnect("button_release", self, "_on_button_released")
 	
 	_update_buttons_and_sticks()
 	_update_rumble(delta)
@@ -51,24 +84,33 @@ func _physics_process(delta):
 	if track_velocity:
 		calc_velocity(delta)
 
+func _sim_is_button_pressed(i):
+	if GameVariables.ENABLE_VR and not webxr_interface:
+		return is_button_pressed(i); # is the button pressed
+	else: return _simulation_buttons_pressed[i];
+
 func _update_buttons_and_sticks():
 	for i in range(0,16):
-		
-		var b = is_button_pressed(i)
-		
-		if b != _buttons_pressed[i] :
-			_buttons_pressed[i] = b
-			print (i, " pressed")
-			if b==1:
-				_buttons_just_pressed[i]=1
-				print (i, " just pressed")
-			else:
-				_buttons_just_released[i]=1
-				print (i, " just released")
-		else:
-			_buttons_just_pressed[i]=0
-			_buttons_just_released[i]=0
+#		if webxr_interface:
+#			if i==JOY_VR_TRIGGER or i==JOY_VR_GRIP:
+#				continue
+		var b = _sim_is_button_pressed(i);
+		check_button(i,b)
 
+func check_button(i,b):
+	#print("checking ",i," is ", b)
+	if b != _buttons_pressed[i]:
+		_buttons_pressed[i] = b
+		print (i, " pressed")
+		if b==1:
+			_buttons_just_pressed[i]=1
+			print (i, " just pressed")
+		else:
+			_buttons_just_released[i]=1
+			print (i, " just released")
+	else:
+		_buttons_just_pressed[i]=0
+		_buttons_just_released[i]=0
 
 func simple_rumble(intensity, duration):
 	_rumble_intensity = intensity;
