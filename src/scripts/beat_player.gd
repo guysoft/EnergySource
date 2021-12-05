@@ -67,6 +67,8 @@ func play(from_position: float = 0.0):
 		
 	#_prevent_loop()
 	
+	last_beat = playback_to_beat(from_position)
+	
 	self.playback_position = from_position
 	if from_position + offset >= 0.0:
 		.play(from_position + offset)
@@ -99,13 +101,12 @@ func _ready() -> void:
 	if error != OK:
 		print_debug(error)
 	
-	_prevent_loop()
-	
 	#set_process(true) # it seems like AudioStreamPlayer automatically sets processing to true
 
 func _process(delta: float) -> void:
-	_interpolate_playback_position(delta)
-	beat_pulse()
+	if !stream_paused:
+		_interpolate_playback_position(delta)
+		beat_pulse()
 
 ###############
 # own methods #
@@ -117,7 +118,7 @@ func beat_pulse():
 	#print (beat_pulse)
 	if beat_pulse>last_beat:
 		last_beat=beat_pulse
-		print ("beat! ", last_beat)
+		#print ("beat! ", last_beat)
 		emit_signal("beat", last_beat)
 
 
