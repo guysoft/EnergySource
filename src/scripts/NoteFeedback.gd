@@ -21,31 +21,31 @@ func show_feedback(position, accuracy):
 	
 	#EARLY
 	if accuracy>0.0 and accuracy < 1.0:
-		print ("EARLY")
+		#print ("EARLY")
 		mat.albedo_texture = early_texture
 		#$AnimationPlayer.play("Early")
 	
 	#PERFECT
 	if accuracy>1.0 and accuracy<2.0:
-		print ("PERFECT")
+		#print ("PERFECT")
 		mat.albedo_texture = perfect_texture
 		#$AnimationPlayer.play("Perfect")
 	
 	#LATE
 	if accuracy>2.0 and accuracy<3.0:
-		print ("LATE")
+		#print ("LATE")
 		mat.albedo_texture = late_texture
 		#$AnimationPlayer.play("Late")
 	
 	#MISS
 	if accuracy<0.0 or accuracy>3.0:
-		print ("MISS")
+		#print ("MISS")
 		mat.albedo_texture = miss_texture
 		#$AnimationPlayer.play("Miss")
 
 	#special case for bombs
 	if accuracy==25:
-		print ("BOMB")
+		#print ("BOMB")
 		mat.albedo_texture = bomb_texture
 	
 	$AnimationPlayer.play("show")
