@@ -17,16 +17,20 @@ func _ready():
 
 func _on_current_score_updated(new_score):
 	target_value = new_score
-	print ("updating score:", target_value)
+	#print ("updating score:", target_value)
 	if updating:
 		return
 	updating = true
 	while (not is_equal_approx(value, target_value)):
 		value = lerp(value, target_value, lerp_amount)
-		text = prefix + String(int(value))
+		var output_string = "%06d"
+		text = output_string %[value]
 		yield (get_tree().create_timer(time_step),"timeout")
 	
 	value = target_value
-	text = prefix + String(int(value))
+	
+	var output_string = "%06d"
+	text = output_string % [value]
+	#String(int(value))
 	
 	updating = false
