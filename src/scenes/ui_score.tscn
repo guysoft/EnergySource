@@ -1,12 +1,15 @@
-[gd_scene format=2]
+[gd_scene load_steps=2 format=2]
 
-[node name="Score" type="Label"]
+[ext_resource path="res://scripts/ui_score.gd" type="Script" id=1]
+
+[node name="UIScore" type="Label"]
 margin_right = 659.0
 margin_bottom = 215.0
 custom_colors/font_color = Color( 0.25, 0.48, 0.24, 1 )
 text = "SCORE: 999999"
 align = 1
 valign = 1
+script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
