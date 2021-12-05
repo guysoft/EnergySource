@@ -13,7 +13,7 @@ sun_curve = 0.00769461
 sun_energy = 5.0
 
 [resource]
-background_mode = 2
+background_mode = 1
 background_sky = SubResource( 27 )
 fog_enabled = true
 fog_color = Color( 0.192157, 0.164706, 0.215686, 1 )
@@ -38,4 +38,4 @@ glow_levels/5 = false
 glow_intensity = 0.25
 glow_bloom = 0.5
 glow_blend_mode = 0
-adjustment_enabled = true
+adjustment_contrast = 2.29
