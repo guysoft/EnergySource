@@ -106,15 +106,16 @@ skeleton = NodePath("../..")
 material/0 = ExtResource( 2 )
 
 [node name="CenterLights" type="Spatial" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0 )
 
-[node name="MeshInstance" type="MeshInstance" parent="CenterLights"]
-transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 1.5, 0.5, 0 )
+[node name="LeftLight" type="MeshInstance" parent="CenterLights"]
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -1.5, 0, 0 )
 mesh = SubResource( 5 )
 skeleton = NodePath("../..")
 material/0 = ExtResource( 5 )
 
-[node name="MeshInstance3" type="MeshInstance" parent="CenterLights"]
-transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -1.5, 0.5, 0 )
+[node name="RightLight" type="MeshInstance" parent="CenterLights"]
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 1.5, 0, 0 )
 mesh = SubResource( 5 )
 skeleton = NodePath("../..")
 material/0 = ExtResource( 5 )
