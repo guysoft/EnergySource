@@ -1,0 +1,41 @@
+[gd_resource type="Theme" load_steps=10 format=2]
+
+[ext_resource path="res://fonts/anthony-master/fonts/Anthony.otf" type="DynamicFontData" id=1]
+
+[sub_resource type="DynamicFont" id=10]
+size = 64
+use_mipmaps = true
+use_filter = true
+font_data = ExtResource( 1 )
+
+[sub_resource type="StyleBoxEmpty" id=11]
+
+[sub_resource type="StyleBoxEmpty" id=20]
+
+[sub_resource type="StyleBoxEmpty" id=21]
+
+[sub_resource type="StyleBoxEmpty" id=19]
+
+[sub_resource type="StyleBoxEmpty" id=22]
+
+[sub_resource type="DynamicFont" id=18]
+size = 300
+font_data = ExtResource( 1 )
+
+[sub_resource type="DynamicFont" id=16]
+size = 32
+use_mipmaps = true
+use_filter = true
+font_data = ExtResource( 1 )
+
+[resource]
+default_font = SubResource( 16 )
+Button/colors/font_color_hover = Color( 0.870588, 0.764706, 0.352941, 1 )
+Button/colors/font_color_pressed = Color( 0.972549, 0.545098, 0.0470588, 1 )
+Button/fonts/font = SubResource( 10 )
+Button/styles/disabled = SubResource( 11 )
+Button/styles/focus = SubResource( 20 )
+Button/styles/hover = SubResource( 21 )
+Button/styles/normal = SubResource( 19 )
+Button/styles/pressed = SubResource( 22 )
+RichTextLabel/fonts/normal_font = SubResource( 18 )

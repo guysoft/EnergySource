@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=5 format=2]
+[gd_resource type="Theme" load_steps=8 format=2]
 
 [ext_resource path="res://fonts/anthony-master/fonts/Anthony.otf" type="DynamicFontData" id=1]
 
@@ -7,6 +7,13 @@ size = 150
 use_mipmaps = true
 use_filter = true
 font_data = ExtResource( 1 )
+
+[sub_resource type="StyleBoxFlat" id=22]
+bg_color = Color( 0, 0, 0, 0.627451 )
+corner_radius_top_left = 64
+corner_radius_top_right = 64
+corner_radius_bottom_right = 64
+corner_radius_bottom_left = 64
 
 [sub_resource type="StyleBoxFlat" id=20]
 bg_color = Color( 0, 0, 0, 0.0980392 )
@@ -22,7 +29,21 @@ corner_radius_top_right = 32
 corner_radius_bottom_right = 32
 corner_radius_bottom_left = 32
 
+[sub_resource type="DynamicFont" id=24]
+size = 150
+use_mipmaps = true
+use_filter = true
+font_data = ExtResource( 1 )
+
+[sub_resource type="DynamicFont" id=23]
+size = 150
+use_mipmaps = true
+use_filter = true
+
 [resource]
+default_font = SubResource( 23 )
 Label/fonts/font = SubResource( 19 )
+Panel/styles/panel = SubResource( 22 )
 ProgressBar/styles/bg = SubResource( 20 )
 ProgressBar/styles/fg = SubResource( 21 )
+RichTextLabel/fonts/normal_font = SubResource( 24 )
