@@ -44,7 +44,7 @@ func update_size():
 		ui_area.scale.x = ui_size.x * UI_PIXELS_TO_METER;
 		ui_area.scale.y = ui_size.y * UI_PIXELS_TO_METER;
 	if (viewport != null):
-		print ("setting vieport size:", ui_size)
+		print ("setting viewport size:", ui_size)
 		viewport.set_size(ui_size);
 
 func _ready():
