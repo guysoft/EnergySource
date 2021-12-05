@@ -19,6 +19,7 @@ uniform sampler2D dissolve_texture;
 uniform float burn_size : hint_range(0,2);
 uniform float dissolve_amount : hint_range(0,1);
 
+uniform float low_clip=0.0;
 
 void fragment() {
 	float sample = texture(dissolve_texture, UV).r;
@@ -34,7 +35,7 @@ void fragment() {
 	*/
 	
 	ALBEDO = vec3(emission_value * emission_amount * emission_color.rgb);
-	ALPHA = smoothstep(dissolve_amount - burn_size, dissolve_amount, sample);
+	ALPHA = smoothstep(dissolve_amount - burn_size, dissolve_amount, sample + low_clip);
 }
 
 void vertex(){
@@ -50,11 +51,12 @@ noise = SubResource( 4 )
 render_priority = 5
 shader = SubResource( 3 )
 shader_param/albedo = null
-shader_param/emission_color = Color( 1.44, 0.74, 0.09, 1 )
-shader_param/emission_amount = 0.5
+shader_param/emission_color = Color( 1, 0.2, 0.913725, 1 )
+shader_param/emission_amount = 1.0
 shader_param/invert = false
 shader_param/burn_size = 0.0
 shader_param/dissolve_amount = 0.0
+shader_param/low_clip = 0.0
 shader_param/dissolve_texture = SubResource( 5 )
 
 [sub_resource type="Animation" id=7]
@@ -69,7 +71,7 @@ tracks/0/keys = {
 "times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
 "update": 0,
-"values": [ true ]
+"values": [ false ]
 }
 tracks/1/type = "value"
 tracks/1/path = NodePath(".:material/0:shader_param/dissolve_amount")
