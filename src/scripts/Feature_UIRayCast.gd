@@ -13,6 +13,7 @@ onready var ui_raycast_position : Spatial = $RayCastPosition;
 onready var ui_raycast : RayCast = $RayCastPosition/RayCast;
 onready var ui_raycast_mesh : MeshInstance = $RayCastPosition/RayCastMesh;
 onready var ui_raycast_hitmarker : MeshInstance = $RayCastPosition/RayCastHitMarker;
+onready var webxr = Global.manager().webxr_interface
 
 var is_colliding := false;
 
@@ -35,6 +36,8 @@ func _ready():
 func _physics_process(_dt):
 	if (!active): return;
 	if (!visible): return;
+	if Global.manager().webxr_interface:
+		webxr = Global.manager().webxr_interface
 	_update_raycasts();
 
 
@@ -48,13 +51,20 @@ func _update_raycasts():
 	if ui_raycast.is_colliding():
 		
 		var c = ui_raycast.get_collider();
-		if (!c.has_method("ui_raycast_hit_event")): return;
+		if (!c.has_method("ui_raycast_hit_event")): 
+			print ("does not have ui_raycast_hit_event")
+			return;
 		
 		var click = false;
 		var release = false;
 		
-		click = controller._buttons_just_pressed[JOY_VR_TRIGGER]
-		release = controller._buttons_just_released[JOY_VR_TRIGGER]
+		
+		if webxr:
+			click = controller._buttons_just_pressed[5]
+			release = controller._buttons_just_released[5]
+		else:
+			click = controller._buttons_just_pressed[JOY_VR_TRIGGER]
+			release = controller._buttons_just_released[JOY_VR_TRIGGER]
 		
 		var position = ui_raycast.get_collision_point();
 		ui_raycast_hitmarker.visible = true;
