@@ -41,3 +41,6 @@ amount = 4
 lifetime = 5.0
 process_material = SubResource( 5 )
 draw_pass_1 = SubResource( 7 )
+
+[node name="OmniLight" type="OmniLight" parent="."]
+light_energy = 2.0
