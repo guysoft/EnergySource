@@ -18,3 +18,6 @@ func _ready():
 		_beat_player.stream = music
 		_beat_player.play()
 		#_environment.start_strobe(_music.bpm/2)
+	
+	_player.in_game=false
+	_player.game_node=null
