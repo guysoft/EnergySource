@@ -1,7 +1,7 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://scripts/obstacle.gd" type="Script" id=1]
-[ext_resource path="res://sfx/beep_01.wav" type="AudioStream" id=2]
+[ext_resource path="res://sfx/RhySD-BackButton.wav" type="AudioStream" id=2]
 [ext_resource path="res://effects/obstacle_material.tres" type="Material" id=3]
 
 [sub_resource type="CubeMesh" id=7]
@@ -200,12 +200,10 @@ tracks/5/keys = {
 "values": [ 0.0, 1.0 ]
 }
 
-[sub_resource type="CubeMesh" id=9]
-
 [node name="Obstacle" type="Area" groups=["obstacle"]]
 visible = false
-collision_layer = 4
-collision_mask = 2
+collision_layer = 8
+collision_mask = 3
 monitoring = false
 script = ExtResource( 1 )
 
@@ -226,9 +224,5 @@ anims/RESET = SubResource( 4 )
 anims/despawn = SubResource( 6 )
 anims/spawn = SubResource( 5 )
 
-[node name="AudioStreamPlayer3D" type="AudioStreamPlayer" parent="."]
+[node name="HitSound" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 2 )
-
-[node name="MeshInstance2" type="MeshInstance" parent="."]
-mesh = SubResource( 9 )
-material/0 = null

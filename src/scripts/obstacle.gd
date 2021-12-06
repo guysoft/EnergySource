@@ -25,7 +25,7 @@ var size_y = 1.0
 var size_z = 1.0
 
 #Refs
-onready var _audio_stream_player = $AudioStreamPlayer3D
+onready var _audio_stream_player = $HitSound
 onready var _animation_player = $AnimationPlayer
 onready var _mesh = $MeshInstance as MeshInstance
 onready var _collision = $CollisionShape
@@ -47,16 +47,19 @@ func setup_obstacle(obstacle, speed, bpm, distance):
 	
 	if obstacle["type"] == "full_height":
 		var index_to_position_x = {
-			0: -Map.LEVEL_WIDTH,
+			0: -Map.LEVEL_WIDTH, 
 			1: -Map.LEVEL_WIDTH*0.5,
 			2: Map.LEVEL_WIDTH*0.5,
 			3: Map.LEVEL_WIDTH
 		}
-	
+		
+		#scale_x is double the width
 		scale_x = 2*Map.LEVEL_WIDTH/4 * obstacle["width"]
-		scale_y = Map.LEVEL_HIGH - Map.LEVEL_LOW
-		x = index_to_position_x[int(obstacle["_lineIndex"])] + 0.5 * scale_x
-		y = (Map.LEVEL_HIGH + Map.LEVEL_LOW)/2
+		#scale_x = Map.LEVEL_WIDTH*0.25 * obstacle["width"]
+		scale_y = Map.LEVEL_HIGH*2 - Map.LEVEL_LOW
+		#x = index_to_position_x[int(obstacle["_lineIndex"])] + 0.5 * scale_x
+		x = index_to_position_x[int(obstacle["_lineIndex"])]*obstacle["width"] + 0.5 * scale_x
+		y = (Map.LEVEL_HIGH*2 + Map.LEVEL_LOW)/2
 		
 	elif obstacle["type"] == "crouch":
 		var index_to_position_x = {
@@ -66,22 +69,26 @@ func setup_obstacle(obstacle, speed, bpm, distance):
 			3: Map.LEVEL_WIDTH
 		}
 		scale_x = 2*Map.LEVEL_WIDTH/4 * obstacle["width"]
-		scale_y = (Map.LEVEL_HIGH - Map.LEVEL_LOW) / 2
+		scale_y = (Map.LEVEL_HIGH*2 - Map.LEVEL_LOW) / 2
 		x = index_to_position_x[int(obstacle["_lineIndex"])] + 0.5 * scale_x
-		y = Map.LEVEL_LOW + (Map.LEVEL_HIGH - Map.LEVEL_LOW) * 0.75 + scale_y/2
-
+		#y = Map.LEVEL_LOW + (Map.LEVEL_HIGH - Map.LEVEL_LOW) * 0.75 + scale_y/2
+		#y = Map.LEVEL_LOW + (Map.LEVEL_HIGH - Map.LEVEL_LOW)
+		y = Map.LEVEL_HIGH*2
+		
 	print("got: " + obstacle["type"])
 	print("width: " + str(obstacle["width"]))
 	print("index: " + str(obstacle["_lineIndex"]))
 		
 	var z = obstacle["duration"] * bpm / 60 * (1/size_z) / 2
-	self.scale_object_local(Vector3(scale_x, scale_y, z))
+	#self.scale_object_local(Vector3(scale_x, scale_y, z))
+	$MeshInstance.scale = (Vector3(scale_x, scale_y, z))
+	$CollisionShape.scale = (Vector3(scale_x, scale_y, z))
 	transform.origin = Vector3(x, y, -z)
 	
 	
 	
 	
-	despawn_z = distance
+	despawn_z = distance+z
 	
 	#if the note has an offset, set up the timer to match
 	if obstacle["offset"] > 0.0:
@@ -131,11 +138,8 @@ func deactivate(delete:bool = true, delete_delay:float=1.0):
 		queue_free()
 
 #TODO: Take into account the controller position of the hit?
-func on_hit(velocity, linear_velocity):
+func on_hit():
 	_audio_stream_player.play()
-	direction = velocity.normalized()
-	speed = linear_velocity
-	despawn()
 	
 func despawn():
 	if not alive:
@@ -151,5 +155,5 @@ func _physics_process(delta):
 	_velocity = direction * speed * delta
 	global_translate(_velocity)
 	
-	if self.transform.origin.z > despawn_z:
+	if self.transform.origin.z > despawn_z+(speed*0.25):
 		self.despawn()
