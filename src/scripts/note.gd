@@ -120,7 +120,7 @@ func on_hit(velocity, linear_velocity, hit_accuracy):
 	if linear_velocity:
 		speed = linear_velocity
 	
-	spawn_feedback(hit_accuracy)
+	spawn_feedback(0,hit_accuracy)
 	
 	if hit_accuracy>0.0 and hit_accuracy<3.0:
 		spawn_hit_effect()
@@ -134,12 +134,19 @@ func on_hit(velocity, linear_velocity, hit_accuracy):
 func spawn_hit_effect():
 	var hit_effect_instance = hit_effect.instance()
 	get_tree().current_scene.add_child(hit_effect_instance)
-	hit_effect_instance.setup_effect(global_transform.origin, speed)
 
-func spawn_feedback(accuracy):
+	var spawn_position = global_transform.origin
+	hit_effect_instance.setup_effect(spawn_position, speed)
+
+func spawn_feedback(offset, accuracy):
 	var feedback_instance = feedback_effect.instance()
 	get_tree().current_scene.add_child(feedback_instance)
-	feedback_instance.show_feedback(global_transform.origin, accuracy)
+	
+	var marker_position = Global.manager()._player.game_node._hit_marker.global_transform.origin.z
+	var note_transform = global_transform.origin
+	var spawn_position = Vector3(note_transform.x,note_transform.y,marker_position)
+	#var spawn_position = global_transform.origin + Vector3(0,0,offset)
+	feedback_instance.show_feedback(spawn_position, accuracy)
 
 func despawn(type):
 	if not alive:
@@ -154,11 +161,13 @@ func despawn(type):
 	if type==HIT:
 		print ("hit")
 		
-	elif type==MISS and not been_hit:
-		print ("miss")
-		spawn_feedback(-10) #sufficiently high value to ensure a miss
+	elif type==MISS and not been_hit and _type!=3:
+		#print ("miss")
+		spawn_feedback(-speed*0.25,-10) #sufficiently high value to ensure a miss
 		#bad reference, replace with signal
 		Global.manager()._player.combo = 0
+		Global.manager()._player.score -= 50
+		Global.manager()._player.energy -= 1
 		
 	yield(_animation_player, "animation_finished")
 	deactivate()
