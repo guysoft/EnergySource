@@ -12,11 +12,11 @@ const NOTE_TYPE = {"BOMB": 3}
 const OBSTACLE_TYPE = {"FULL_HEIGHT": 0, "CROUCH": 1}
 
 # The width from each side in the center (the total width is twice this number)
-const LEVEL_WIDTH = 1.2
+const LEVEL_WIDTH = 0.8
 # Lowest point in the game map beneeth your center
-const LEVEL_LOW = 0.5
+const LEVEL_LOW = 0.6
 # Highest point in the map
-const LEVEL_HIGH = 1.2
+const LEVEL_HIGH = 1.05
 
 var path = null
 var bs_level_data = {}
@@ -44,6 +44,9 @@ func get_bpm():
 
 func get_offset():
 	return self.bs_info_data["_songTimeOffset"] # + self.bs_data["_shufflePeriod"] * self.get_bpm()
+
+func get_note_count(difficulty):
+	return self.bs_level_data[difficulty]["_notes"].size()
 
 func _on_beat_detected(difficulty, beat:int):
 	# assert(typeof(beat) == TYPE_INT)

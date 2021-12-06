@@ -1,13 +1,16 @@
-[gd_scene load_steps=22 format=2]
+[gd_scene load_steps=26 format=2]
 
 [ext_resource path="res://scripts/Game.gd" type="Script" id=1]
 [ext_resource path="res://effects/Dark_environment.tres" type="Environment" id=2]
+[ext_resource path="res://sfx/RhySD-Scoreboard.wav" type="AudioStream" id=3]
+[ext_resource path="res://effects/menu_theme.tres" type="Theme" id=4]
 [ext_resource path="res://scripts/beat_responder.gd" type="Script" id=5]
 [ext_resource path="res://scenes/environment_particles.tscn" type="PackedScene" id=6]
 [ext_resource path="res://scenes/Ground.tscn" type="PackedScene" id=7]
+[ext_resource path="res://scenes/UICanvasInteract.tscn" type="PackedScene" id=8]
+[ext_resource path="res://sfx/RhySD-StartButton.wav" type="AudioStream" id=9]
 [ext_resource path="res://scripts/environment_particles.gd" type="Script" id=10]
 [ext_resource path="res://scenes/UICanvas.tscn" type="PackedScene" id=11]
-[ext_resource path="res://scripts/ui_score.gd" type="Script" id=12]
 [ext_resource path="res://scenes/ui_combo.tscn" type="PackedScene" id=13]
 [ext_resource path="res://effects/wall_material.tres" type="Material" id=14]
 [ext_resource path="res://effects/note_3_material.tres" type="Material" id=15]
@@ -23,6 +26,10 @@
 
 [sub_resource type="QuadMesh" id=5]
 size = Vector2( 0.25, 500 )
+
+[sub_resource type="StyleBoxLine" id=6]
+color = Color( 1, 1, 1, 0.501961 )
+thickness = 3
 
 [node name="Game" type="Spatial"]
 script = ExtResource( 1 )
@@ -66,12 +73,147 @@ mesh = SubResource( 5 )
 skeleton = NodePath("../..")
 material/0 = ExtResource( 27 )
 
-[node name="BigScore" parent="." instance=ExtResource( 11 )]
-transform = Transform( 5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 2.10498, -4.21181 )
+[node name="BigScore" parent="." instance=ExtResource( 8 )]
+transform = Transform( 1.5, 0, 0, 0, 1.5, 0, 0, 0, 2, 0, 1.5, -2.97768 )
 visible = false
+transparent = true
 
-[node name="Score" parent="BigScore" instance=ExtResource( 16 )]
+[node name="ReferenceRect" type="Panel" parent="BigScore"]
+margin_right = 1216.0
+margin_bottom = 1230.0
 theme = ExtResource( 21 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="BigScore/ReferenceRect"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -533.5
+margin_top = -551.0
+margin_right = 533.5
+margin_bottom = 551.0
+theme = ExtResource( 21 )
+alignment = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Finished" type="RichTextLabel" parent="BigScore/ReferenceRect/VBoxContainer"]
+margin_right = 1067.0
+margin_bottom = 256.0
+rect_min_size = Vector2( 1067, 256 )
+rect_clip_content = false
+custom_colors/default_color = Color( 1, 0.305882, 0.92549, 1 )
+bbcode_enabled = true
+bbcode_text = "[center][wave][rainbow]SONG FINISHED"
+text = "SONG FINISHED"
+scroll_active = false
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HSeparator2" type="HSeparator" parent="BigScore/ReferenceRect/VBoxContainer"]
+margin_top = 260.0
+margin_right = 1067.0
+margin_bottom = 264.0
+custom_styles/separator = SubResource( 6 )
+
+[node name="TimeBonusLabel" type="Label" parent="BigScore/ReferenceRect/VBoxContainer"]
+margin_top = 268.0
+margin_right = 1067.0
+margin_bottom = 449.0
+text = "time bonus"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TimeBonus" type="Label" parent="BigScore/ReferenceRect/VBoxContainer"]
+margin_top = 453.0
+margin_right = 1067.0
+margin_bottom = 634.0
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HSeparator3" type="HSeparator" parent="BigScore/ReferenceRect/VBoxContainer"]
+margin_top = 638.0
+margin_right = 1067.0
+margin_bottom = 642.0
+custom_styles/separator = SubResource( 6 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ScoreCardLabel" type="Label" parent="BigScore/ReferenceRect/VBoxContainer"]
+margin_top = 646.0
+margin_right = 1067.0
+margin_bottom = 827.0
+custom_colors/font_color = Color( 0.25098, 0.478431, 0.239216, 1 )
+text = "final score"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="UIScore" parent="BigScore/ReferenceRect/VBoxContainer" instance=ExtResource( 16 )]
+margin_top = 831.0
+margin_right = 1067.0
+margin_bottom = 1012.0
+theme = ExtResource( 21 )
+custom_colors/font_color = Color( 0.25098, 0.478431, 0.239216, 1 )
+text = "0"
+
+[node name="HSeparator" type="HSeparator" parent="BigScore/ReferenceRect/VBoxContainer"]
+margin_top = 1016.0
+margin_right = 1067.0
+margin_bottom = 1020.0
+custom_styles/separator = SubResource( 6 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="BigScore/ReferenceRect/VBoxContainer"]
+margin_top = 1024.0
+margin_right = 1067.0
+margin_bottom = 1102.0
+custom_constants/separation = 256
+alignment = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="RestartButton" type="Button" parent="BigScore/ReferenceRect/VBoxContainer/HBoxContainer"]
+margin_left = 230.0
+margin_right = 430.0
+margin_bottom = 78.0
+theme = ExtResource( 4 )
+action_mode = 0
+text = "restart"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MenuButton" type="Button" parent="BigScore/ReferenceRect/VBoxContainer/HBoxContainer"]
+margin_left = 686.0
+margin_right = 837.0
+margin_bottom = 78.0
+theme = ExtResource( 4 )
+action_mode = 0
+text = "menu"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="SongFinished" type="AudioStreamPlayer" parent="BigScore"]
+stream = ExtResource( 3 )
+
+[node name="AcceptSound" type="AudioStreamPlayer" parent="BigScore"]
+stream = ExtResource( 9 )
 
 [node name="ScoreCanvas" parent="." instance=ExtResource( 11 )]
 transform = Transform( 1.22873, 0.363606, 0.0779755, 0, 1.35946, -0.0633927, -0.860365, 0.519283, 0.111361, -2.56726, 2.41427, -6.60775 )
@@ -80,50 +222,71 @@ editor_live_update = false
 [node name="ReferenceRect" type="ReferenceRect" parent="ScoreCanvas"]
 anchor_right = 1.0
 anchor_bottom = 1.0
+margin_bottom = 200.0
+rect_min_size = Vector2( 1024, 800 )
 theme = ExtResource( 21 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="CenterContainer" type="CenterContainer" parent="ScoreCanvas/ReferenceRect"]
+[node name="CenterContainer" type="Container" parent="ScoreCanvas/ReferenceRect"]
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -317.5
-margin_top = -302.5
-margin_right = 317.5
-margin_bottom = 302.5
+margin_left = -400.0
+margin_top = -374.0
+margin_right = 400.0
+margin_bottom = 374.0
+rect_min_size = Vector2( 900, 0 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="VBoxContainer" type="VBoxContainer" parent="ScoreCanvas/ReferenceRect/CenterContainer"]
-margin_left = 224.0
-margin_right = 411.0
-margin_bottom = 605.0
+margin_right = 900.0
+margin_bottom = 748.0
+rect_min_size = Vector2( 900, 748 )
+custom_constants/separation = 32
+alignment = 1
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="UITimeLeft" parent="ScoreCanvas/ReferenceRect/CenterContainer/VBoxContainer" instance=ExtResource( 20 )]
-margin_right = 187.0
+margin_top = 106.0
+margin_right = 900.0
+margin_bottom = 287.0
+text = "00:00:00"
+align = 3
+valign = 3
 
-[node name="UIScore" parent="ScoreCanvas/ReferenceRect/CenterContainer/VBoxContainer" instance=ExtResource( 16 )]
-margin_top = 185.0
-margin_right = 187.0
-margin_bottom = 366.0
-text = "0"
-script = ExtResource( 12 )
+[node name="HBoxContainer" type="HBoxContainer" parent="ScoreCanvas/ReferenceRect/CenterContainer/VBoxContainer"]
+margin_top = 319.0
+margin_right = 900.0
+margin_bottom = 509.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
-[node name="UICombo" parent="ScoreCanvas/ReferenceRect/CenterContainer/VBoxContainer" instance=ExtResource( 13 )]
-margin_top = 370.0
-margin_right = 187.0
-margin_bottom = 551.0
+[node name="UIScore" parent="ScoreCanvas/ReferenceRect/CenterContainer/VBoxContainer/HBoxContainer" instance=ExtResource( 16 )]
+margin_right = 600.0
+margin_bottom = 190.0
+rect_min_size = Vector2( 600, 190 )
+text = "000000"
+
+[node name="UICombo" parent="ScoreCanvas/ReferenceRect/CenterContainer/VBoxContainer/HBoxContainer" instance=ExtResource( 13 )]
+margin_left = 604.0
+margin_top = 4.0
+margin_right = 791.0
+margin_bottom = 185.0
 text = "X4"
 
 [node name="EnergyBar" parent="ScoreCanvas/ReferenceRect/CenterContainer/VBoxContainer" instance=ExtResource( 17 )]
-margin_right = 187.0
+margin_top = 541.0
+margin_right = 900.0
+margin_bottom = 641.0
+rect_min_size = Vector2( 800, 100 )
 
 [node name="Lasers" parent="." instance=ExtResource( 23 )]
 
@@ -134,5 +297,7 @@ one_shot = true
 [node name="EndTimer" type="Timer" parent="."]
 one_shot = true
 
+[connection signal="pressed" from="BigScore/ReferenceRect/VBoxContainer/HBoxContainer/RestartButton" to="." method="_on_RestartButton_pressed"]
+[connection signal="pressed" from="BigScore/ReferenceRect/VBoxContainer/HBoxContainer/MenuButton" to="." method="_on_MenuButton_pressed"]
 [connection signal="timeout" from="StartTimer" to="." method="_on_StartTimer_timeout"]
 [connection signal="timeout" from="EndTimer" to="." method="_on_EndTimer_timeout"]
