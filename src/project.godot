@@ -68,7 +68,7 @@ _global_script_class_icons={
 
 [application]
 
-config/name="gsaber"
+config/name="TempoVR"
 run/main_scene="res://scenes/GameManager.tscn"
 run/delta_sync_after_draw=true
 config/icon="res://icon.png"
