@@ -5,6 +5,13 @@ Work in progress, game jam entry for Go Godot 2. Now we are actually trying to t
 This is a rhythm game that works in vr using OpenXR, and supports WebXR.
 It has a cool mechanic where you can slow down the music inside a level.
 
+
+# Where to get it
+* For now we tested the [game jam entry with playable sources](https://guysoft.itch.io/tempovr)
+
+* There are also nightly builds on the [release page](https://github.com/guysoft/EnergySource/releases)
+    * [but there is an issue](https://github.com/guysoft/EnergySource/issues/3)
+
 # Community
 [Discord](https://discord.gg/xkbAszgKcd)
 
