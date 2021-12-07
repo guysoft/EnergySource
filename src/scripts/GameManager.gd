@@ -82,7 +82,9 @@ func _ready():
 		_right_hand.queue_free()
 		
 		
-	
+	GameVariables.path = "res://Levels/test"
+	GameVariables.difficulty = "ExpertPlusStandard"
+
 	match (debug_start_scene):
 		"GGJ2Splash":
 			load_scene(splash_path, "splash")

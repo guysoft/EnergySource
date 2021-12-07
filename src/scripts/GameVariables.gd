@@ -19,3 +19,11 @@ var ENABLE_VR = true
 
 # Don't edit
 export var vr_enabled = false
+
+
+## In game variables
+
+# The path os the song to play
+var path = null
+# The difficulty to load
+var difficulty = null

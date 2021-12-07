@@ -21,6 +21,7 @@ const LEVEL_HIGH = 1.05
 var path = null
 var bs_level_data = {}
 var bs_info_data = null
+var difficulty = null
 
 var notes = {}
 var obstacles = {}
@@ -38,6 +39,12 @@ func _init(path):
 	self.bs_info_data = parse_json(file.get_as_text())
 	file.close()
 
+func set_difficulty(select_difficulty):
+	self.difficulty = select_difficulty
+	return
+	
+func get_difficulty():
+	return self.difficulty
 
 func get_bpm():
 	return self.bs_info_data["_beatsPerMinute"]
@@ -90,6 +97,7 @@ func get_level(difficulty):
 	for event in self.bs_level_data[difficulty]["_events"]:
 		self.add_event(difficulty,event)
 	
+	self.set_difficulty(difficulty)
 	return
 
 func line_index_layer_to_position(note):

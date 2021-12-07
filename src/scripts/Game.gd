@@ -4,9 +4,6 @@ export(Environment) var environment:Environment
 export (NodePath) var viewport = null #Unused, here for compatability
 export var start_time_offset = 0
 
-onready var path:String = "res://Levels/test"
-onready var difficulty = "ExpertPlusStandard"
-
 var notescene = preload("res://scenes/Note.tscn")
 var obstaclescene = preload("res://scenes/Obstacle.tscn")
 
@@ -46,7 +43,10 @@ func _ready():
 	_player.in_game = true
 	_player.game_node = self
 	
-	_map = setup_map(path)
+	var difficulty = GameVariables.difficulty
+	var path = GameVariables.path
+	
+	_map = setup_map(path, difficulty)
 	setup_song(_map)
 	setup_environment(_map)
 
@@ -58,8 +58,9 @@ func setup_song(map:Map):
 	if not map:
 		return
 	_beat_player.stop()
+
 	_beat_player.connect("beat", self, "_on_beat_detected")
-	_beat_player.stream = load(path + "/song.ogg")
+	_beat_player.stream = load(map.path + "/song.ogg")
 	_song_length = _beat_player.stream.get_length()
 	_beat_player.bpm = map.get_bpm()
 	
@@ -131,7 +132,7 @@ func bounce_notes(delta):
 #All spawn simulatenously but each can have offsets which are used to time when they actually appear.
 func _on_beat_detected(beat):
 
-	var tmp = _map._on_beat_detected(difficulty, beat + notes_delay)
+	var tmp = _map._on_beat_detected(_map.get_difficulty(), beat + notes_delay)
 	var notes = tmp[0]
 	var obstacles = tmp[1]
 	var events = tmp[2]
@@ -203,7 +204,7 @@ func _on_beat_detected(beat):
 			$GroundBeatResponse.disabled=false
 
 #simple helper to setup the map
-func setup_map(path:String)->Map:
+func setup_map(path:String, difficulty:String)->Map:
 	var map = Map.new(path)
 	map.get_level(difficulty)
 	return map
@@ -291,7 +292,7 @@ func _on_EndTimer_timeout():
 	#begin calculation of whether player got a good score
 	#count total misses, perfects, early, lates
 	#provide rank and suggestion based on performance
-	var total_notes = _map.get_note_count(difficulty)
+	var total_notes = _map.get_note_count(_map.get_difficulty())
 	
 	$BigScore/Viewport/ReferenceRect/VBoxContainer/Finished.visible=true
 	yield(get_tree().create_timer(0.5),"timeout")
