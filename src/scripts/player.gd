@@ -122,6 +122,12 @@ func _process(delta):
 				else:
 					game_node.song_speed = 1.0
 	
+	# Handle non-vr exit on ESCAPE
+	if not GameVariables.ENABLE_VR:
+		if Exit_On_Escape:
+				if Input.is_key_pressed(KEY_ESCAPE):
+						get_tree().quit()
+	
 	
 func _physics_process(delta):
 	
@@ -360,32 +366,34 @@ func process_controller_input(hand, delta):
 		else:
 			trigger = JOY_VR_TRIGGER
 			grip = JOY_VR_GRIP
+			
+		if GameVariables.ENABLE_VR:
 		
-		if hand_object._buttons_just_pressed[JOY_OCULUS_MENU]:
-			pause_game()
-		
-		#if hand_object._buttons_pressed[JOY_OPENVR_MENU]:
-		
-		if hand_object._buttons_just_pressed[trigger] or hand_object._buttons_just_pressed[JOY_VR_GRIP]:
-			if can_use_energy==false or energy<energy_decay_rate*delta:
-				$BombSound.play()
-		
-		if hand_object._buttons_pressed[trigger]:
-			if energy>energy_decay_rate*delta and can_use_energy:
-				#print ("joy button pressed")
-				#self.get_parent().toggle_speed(1.5, 0.1, 5.0, 0.01)
-				self.song_acceleration+=acceleration_rate * delta
-				time_direction = FASTER
-				self.energy -= energy_decay_rate * delta
-		
-		if hand_object._buttons_pressed[grip]:
-			if energy>energy_decay_rate*delta and can_use_energy:
-				#print ("joy grip pressed")
-				#self.get_parent().toggle_speed(0.5, 0.1, 5.0, 0.01)
-				self.song_acceleration+=acceleration_rate * delta
-				time_direction = SLOWER
-				self.energy -= energy_decay_rate * delta
-		
+			if hand_object._buttons_just_pressed[JOY_OCULUS_MENU]:
+				pause_game()
+			
+			#if hand_object._buttons_pressed[JOY_OPENVR_MENU]:
+			
+			if hand_object._buttons_just_pressed[trigger] or hand_object._buttons_just_pressed[JOY_VR_GRIP]:
+				if can_use_energy==false or energy<energy_decay_rate*delta:
+					$BombSound.play()
+			
+			if hand_object._buttons_pressed[trigger]:
+				if energy>energy_decay_rate*delta and can_use_energy:
+					#print ("joy button pressed")
+					#self.get_parent().toggle_speed(1.5, 0.1, 5.0, 0.01)
+					self.song_acceleration+=acceleration_rate * delta
+					time_direction = FASTER
+					self.energy -= energy_decay_rate * delta
+			
+			if hand_object._buttons_pressed[grip]:
+				if energy>energy_decay_rate*delta and can_use_energy:
+					#print ("joy grip pressed")
+					#self.get_parent().toggle_speed(0.5, 0.1, 5.0, 0.01)
+					self.song_acceleration+=acceleration_rate * delta
+					time_direction = SLOWER
+					self.energy -= energy_decay_rate * delta
+			
 
 
 
