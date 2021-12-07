@@ -35,14 +35,21 @@ jobs:
         wget https://github.com/GodotVR/godot-xr-tools/archive/96361bbbc6066dc5418d52e8a05dc3d0ca630dcb.zip
         unzip 96361bbbc6066dc5418d52e8a05dc3d0ca630dcb.zip
         mv godot-xr-tools-96361bbbc6066dc5418d52e8a05dc3d0ca630dcb/addons/godot-xr-tools src/addons
+        
+        mkdir -p src/Levels/test
+        wget https://as.cdn.beatsaver.com/9d9092a6d2a70bb0a2b3f1b71fb97c6d6db046ab.zip
+        unzip 9d9092a6d2a70bb0a2b3f1b71fb97c6d6db046ab.zip -d src/Levels/test
+        cp src/Levels/test/Expert.dat src/Levels/test/ExpertPlusStandard.dat
+        mv src/Levels/test/Info.dat src/Levels/test/info.dat
+        mv src/Levels/test/song.egg src/Levels/test/song.ogg
     - name: export game
       # Use latest version (see releases for all versions)
-      uses: firebelley/godot-export@v2.8.0
+      uses: firebelley/godot-export@v3.0.0
       with:
         # Defining all the required inputs
         # I used the mono version of Godot in this example
-        godot_executable_download_url: https://downloads.tuxfamily.org/godotengine/3.3/Godot_v3.3-stable_linux_headless.64.zip
-        godot_export_templates_download_url: https://downloads.tuxfamily.org/godotengine/3.3/Godot_v3.3-stable_export_templates.tpz
+        godot_executable_download_url: https://downloads.tuxfamily.org/godotengine/3.4/Godot_v3.4-stable_linux_headless.64.zip
+        godot_export_templates_download_url: https://downloads.tuxfamily.org/godotengine/3.4/Godot_v3.4-stable_export_templates.tpz
         relative_project_path: ./src
         archive_export_output: true
         generate_release_notes: true
