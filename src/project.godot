@@ -102,6 +102,12 @@ ogg_vorbis={
 "loop": false,
 "loop_offset": 0
 }
+texture={
+"compress/mode": 2,
+"flags/anisotropic": true,
+"flags/mipmaps": true,
+"flags/repeat": 1
+}
 
 [layer_names]
 
