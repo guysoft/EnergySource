@@ -9,7 +9,7 @@ It has a cool mechanic where you can slow down the music inside a level.
 # Where to get it
 * There are nightly builds in the [release page](https://github.com/guysoft/EnergySource/releases)
 * There is also a stable (at least once) tested version in the [game jam entry with playable sources](https://guysoft.itch.io/tempovr)
-* 
+
 # Community
 [Discord](https://discord.gg/xkbAszgKcd)
 
