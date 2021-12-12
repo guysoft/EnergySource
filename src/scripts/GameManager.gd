@@ -81,8 +81,11 @@ func _ready():
 		_left_hand.queue_free()
 		_right_hand.queue_free()
 		
-	
-	var dir = ProjectSettings.globalize_path("res://").get_base_dir()
+	var dir = ""
+	if OS.get_name() == "HTML5":
+		dir = "res:/"
+	else:
+		dir = ProjectSettings.globalize_path("res://").get_base_dir()
 	GameVariables.path = dir + "/Levels/test"
 	GameVariables.difficulty = "ExpertPlusStandard"
 
