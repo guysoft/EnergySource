@@ -55,6 +55,9 @@ func get_offset():
 func get_note_count(difficulty):
 	return self.bs_level_data[difficulty]["_notes"].size()
 
+func get_song():
+	return self.path + "/song.ogg"
+
 func _on_beat_detected(difficulty, beat:int):
 	# assert(typeof(beat) == TYPE_INT)
 	

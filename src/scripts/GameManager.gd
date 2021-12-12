@@ -81,8 +81,9 @@ func _ready():
 		_left_hand.queue_free()
 		_right_hand.queue_free()
 		
-		
-	GameVariables.path = "res://Levels/test"
+	
+	var dir = ProjectSettings.globalize_path("res://").get_base_dir()
+	GameVariables.path = dir + "/Levels/test"
 	GameVariables.difficulty = "ExpertPlusStandard"
 
 	match (debug_start_scene):
