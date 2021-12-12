@@ -6,6 +6,7 @@ on:
       - main
       - workflow
       - linux-workflow
+      - try_fix_webxr
 
 jobs:
   # job id, can be anything
