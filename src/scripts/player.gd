@@ -328,6 +328,8 @@ func pause_game():
 	var pause_state = get_tree().paused
 	get_tree().paused = !pause_state
 
+	var pause_btns = $ARVROrigin/PauseLabel/Viewport/PauseContainer/PauseBtns.get_children()
+	
 	if get_tree().paused:
 		set_process(false)
 		if _beat_player:
@@ -336,6 +338,9 @@ func pause_game():
 		$ARVROrigin/PauseLabel.visible=true
 		#$ARVROrigin/PauseLabel.enable_collision()
 		$ARVROrigin/PauseLabel.disable_collision = false
+		for btn in pause_btns:
+			btn.disabled=false
+		
 		#if game_node: game_node._spawn_location.visible = false
 	else:
 		set_process(true)
@@ -344,6 +349,8 @@ func pause_game():
 		$ARVROrigin/PauseLabel/PauseSound.play()
 		$ARVROrigin/PauseLabel.visible=false
 		$ARVROrigin/PauseLabel.disable_collision= true
+		for btn in pause_btns:
+			btn.disabled=true
 		#if game_node: game_node._spawn_location.visible = true
 	
 
