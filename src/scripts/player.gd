@@ -138,6 +138,10 @@ func _physics_process(delta):
 #			if Input.is_key_pressed(KEY_P):
 #				game_node.toggle_speed(0.5, 0.1, 5.0, 0.01)
 		
+		if GameVariables.NON_VR_MOVEMENT:
+			_handle_non_vr_move_and_slide()
+			
+func _handle_non_vr_move_and_slide():
 		if Input.is_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP):
 				Walk_Speed += Accelaration
 				if Walk_Speed > Maximum_Walk_Speed:

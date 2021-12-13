@@ -31,3 +31,7 @@ var difficulty = null
 # Defalt location of songs
 var songs_path = null
 var song_selected = null
+
+
+# Enable or disable to let non-vr mode move with up/right/left/down keys
+var NON_VR_MOVEMENT = false
