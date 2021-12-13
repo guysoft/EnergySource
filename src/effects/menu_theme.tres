@@ -1,12 +1,6 @@
-[gd_resource type="Theme" load_steps=10 format=2]
+[gd_resource type="Theme" load_steps=7 format=2]
 
-[ext_resource path="res://fonts/anthony-master/fonts/Anthony.otf" type="DynamicFontData" id=1]
-
-[sub_resource type="DynamicFont" id=10]
-size = 64
-use_mipmaps = true
-use_filter = true
-font_data = ExtResource( 1 )
+[ext_resource path="res://fonts/millimetre-font-64.tres" type="DynamicFont" id=1]
 
 [sub_resource type="StyleBoxEmpty" id=11]
 
@@ -18,25 +12,40 @@ font_data = ExtResource( 1 )
 
 [sub_resource type="StyleBoxEmpty" id=22]
 
-[sub_resource type="DynamicFont" id=18]
-size = 300
-font_data = ExtResource( 1 )
-
-[sub_resource type="DynamicFont" id=16]
-size = 32
-use_mipmaps = true
-use_filter = true
-font_data = ExtResource( 1 )
-
 [resource]
-default_font = SubResource( 16 )
+default_font = ExtResource( 1 )
 Button/colors/font_color = Color( 0.556863, 0.556863, 0.556863, 1 )
 Button/colors/font_color_hover = Color( 1, 1, 1, 1 )
 Button/colors/font_color_pressed = Color( 1, 0.152941, 0.968627, 1 )
-Button/fonts/font = SubResource( 10 )
+Button/fonts/font = null
 Button/styles/disabled = SubResource( 11 )
 Button/styles/focus = SubResource( 20 )
 Button/styles/hover = SubResource( 21 )
 Button/styles/normal = SubResource( 19 )
 Button/styles/pressed = SubResource( 22 )
-RichTextLabel/fonts/normal_font = SubResource( 18 )
+CheckBox/fonts/font = null
+CheckButton/fonts/font = null
+ColorPickerButton/fonts/font = null
+Fonts/fonts/large = null
+Fonts/fonts/normal = null
+GraphNode/fonts/title_font = null
+ItemList/fonts/font = null
+LineEdit/fonts/font = null
+LinkButton/fonts/font = null
+MenuButton/fonts/font = null
+OptionButton/fonts/font = null
+PopupMenu/fonts/font = null
+ProgressBar/fonts/font = null
+RichTextLabel/fonts/bold_font = null
+RichTextLabel/fonts/bold_italics_font = null
+RichTextLabel/fonts/italics_font = null
+RichTextLabel/fonts/mono_font = null
+RichTextLabel/fonts/normal_font = null
+TabContainer/fonts/font = null
+Tabs/fonts/font = null
+TextEdit/fonts/font = null
+ToolButton/fonts/font = null
+TooltipLabel/fonts/font = null
+Tree/fonts/font = null
+Tree/fonts/title_button_font = null
+WindowDialog/fonts/title_font = null

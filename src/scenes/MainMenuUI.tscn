@@ -1,13 +1,14 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://effects/menu_theme.tres" type="Theme" id=1]
 [ext_resource path="res://icon.png" type="Texture" id=2]
 [ext_resource path="res://scripts/MainMenuUI.gd" type="Script" id=3]
 [ext_resource path="res://sfx/RhySD-BackButton.wav" type="AudioStream" id=4]
 [ext_resource path="res://sfx/RhySD-StartButton.wav" type="AudioStream" id=5]
+[ext_resource path="res://fonts/logo_font.tres" type="DynamicFont" id=6]
 
 [node name="MainMenuUI" type="MarginContainer"]
-margin_right = 1290.0
+margin_right = 1500.0
 margin_bottom = 986.0
 theme = ExtResource( 1 )
 script = ExtResource( 3 )
@@ -19,7 +20,7 @@ quit_button = NodePath("VBoxContainer2/VBoxContainer/Quit")
 start_scene = "res://scenes/Game.tscn"
 
 [node name="VBoxContainer2" type="VBoxContainer" parent="."]
-margin_right = 1290.0
+margin_right = 1500.0
 margin_bottom = 986.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -29,13 +30,14 @@ __meta__ = {
 }
 
 [node name="RichTextLabel" type="RichTextLabel" parent="VBoxContainer2"]
-margin_right = 1290.0
-margin_bottom = 361.0
+margin_right = 1500.0
+margin_bottom = 201.0
 rect_clip_content = false
 size_flags_horizontal = 3
+custom_fonts/normal_font = ExtResource( 6 )
 bbcode_enabled = true
-bbcode_text = "[rainbow][wave] tempoVR"
-text = " tempoVR"
+bbcode_text = "[rainbow][wave] TempoVR"
+text = " TempoVR"
 fit_content_height = true
 scroll_active = false
 __meta__ = {
@@ -43,15 +45,17 @@ __meta__ = {
 }
 
 [node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer2"]
-margin_top = 365.0
-margin_right = 1290.0
+margin_top = 205.0
+margin_right = 1500.0
 margin_bottom = 854.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="SongList" type="ItemList" parent="VBoxContainer2/ScrollContainer"]
-margin_right = 1290.0
-margin_bottom = 489.0
+self_modulate = Color( 0.341176, 0.341176, 0.341176, 1 )
+show_behind_parent = true
+margin_right = 1500.0
+margin_bottom = 649.0
 rect_min_size = Vector2( 200, 400 )
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -63,15 +67,15 @@ __meta__ = {
 
 [node name="VBoxContainer" type="HBoxContainer" parent="VBoxContainer2"]
 margin_top = 858.0
-margin_right = 1290.0
+margin_right = 1500.0
 margin_bottom = 986.0
 rect_min_size = Vector2( 512, 0 )
 custom_constants/separation = 150
 alignment = 1
 
 [node name="Start" type="Button" parent="VBoxContainer2/VBoxContainer"]
-margin_left = 220.0
-margin_right = 570.0
+margin_left = 325.0
+margin_right = 675.0
 margin_bottom = 128.0
 rect_min_size = Vector2( 350, 128 )
 shortcut_in_tooltip = false
@@ -79,8 +83,8 @@ action_mode = 0
 text = "start"
 
 [node name="Quit" type="Button" parent="VBoxContainer2/VBoxContainer"]
-margin_left = 720.0
-margin_right = 1070.0
+margin_left = 825.0
+margin_right = 1175.0
 margin_bottom = 128.0
 rect_min_size = Vector2( 350, 128 )
 shortcut_in_tooltip = false

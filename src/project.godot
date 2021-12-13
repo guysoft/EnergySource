@@ -101,6 +101,7 @@ singletons=[ "res://addons/godot-openxr/config/godot_openxr.gdnlib" ]
 [global]
 
 autoload=false
+theme=false
 
 [importer_defaults]
 
