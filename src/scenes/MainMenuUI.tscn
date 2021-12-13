@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://effects/menu_theme.tres" type="Theme" id=1]
+[ext_resource path="res://icon.png" type="Texture" id=2]
 [ext_resource path="res://scripts/MainMenuUI.gd" type="Script" id=3]
 [ext_resource path="res://sfx/RhySD-BackButton.wav" type="AudioStream" id=4]
 [ext_resource path="res://sfx/RhySD-StartButton.wav" type="AudioStream" id=5]
@@ -20,15 +21,16 @@ start_scene = "res://scenes/Game.tscn"
 [node name="VBoxContainer2" type="VBoxContainer" parent="."]
 margin_right = 1290.0
 margin_bottom = 986.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
 alignment = 1
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="RichTextLabel" type="RichTextLabel" parent="VBoxContainer2"]
-margin_top = 246.0
 margin_right = 1290.0
-margin_bottom = 607.0
+margin_bottom = 361.0
 rect_clip_content = false
 size_flags_horizontal = 3
 bbcode_enabled = true
@@ -40,10 +42,29 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="VBoxContainer" type="HBoxContainer" parent="VBoxContainer2"]
-margin_top = 611.0
+[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer2"]
+margin_top = 365.0
 margin_right = 1290.0
-margin_bottom = 739.0
+margin_bottom = 854.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="SongList" type="ItemList" parent="VBoxContainer2/ScrollContainer"]
+margin_right = 1290.0
+margin_bottom = 489.0
+rect_min_size = Vector2( 200, 400 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+items = [ "Item 0", ExtResource( 2 ), false, "Item 1", ExtResource( 2 ), false ]
+auto_height = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="HBoxContainer" parent="VBoxContainer2"]
+margin_top = 858.0
+margin_right = 1290.0
+margin_bottom = 986.0
 rect_min_size = Vector2( 512, 0 )
 custom_constants/separation = 150
 alignment = 1
@@ -70,3 +91,5 @@ stream = ExtResource( 5 )
 
 [node name="BackSound" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 4 )
+
+[connection signal="item_selected" from="VBoxContainer2/ScrollContainer/SongList" to="." method="_on_SongList_item_selected"]

@@ -23,7 +23,6 @@ albedo_texture = SubResource( 3 )
 script = ExtResource( 1 )
 
 [node name="Viewport" type="Viewport" parent="."]
-size = Vector2( 512, 512 )
 size_override_stretch = true
 transparent_bg = true
 hdr = false

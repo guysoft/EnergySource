@@ -38,6 +38,11 @@ func _init(path):
 	file.open(info_path, File.READ)
 	self.bs_info_data = parse_json(file.get_as_text())
 	file.close()
+	
+func get_name():
+	if self.bs_info_data != null and "_songName" in self.bs_info_data:
+		return self.bs_info_data["_songName"]
+	return ""
 
 func set_difficulty(select_difficulty):
 	self.difficulty = select_difficulty

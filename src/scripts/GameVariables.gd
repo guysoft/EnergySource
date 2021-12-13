@@ -27,3 +27,7 @@ export var vr_enabled = false
 var path = null
 # The difficulty to load
 var difficulty = null
+
+# Defalt location of songs
+var songs_path = null
+var song_selected = null

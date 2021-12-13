@@ -86,6 +86,8 @@ func _ready():
 		dir = "res:/"
 	else:
 		dir = ProjectSettings.globalize_path("res://").get_base_dir()
+	
+	GameVariables.songs_path = dir + "/Levels"
 	GameVariables.path = dir + "/Levels/test"
 	GameVariables.difficulty = "ExpertPlusStandard"
 

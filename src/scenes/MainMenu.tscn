@@ -80,11 +80,11 @@ __meta__ = {
 
 [node name="UICanvasInteract" parent="." instance=ExtResource( 4 )]
 pause_mode = 2
-transform = Transform( 2, 0, 0, 0, 2, 0, 0, 0, 1, 0, 1.8499, -3 )
+transform = Transform( 2, 0, 0, 0, 2, 0, 0, 0, 1, 2.96831e-05, 2.22326, -3.00028 )
 transparent = true
 
 [node name="MainMenuUI" parent="UICanvasInteract" instance=ExtResource( 7 )]
-margin_bottom = 493.0
+margin_bottom = 1000.0
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 3 )
