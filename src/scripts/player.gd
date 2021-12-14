@@ -7,8 +7,7 @@ const BOMB_ENERGY_VALUE = 25
 const MAX_COMBO = 8
 
 # Payer movement in non-vr mode settings
-export var Sensitivity_X = 0.01
-export var Sensitivity_Y = 0.01
+export var mouse_sensitivity = 0.03
 export var Invert_Y_Axis = true
 export var Exit_On_Escape = true
 export var Maximum_Y_Look = 45
@@ -44,6 +43,10 @@ var combo = 0 setget set_combo
 var can_use_energy = true
 
 var energy_decay_rate = 7
+
+#REFS
+onready var _camera = $ARVROrigin/ARVRCamera
+
 
 func reset_player():
 	self.score = 0
@@ -123,10 +126,10 @@ func _process(delta):
 					game_node.song_speed = 1.0
 	
 	# Handle non-vr exit on ESCAPE
-	if not GameVariables.ENABLE_VR:
-		if Exit_On_Escape:
-				if Input.is_key_pressed(KEY_ESCAPE):
-						get_tree().quit()
+#	if not GameVariables.ENABLE_VR:
+#		if Exit_On_Escape:
+#				if Input.is_key_pressed(KEY_ESCAPE):
+#						get_tree().quit()
 	
 	
 func _physics_process(delta):
@@ -137,9 +140,14 @@ func _physics_process(delta):
 #		if game_node:
 #			if Input.is_key_pressed(KEY_P):
 #				game_node.toggle_speed(0.5, 0.1, 5.0, 0.01)
-		
-		if GameVariables.NON_VR_MOVEMENT:
-			_handle_non_vr_move_and_slide()
+	
+	if GameVariables.ENABLE_VR:
+		$ARVROrigin/ARVRCamera/Feature_UIRayCast.active=false
+	else:
+		$ARVROrigin/ARVRCamera/Feature_UIRayCast.active=true
+	
+	if GameVariables.NON_VR_MOVEMENT:
+		_handle_non_vr_move_and_slide()
 			
 func _handle_non_vr_move_and_slide():
 		if Input.is_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP):
@@ -177,14 +185,16 @@ func _handle_non_vr_move_and_slide():
 						velocity.y = Jump_Speed
 		velocity = move_and_slide(velocity, Vector3(0,1,0))
 
-func _input(event):
-	if not GameVariables.ENABLE_VR and in_game:
-		if Input.is_key_pressed(KEY_ESCAPE):
+func _unhandled_input(event):
+	if not GameVariables.ENABLE_VR:
+		
+		if Input.is_key_pressed(KEY_ESCAPE) and in_game:
 				pause_game()
 		
-		if event is InputEventMouseMotion and not get_tree().paused:
-			rotate_y(-Sensitivity_X * event.relative.x)
-			# rotate_x(-Sensitivity_Y * event.relative.y)
+		if event is InputEventMouseMotion:
+			rotate_y(deg2rad(-event.relative.x * mouse_sensitivity))
+			_camera.rotate_x(deg2rad(-event.relative.y * mouse_sensitivity))
+			_camera.rotation.x = clamp(_camera.rotation.x, deg2rad(-89), deg2rad(89))
 
 
 func handle_hit(body, hand):
