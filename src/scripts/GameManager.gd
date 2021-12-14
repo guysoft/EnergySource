@@ -85,7 +85,10 @@ func _ready():
 	if OS.get_name() == "HTML5":
 		dir = "res:/"
 	else:
-		dir = ProjectSettings.globalize_path("res://").get_base_dir()
+		if OS.has_feature("editor"):
+			dir = ProjectSettings.globalize_path("res://").get_base_dir()
+		else:
+			dir = OS.get_executable_path().get_base_dir()
 	
 	GameVariables.songs_path = dir + "/Levels"
 	GameVariables.path = dir + "/Levels/test"
