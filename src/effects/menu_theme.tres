@@ -1,6 +1,8 @@
-[gd_resource type="Theme" load_steps=7 format=2]
+[gd_resource type="Theme" load_steps=12 format=2]
 
 [ext_resource path="res://fonts/millimetre-font-64.tres" type="DynamicFont" id=1]
+[ext_resource path="res://fonts/millimetre-font-24.tres" type="DynamicFont" id=2]
+[ext_resource path="res://fonts/millimetre-font-256.tres" type="DynamicFont" id=3]
 
 [sub_resource type="StyleBoxEmpty" id=11]
 
@@ -12,12 +14,23 @@
 
 [sub_resource type="StyleBoxEmpty" id=22]
 
+[sub_resource type="StyleBoxEmpty" id=27]
+
+[sub_resource type="StyleBoxFlat" id=25]
+bg_color = Color( 0.188235, 0.301961, 0.709804, 0.188235 )
+corner_radius_top_left = 32
+corner_radius_top_right = 32
+corner_radius_bottom_right = 32
+corner_radius_bottom_left = 32
+
+[sub_resource type="StyleBoxEmpty" id=26]
+
 [resource]
-default_font = ExtResource( 1 )
+default_font = ExtResource( 2 )
 Button/colors/font_color = Color( 0.556863, 0.556863, 0.556863, 1 )
-Button/colors/font_color_hover = Color( 1, 1, 1, 1 )
+Button/colors/font_color_hover = Color( 1, 0.152941, 0.968627, 0.501961 )
 Button/colors/font_color_pressed = Color( 1, 0.152941, 0.968627, 1 )
-Button/fonts/font = null
+Button/fonts/font = ExtResource( 3 )
 Button/styles/disabled = SubResource( 11 )
 Button/styles/focus = SubResource( 20 )
 Button/styles/hover = SubResource( 21 )
@@ -29,11 +42,16 @@ ColorPickerButton/fonts/font = null
 Fonts/fonts/large = null
 Fonts/fonts/normal = null
 GraphNode/fonts/title_font = null
-ItemList/fonts/font = null
+ItemList/colors/font_color = Color( 0.556863, 0.556863, 0.556863, 1 )
+ItemList/colors/font_color_selected = Color( 1, 0.152941, 0.968627, 1 )
+ItemList/constants/icon_margin = 16
+ItemList/fonts/font = ExtResource( 1 )
+ItemList/styles/bg = SubResource( 27 )
 LineEdit/fonts/font = null
 LinkButton/fonts/font = null
 MenuButton/fonts/font = null
 OptionButton/fonts/font = null
+Panel/styles/panel = SubResource( 25 )
 PopupMenu/fonts/font = null
 ProgressBar/fonts/font = null
 RichTextLabel/fonts/bold_font = null
@@ -41,6 +59,7 @@ RichTextLabel/fonts/bold_italics_font = null
 RichTextLabel/fonts/italics_font = null
 RichTextLabel/fonts/mono_font = null
 RichTextLabel/fonts/normal_font = null
+ScrollContainer/styles/bg = SubResource( 26 )
 TabContainer/fonts/font = null
 Tabs/fonts/font = null
 TextEdit/fonts/font = null
