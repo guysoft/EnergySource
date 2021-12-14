@@ -59,12 +59,16 @@ func _update_raycasts():
 		var release = false;
 		
 		
-		if webxr:
-			click = controller._buttons_just_pressed[5]
-			release = controller._buttons_just_released[5]
+		if controller:
+			if webxr:
+				click = controller._buttons_just_pressed[5]
+				release = controller._buttons_just_released[5]
+			else:
+				click = controller._buttons_just_pressed[JOY_VR_TRIGGER]
+				release = controller._buttons_just_released[JOY_VR_TRIGGER]
 		else:
-			click = controller._buttons_just_pressed[JOY_VR_TRIGGER]
-			release = controller._buttons_just_released[JOY_VR_TRIGGER]
+			click= Input.is_action_just_pressed("ui_accept", false)
+			release = Input.is_action_just_released("ui_accept", false)
 		
 		var position = ui_raycast.get_collision_point();
 		ui_raycast_hitmarker.visible = true;
