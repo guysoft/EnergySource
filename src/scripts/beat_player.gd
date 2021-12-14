@@ -22,7 +22,9 @@ export(float) var pop_filter: float = 0.8
 #CUSTOM
 export(float) var beat_subdivisions := 0.25
 var last_beat:float = 0.0
+
 signal beat
+signal reset
 
 ##################
 # setter, getter #
@@ -68,6 +70,7 @@ func play(from_position: float = 0.0):
 	#_prevent_loop()
 	
 	last_beat = playback_to_beat(from_position)
+	emit_signal("reset",last_beat)
 	
 	self.playback_position = from_position
 	if from_position + offset >= 0.0:
@@ -76,6 +79,8 @@ func play(from_position: float = 0.0):
 
 func seek(to_position: float) -> void:
 	self.playback_position = to_position
+	last_beat = playback_to_beat(to_position)
+	emit_signal("reset",last_beat)
 	if to_position + offset < 0.0:
 		set_process(true)
 		.stop()
@@ -84,11 +89,14 @@ func seek(to_position: float) -> void:
 
 func seek_to_beat(beat: float) -> void:
 	self.beat = beat # this calls setter and changes playback_position
+	self.last_beat = beat
+	emit_signal("reset",last_beat)
 	self.seek(self.playback_position)
 	
 func stop() -> void:
 	.stop()
 	last_beat=0
+	emit_signal("reset",last_beat)
 	set_process(false)
 	
 #####################
@@ -118,7 +126,7 @@ func beat_pulse():
 	#print (beat_pulse)
 	if beat_pulse>last_beat:
 		last_beat=beat_pulse
-		#print ("beat! ", last_beat)
+		print ("beat! ", last_beat)
 		emit_signal("beat", last_beat)
 
 
