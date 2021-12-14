@@ -20,9 +20,9 @@ var mesh_material = null
 
 var ui_size = Vector2()
 
-func _input(event: InputEvent) -> void:
-	if event:
-		viewport.input(event)
+#func _input(event: InputEvent) -> void:
+#	if event:
+#		viewport.input(event)
 
 func _get_configuration_warning():
 	if (ui_control == null): return "Need a Control node as child."
@@ -88,6 +88,8 @@ func enable_collision():
 func _process(delta: float) -> void:
 	#if we aren't in the editor
 	if !Engine.editor_hint:
+		if ui_size!=ui_control.get_size():
+			update_size();
 		if disable_collision:
 			#disable the collision
 			ui_collisionshape.disabled = true
