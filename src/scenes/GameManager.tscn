@@ -15,7 +15,7 @@ debug_start_scene = "GGJ2Splash"
 
 [node name="BeatPlayer" type="AudioStreamPlayer" parent="."]
 script = ExtResource( 3 )
-bpm = 128.0
+bpm = 109.0
 beat_subdivisions = 1.0
 
 [node name="EnvironmentManager" type="WorldEnvironment" parent="."]
