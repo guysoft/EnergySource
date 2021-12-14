@@ -1,0 +1,181 @@
+[gd_resource type="ShaderMaterial" load_steps=4 format=2]
+
+[sub_resource type="Shader" id=3]
+code = "shader_type spatial;
+render_mode depth_draw_always,cull_back,world_vertex_coords;
+
+uniform vec4 emission_color : hint_color = vec4(1.0,1.0,1.0,1.0) ;
+uniform vec4 albedo_color : hint_color = vec4(1.0,1.0,1.0,1.0);
+
+uniform vec2 noise_stretch = vec2(0.0,0.0);
+
+uniform float displace_scale;
+uniform float mid_level : hint_range(0, 1);
+
+uniform float scale;
+uniform vec2 offset;
+uniform sampler2D noise : hint_albedo;
+
+uniform vec2 scroll;
+
+uniform vec3 object_position;
+uniform float max_distance_clamp;
+uniform float min_displace;
+
+varying vec3 vert_out;
+
+void vertex() {
+	//vec4 world_vertex = CAMERA_MATRIX * vec4(VERTEX,1.0);
+	vec4 world_vertex = vec4(VERTEX,1.0);
+	
+	vec2 uv = UV + offset + (scroll*TIME);
+
+	vec3 norm = NORMAL;
+	
+	vec4 tex= texture(noise,uv);
+	
+	float dist = distance(object_position,world_vertex.xyz);
+	
+	if (dist>max_distance_clamp){
+		dist=max_distance_clamp;
+	}
+	
+	float new_distance = max_distance_clamp + min_displace - dist;
+	
+	//vec4 tex_adjusted = tex*(distance_clamp-dist);
+	vec4 tex_adjusted = (tex - mid_level) * new_distance;
+	vert_out.x = VERTEX.x + (((tex_adjusted.r)*norm.x)*displace_scale);
+	vert_out.y = VERTEX.y + (((tex_adjusted.r)*norm.y)*displace_scale);
+	vert_out.z = VERTEX.z + (((tex_adjusted.r)*norm.z)*displace_scale);
+	
+	VERTEX = vert_out;
+	 
+}
+
+const float PI = 3.14159265358979323846;
+
+vec4 hsv_to_rgb(float h, float s, float v, float a){
+    //based on 
+    //https://stackoverflow.com/questions/51203917/math-behind-hsv-to-rgb-conversion-of-colors
+    // So it needs values from 0 to 1
+    float r;
+    float g;
+    float b;
+
+    float i = floor(h*6.0);
+    float f = h*6.0 -i;
+    float p = v*(1.0-s);
+    float q = v*(1.0-f*s);
+    float t = v* (1.0-(1.0-f)*s);
+
+    int cond = int(i)%6;
+
+    if (cond == 0){
+        r = v; g = t; b = p;
+    }
+    else if (cond == 1){
+        r = q; g = v; b = p;
+    }
+    else if (cond == 2){
+        r = p; g = v; b = t;
+    }
+    else if (cond == 3){
+        r = p; g = q; b = v;
+    }
+    else if (cond == 4){
+        r = t; g = p; b = v;
+    }
+    else if (cond == 5){
+        r = v; g = p; b = q;
+    }
+    else {
+        // THIS SHOULD NEVER HAPPEN
+        r = 0.0; g = 0.0; b = 0.0;
+    }
+    return vec4(r,g,b,a);
+
+
+
+    return vec4(0.5,1.0,0.0,1.0);
+}
+
+float atan2(float x, float y){
+    if (x > 0.0){
+        return atan(y/x);
+    }
+    else if (x < 0.0){
+        if (y >= 0.0){
+            return atan(y/x) + PI;
+        }
+        else {
+            return atan(y/x) - PI;
+        }
+    }
+    else { // This is x=0
+        if(y > 0.0){
+            return PI/2.0;
+        }
+        else {
+            // This includes the actually undefined x=y=0 case
+            return -PI/2.0;
+        }
+    }
+}
+
+vec2 cartesian_to_polar(vec2 XY){
+    float r = length(XY);
+    float phi = (atan2(XY[0],XY[1]) + PI)/(2.0*PI);
+    // We shift the atan2 to the [0,2pi] range and then normalize
+    return vec2(r,phi);
+}
+
+
+void fragment() {
+	
+//	vec2 uv = UV;
+//
+//	vec4 world_vertex = CAMERA_MATRIX * vec4(VERTEX,1.0);
+//	float dist = distance(object_position,world_vertex.xyz)/scale;
+//	vec3 col = tex.rgb * vec3(1.0f - dist, 1.0f - dist, 1.0f - dist);
+//	float distcol = smoothstep(1.0,0.8,dist);
+	
+	// Center coordinates
+	vec2 uv = UV*noise_stretch + offset + (scroll*(TIME*0.25));
+	vec4 tex= texture(noise,uv);
+	vec2 XY = 2.0*UV - 1.0;
+	vec2 RPhi = cartesian_to_polar(XY);
+	float r = RPhi[0];
+	float phi = RPhi[1];
+	//vec3 col = hsv_to_rgb(phi,r/sqrt(2.0),1.0,1.0).rgb;
+	vec3 col = hsv_to_rgb(phi,0.8,1.0,1.0).rgb;
+    ALBEDO = col;
+	EMISSION = col/2.0*smoothstep(0.35,0.55,tex.r);
+	//ALBEDO = albedo_color.rgb * vec3(sin(TIME)-0.3,sin(TIME),sin(TIME)+0.3);
+	ALPHA = 1.0;
+	//ALBEDO = col;
+	//ALBEDO = vec3(0.0);
+	//vec2 uv = UV;
+	
+	//ALBEDO = tex.rgb;
+}"
+
+[sub_resource type="OpenSimplexNoise" id=1]
+
+[sub_resource type="NoiseTexture" id=2]
+seamless = true
+noise = SubResource( 1 )
+
+[resource]
+shader = SubResource( 3 )
+shader_param/emission_color = Color( 0, 0, 0, 1 )
+shader_param/albedo_color = Color( 0.521569, 1, 0.964706, 1 )
+shader_param/noise_stretch = Vector2( 0.01, 1 )
+shader_param/displace_scale = 0.148
+shader_param/mid_level = 0.15
+shader_param/scale = null
+shader_param/offset = null
+shader_param/scroll = Vector2( 0.1, 0.25 )
+shader_param/object_position = null
+shader_param/max_distance_clamp = 0.5
+shader_param/min_displace = 0.564
+shader_param/noise = SubResource( 2 )

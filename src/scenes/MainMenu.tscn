@@ -1,13 +1,16 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://scripts/MainMenu.gd" type="Script" id=1]
-[ext_resource path="res://sfx/RhySD-Riser.wav" type="AudioStream" id=3]
+[ext_resource path="res://models/logo.obj" type="ArrayMesh" id=2]
+[ext_resource path="res://effects/menu_logo_material.tres" type="Material" id=3]
 [ext_resource path="res://scenes/UICanvasInteract.tscn" type="PackedScene" id=4]
+[ext_resource path="res://scripts/beat_responder.gd" type="Script" id=5]
 [ext_resource path="res://scenes/UICanvas.tscn" type="PackedScene" id=6]
 [ext_resource path="res://scenes/MainMenuUI.tscn" type="PackedScene" id=7]
 [ext_resource path="res://effects/menu_theme.tres" type="Theme" id=8]
 [ext_resource path="res://music/blockout.ogg" type="AudioStream" id=9]
 [ext_resource path="res://effects/MenuScreen_environment.tres" type="Environment" id=10]
+[ext_resource path="res://scenes/ui_song_list.tscn" type="PackedScene" id=11]
 
 [node name="MainMenu" type="Spatial"]
 pause_mode = 2
@@ -16,7 +19,7 @@ environment = ExtResource( 10 )
 music = ExtResource( 9 )
 
 [node name="UICanvas" parent="." instance=ExtResource( 6 )]
-transform = Transform( 1.06066, 0, -1.41421, 0, 1.5, 0, 1.06066, 0, 1.41421, 2.5, 1.5, -2 )
+transform = Transform( 0.707107, 0.183013, -0.683013, 0, 0.965926, 0.258819, 0.707107, -0.183013, 0.683013, 1.4, 1.1014, -1.13389 )
 editor_live_update = false
 
 [node name="ReferenceRect" type="ReferenceRect" parent="UICanvas"]
@@ -27,10 +30,20 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="RichTextLabel" type="RichTextLabel" parent="UICanvas/ReferenceRect"]
+[node name="Panel" type="Panel" parent="UICanvas/ReferenceRect"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_right = -173.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="RichTextLabel" type="RichTextLabel" parent="UICanvas/ReferenceRect/Panel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 32.0
+margin_top = 32.0
+margin_right = -32.0
+margin_bottom = -32.0
 text = "Designed and programmed by: Guy Sheffer and Rainer Weston
 
 Art by: Rainer Weston
@@ -42,7 +55,7 @@ __meta__ = {
 }
 
 [node name="UICanvas2" parent="." instance=ExtResource( 6 )]
-transform = Transform( 1.06066, 0, 1.41421, 0, 1.5, 0, -1.06066, 0, 1.41421, -1.9996, 1.5, -2.67845 )
+transform = Transform( 0.707107, -0.183013, 1.36603, 0, 0.965926, 0.517638, -0.707107, -0.183013, 1.36603, -1.4, 1.1014, -1.13389 )
 editor_live_update = false
 
 [node name="ReferenceRect" type="ReferenceRect" parent="UICanvas2"]
@@ -53,10 +66,20 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="RichTextLabel" type="RichTextLabel" parent="UICanvas2/ReferenceRect"]
+[node name="Panel" type="Panel" parent="UICanvas2/ReferenceRect"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_right = -158.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="RichTextLabel" type="RichTextLabel" parent="UICanvas2/ReferenceRect/Panel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 32.0
+margin_top = 32.0
+margin_right = -32.0
+margin_bottom = -32.0
 tab_size = 10
 text = "Hit notes on time to collect energy and increase your combo. Missing resets your combo so try not to. Use energy to modify your speed.
 
@@ -73,11 +96,29 @@ __meta__ = {
 
 [node name="UICanvasInteract" parent="." instance=ExtResource( 4 )]
 pause_mode = 2
-transform = Transform( 2, 0, 0, 0, 2, 0, 0, 0, 1, 2.96831e-05, 2.22326, -3.00028 )
+transform = Transform( 1, 0, 0, 0, 0.819152, 0.573577, 0, -0.573577, 0.819152, 2.96831e-05, 0.623599, -1.51071 )
 transparent = true
 
 [node name="MainMenuUI" parent="UICanvasInteract" instance=ExtResource( 7 )]
-margin_bottom = 1000.0
 
-[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
-stream = ExtResource( 3 )
+[node name="UICanvasInteract2" parent="." instance=ExtResource( 4 )]
+pause_mode = 2
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 2.96831e-05, 1.33693, -1.57602 )
+transparent = true
+
+[node name="UI_SongList" parent="UICanvasInteract2" instance=ExtResource( 11 )]
+
+[node name="logo" type="MeshInstance" parent="."]
+transform = Transform( 10, 0, 0, 0, 10, 0, 0, 0, 10, 0, 4.31018, -10.2718 )
+material_override = ExtResource( 3 )
+mesh = ExtResource( 2 )
+material/0 = null
+
+[node name="BeatResponder" type="Node" parent="."]
+script = ExtResource( 5 )
+materials = [ ExtResource( 3 ) ]
+params = {
+"min_displace": 4.0
+}
+lerp_value = 2.0
+set_value = 0.1
