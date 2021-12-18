@@ -52,6 +52,8 @@ func get_difficulty():
 	return self.difficulty
 
 func get_bpm():
+	if self.bs_info_data == null or not "_beatsPerMinute" in self.bs_info_data:
+		return 1
 	return self.bs_info_data["_beatsPerMinute"]
 
 func get_offset():
