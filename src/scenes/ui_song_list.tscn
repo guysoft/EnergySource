@@ -52,6 +52,7 @@ __meta__ = {
 margin_right = 1436.0
 margin_bottom = 736.0
 rect_min_size = Vector2( 1436, 736 )
+alignment = 1
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -68,6 +69,20 @@ size_flags_vertical = 3
 items = [ "Item 0", ExtResource( 1 ), false, "Item 1", ExtResource( 1 ), false ]
 auto_height = true
 fixed_icon_size = Vector2( 128, 128 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="NoSongsLabel" type="Label" parent="Panel/UI_SongList/HBoxContainer"]
+visible = false
+margin_left = 98.0
+margin_top = 303.0
+margin_right = 1337.0
+margin_bottom = 432.0
+custom_colors/font_color = Color( 0.992157, 0, 1, 1 )
+text = "NO SONGS DETECTED!"
+align = 1
+valign = 1
 __meta__ = {
 "_edit_use_anchors_": false
 }

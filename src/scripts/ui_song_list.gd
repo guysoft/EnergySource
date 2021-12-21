@@ -12,6 +12,7 @@ func _ready():
 
 	var icon = load("res://icon.png")
 	var songs_list_ui = $HBoxContainer/SongList
+	var no_songs_label = $HBoxContainer/NoSongsLabel
 
 	songs_list_ui.clear()
 
@@ -36,6 +37,11 @@ func _ready():
 			songs_list_ui.add_item(item, icon)
 		else:
 			songs_list_ui.add_item(song_name, icon)
+	
+	if songs_list_ui.get_item_count()==0:
+		songs_list_ui.visible=false
+		no_songs_label.visible=true
+	
 	if GameVariables.song_selected == null:
 		songs_list_ui.select(0)
 		GameVariables.song_selected = 0
