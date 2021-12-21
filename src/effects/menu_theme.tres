@@ -1,8 +1,9 @@
-[gd_resource type="Theme" load_steps=12 format=2]
+[gd_resource type="Theme" load_steps=13 format=2]
 
 [ext_resource path="res://fonts/millimetre-font-64.tres" type="DynamicFont" id=1]
 [ext_resource path="res://fonts/millimetre-font-24.tres" type="DynamicFont" id=2]
 [ext_resource path="res://fonts/millimetre-font-256.tres" type="DynamicFont" id=3]
+[ext_resource path="res://fonts/millimetre-font-128.tres" type="DynamicFont" id=4]
 
 [sub_resource type="StyleBoxEmpty" id=11]
 
@@ -17,7 +18,7 @@
 [sub_resource type="StyleBoxEmpty" id=27]
 
 [sub_resource type="StyleBoxFlat" id=25]
-bg_color = Color( 0.188235, 0.301961, 0.709804, 0.188235 )
+bg_color = Color( 0.1152, 0.159573, 0.32, 0.501961 )
 corner_radius_top_left = 32
 corner_radius_top_right = 32
 corner_radius_bottom_right = 32
@@ -47,6 +48,7 @@ ItemList/colors/font_color_selected = Color( 1, 0.152941, 0.968627, 1 )
 ItemList/constants/icon_margin = 16
 ItemList/fonts/font = ExtResource( 1 )
 ItemList/styles/bg = SubResource( 27 )
+Label/fonts/font = ExtResource( 4 )
 LineEdit/fonts/font = null
 LinkButton/fonts/font = null
 MenuButton/fonts/font = null
