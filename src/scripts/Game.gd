@@ -65,7 +65,7 @@ func setup_song(map:Map):
 		_beat_player.stream = load(map.path + "/song.ogg")
 	else:
 		var audio_loader = AudioLoader.new()
-		_beat_player.stream = audio_loader.loadfile(map.get_song())
+		_beat_player.stream = audio_loader.loadfile(map.get_song(), false, audio_loader.AUDIO_EXT.OGG)
 	
 	_song_length = _beat_player.stream.get_length()
 	_beat_player.bpm = map.get_bpm()
