@@ -73,6 +73,6 @@ func _on_SongList_item_selected(index):
 #		_beatplayer = Global.manager()._beatplayer
 	if _beatplayer:
 		_beatplayer.stop()
-		_beatplayer.stream = audio_loader.loadfile(map.get_song())
+		_beatplayer.stream = audio_loader.loadfile(map.get_song(), false, audio_loader.AUDIO_EXT.OGG)
 		_beatplayer.bpm = map.get_bpm()
 		_beatplayer.play()

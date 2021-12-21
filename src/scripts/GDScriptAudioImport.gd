@@ -26,6 +26,8 @@
 
 class_name AudioLoader
 
+enum AUDIO_EXT {WAV, OGG, MP3}
+
 func report_errors(err, filepath):
 	# See: https://docs.godotengine.org/en/latest/classes/class_@globalscope.html#enum-globalscope-error
 	var result_hash = {
@@ -47,7 +49,7 @@ func report_errors(err, filepath):
 	else:
 		print("Unknown error with file ", filepath, " error code: ", err)
 
-func loadfile(filepath):
+func loadfile(filepath, loop = false, type_override=null):
 	var file = File.new()
 	var err = file.open(filepath, File.READ)
 	if err != OK:
@@ -58,7 +60,7 @@ func loadfile(filepath):
 	var bytes = file.get_buffer(file.get_len())
 
 	# if File is wav
-	if filepath.ends_with(".wav"):
+	if filepath.ends_with(".wav") or type_override==AUDIO_EXT.WAV:
 
 		var newstream = AudioStreamSample.new()
 
@@ -134,20 +136,20 @@ func loadfile(filepath):
 		#get samples and set loop end
 		var samplenum = newstream.data.size() / 4
 		newstream.loop_end = samplenum
-		newstream.loop_mode = 1 #change to 0 or delete this line if you don't want loop, also check out modes 2 and 3 in the docs
+		newstream.loop_mode = 1 if loop else 0 #change to 0 or delete this line if you don't want loop, also check out modes 2 and 3 in the docs
 		return newstream  #:D
 
 	#if file is ogg
-	elif filepath.ends_with(".ogg"):
+	elif filepath.ends_with(".ogg") or type_override==AUDIO_EXT.OGG:
 		var newstream = AudioStreamOGGVorbis.new()
-		newstream.loop = true #set to false or delete this line if you don't want to loop
+		newstream.loop = loop #set to false or delete this line if you don't want to loop
 		newstream.data = bytes
 		return newstream
 
 	#if file is mp3
-	elif filepath.ends_with(".mp3"):
+	elif filepath.ends_with(".mp3") or type_override==AUDIO_EXT.MP3:
 		var newstream = AudioStreamMP3.new()
-		newstream.loop = true #set to false or delete this line if you don't want to loop
+		newstream.loop = loop #set to false or delete this line if you don't want to loop
 		newstream.data = bytes
 		return newstream
 

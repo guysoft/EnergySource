@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=2]
+[gd_scene load_steps=27 format=2]
 
 [ext_resource path="res://scripts/Game.gd" type="Script" id=1]
 [ext_resource path="res://effects/Dark_environment.tres" type="Environment" id=2]
@@ -11,6 +11,7 @@
 [ext_resource path="res://sfx/RhySD-StartButton.wav" type="AudioStream" id=9]
 [ext_resource path="res://scripts/environment_particles.gd" type="Script" id=10]
 [ext_resource path="res://scenes/UICanvas.tscn" type="PackedScene" id=11]
+[ext_resource path="res://fonts/millimetre-font-128.tres" type="DynamicFont" id=12]
 [ext_resource path="res://scenes/ui_combo.tscn" type="PackedScene" id=13]
 [ext_resource path="res://effects/wall_material.tres" type="Material" id=14]
 [ext_resource path="res://effects/note_3_material.tres" type="Material" id=15]
@@ -19,7 +20,7 @@
 [ext_resource path="res://effects/note_1_material.tres" type="Material" id=18]
 [ext_resource path="res://effects/note_0_material.tres" type="Material" id=19]
 [ext_resource path="res://scenes/ui_time_left.tscn" type="PackedScene" id=20]
-[ext_resource path="res://ui_theme.tres" type="Theme" id=21]
+[ext_resource path="res://fonts/millimetre-font-256.tres" type="DynamicFont" id=21]
 [ext_resource path="res://effects/Ground.tres" type="Material" id=22]
 [ext_resource path="res://scenes/Lasers.tscn" type="PackedScene" id=23]
 [ext_resource path="res://effects/center_lights_material.tres" type="Material" id=27]
@@ -81,7 +82,7 @@ transparent = true
 [node name="ReferenceRect" type="Panel" parent="BigScore"]
 margin_right = 1216.0
 margin_bottom = 1230.0
-theme = ExtResource( 21 )
+theme = ExtResource( 4 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -95,18 +96,19 @@ margin_left = -533.5
 margin_top = -551.0
 margin_right = 533.5
 margin_bottom = 551.0
-theme = ExtResource( 21 )
 alignment = 1
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="Finished" type="RichTextLabel" parent="BigScore/ReferenceRect/VBoxContainer"]
-margin_right = 1793.0
-margin_bottom = 256.0
+margin_top = 78.0
+margin_right = 1067.0
+margin_bottom = 334.0
 rect_min_size = Vector2( 1067, 256 )
 rect_clip_content = false
 custom_colors/default_color = Color( 1, 0.305882, 0.92549, 1 )
+custom_fonts/normal_font = ExtResource( 12 )
 bbcode_enabled = true
 bbcode_text = "[center][wave][rainbow]SONG FINISHED"
 text = "SONG FINISHED"
@@ -116,15 +118,16 @@ __meta__ = {
 }
 
 [node name="HSeparator2" type="HSeparator" parent="BigScore/ReferenceRect/VBoxContainer"]
-margin_top = 260.0
-margin_right = 1793.0
-margin_bottom = 264.0
+margin_top = 338.0
+margin_right = 1067.0
+margin_bottom = 342.0
 custom_styles/separator = SubResource( 6 )
 
 [node name="TimeBonusLabel" type="Label" parent="BigScore/ReferenceRect/VBoxContainer"]
-margin_top = 268.0
-margin_right = 1793.0
-margin_bottom = 449.0
+margin_top = 346.0
+margin_right = 1067.0
+margin_bottom = 475.0
+custom_fonts/font = ExtResource( 12 )
 text = "time bonus"
 align = 1
 valign = 1
@@ -133,9 +136,9 @@ __meta__ = {
 }
 
 [node name="TimeBonus" type="Label" parent="BigScore/ReferenceRect/VBoxContainer"]
-margin_top = 453.0
-margin_right = 1793.0
-margin_bottom = 634.0
+margin_top = 479.0
+margin_right = 1067.0
+margin_bottom = 608.0
 align = 1
 valign = 1
 __meta__ = {
@@ -143,18 +146,18 @@ __meta__ = {
 }
 
 [node name="HSeparator3" type="HSeparator" parent="BigScore/ReferenceRect/VBoxContainer"]
-margin_top = 638.0
-margin_right = 1793.0
-margin_bottom = 642.0
+margin_top = 612.0
+margin_right = 1067.0
+margin_bottom = 616.0
 custom_styles/separator = SubResource( 6 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="ScoreCardLabel" type="Label" parent="BigScore/ReferenceRect/VBoxContainer"]
-margin_top = 646.0
-margin_right = 1793.0
-margin_bottom = 827.0
+margin_top = 620.0
+margin_right = 1067.0
+margin_bottom = 749.0
 custom_colors/font_color = Color( 0.25098, 0.478431, 0.239216, 1 )
 text = "final score"
 align = 1
@@ -164,23 +167,22 @@ __meta__ = {
 }
 
 [node name="UIScore" parent="BigScore/ReferenceRect/VBoxContainer" instance=ExtResource( 16 )]
-margin_top = 831.0
-margin_right = 1793.0
-margin_bottom = 1012.0
-theme = ExtResource( 21 )
+margin_top = 753.0
+margin_right = 1067.0
+margin_bottom = 882.0
 custom_colors/font_color = Color( 0.25098, 0.478431, 0.239216, 1 )
 text = "0"
 
 [node name="HSeparator" type="HSeparator" parent="BigScore/ReferenceRect/VBoxContainer"]
-margin_top = 1016.0
-margin_right = 1793.0
-margin_bottom = 1020.0
+margin_top = 886.0
+margin_right = 1067.0
+margin_bottom = 890.0
 custom_styles/separator = SubResource( 6 )
 
 [node name="HBoxContainer" type="HBoxContainer" parent="BigScore/ReferenceRect/VBoxContainer"]
-margin_top = 1024.0
-margin_right = 1793.0
-margin_bottom = 1281.0
+margin_top = 894.0
+margin_right = 1067.0
+margin_bottom = 1023.0
 custom_constants/separation = 256
 alignment = 1
 __meta__ = {
@@ -188,9 +190,11 @@ __meta__ = {
 }
 
 [node name="RestartButton" type="Button" parent="BigScore/ReferenceRect/VBoxContainer/HBoxContainer"]
-margin_right = 870.0
-margin_bottom = 257.0
+margin_left = 21.0
+margin_right = 456.0
+margin_bottom = 129.0
 theme = ExtResource( 4 )
+custom_fonts/font = ExtResource( 12 )
 action_mode = 0
 text = "restart"
 __meta__ = {
@@ -198,10 +202,11 @@ __meta__ = {
 }
 
 [node name="MenuButton" type="Button" parent="BigScore/ReferenceRect/VBoxContainer/HBoxContainer"]
-margin_left = 1126.0
-margin_right = 1793.0
-margin_bottom = 257.0
+margin_left = 712.0
+margin_right = 1045.0
+margin_bottom = 129.0
 theme = ExtResource( 4 )
+custom_fonts/font = ExtResource( 12 )
 action_mode = 0
 text = "menu"
 __meta__ = {
@@ -216,14 +221,18 @@ stream = ExtResource( 9 )
 
 [node name="ScoreCanvas" parent="." instance=ExtResource( 11 )]
 transform = Transform( 1.22873, 0.363606, 0.0779755, 0, 1.35946, -0.0633927, -0.860365, 0.519283, 0.111361, -2.56726, 2.41427, -6.60775 )
-editor_live_update = false
 
-[node name="ReferenceRect" type="ReferenceRect" parent="ScoreCanvas"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_bottom = 200.0
+[node name="ReferenceRect" type="Panel" parent="ScoreCanvas"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -512.0
+margin_top = -400.0
+margin_right = 512.0
+margin_bottom = 400.0
 rect_min_size = Vector2( 1024, 800 )
-theme = ExtResource( 21 )
+theme = ExtResource( 4 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -233,9 +242,9 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -400.0
+margin_left = -450.0
 margin_top = -374.0
-margin_right = 400.0
+margin_right = 450.0
 margin_bottom = 374.0
 rect_min_size = Vector2( 900, 0 )
 __meta__ = {
@@ -246,45 +255,47 @@ __meta__ = {
 margin_right = 900.0
 margin_bottom = 748.0
 rect_min_size = Vector2( 900, 748 )
-custom_constants/separation = 32
+custom_constants/separation = 0
 alignment = 1
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="UITimeLeft" parent="ScoreCanvas/ReferenceRect/CenterContainer/VBoxContainer" instance=ExtResource( 20 )]
-margin_top = 106.0
-margin_right = 900.0
-margin_bottom = 287.0
+margin_top = 131.0
+margin_right = 912.0
+margin_bottom = 260.0
+theme = null
+custom_fonts/font = ExtResource( 12 )
 text = "00:00:00"
-align = 3
-valign = 3
 
 [node name="HBoxContainer" type="HBoxContainer" parent="ScoreCanvas/ReferenceRect/CenterContainer/VBoxContainer"]
-margin_top = 319.0
-margin_right = 900.0
-margin_bottom = 509.0
+margin_top = 260.0
+margin_right = 912.0
+margin_bottom = 517.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="UIScore" parent="ScoreCanvas/ReferenceRect/CenterContainer/VBoxContainer/HBoxContainer" instance=ExtResource( 16 )]
+margin_top = 33.0
 margin_right = 600.0
-margin_bottom = 190.0
+margin_bottom = 223.0
 rect_min_size = Vector2( 600, 190 )
 text = "000000"
 
 [node name="UICombo" parent="ScoreCanvas/ReferenceRect/CenterContainer/VBoxContainer/HBoxContainer" instance=ExtResource( 13 )]
 margin_left = 604.0
-margin_top = 4.0
-margin_right = 791.0
-margin_bottom = 185.0
+margin_top = 0.0
+margin_right = 912.0
+margin_bottom = 257.0
+custom_fonts/font = ExtResource( 21 )
 text = "X4"
 
 [node name="EnergyBar" parent="ScoreCanvas/ReferenceRect/CenterContainer/VBoxContainer" instance=ExtResource( 17 )]
-margin_top = 541.0
-margin_right = 900.0
-margin_bottom = 641.0
+margin_top = 517.0
+margin_right = 912.0
+margin_bottom = 617.0
 rect_min_size = Vector2( 800, 100 )
 
 [node name="Lasers" parent="." instance=ExtResource( 23 )]
