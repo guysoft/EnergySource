@@ -90,7 +90,14 @@ func _ready():
 		else:
 			dir = OS.get_executable_path().get_base_dir()
 	
+	
 	GameVariables.songs_path = dir + "/Levels"
+	
+	#Check to see if the songs_path directory exists, if not create the directory
+	var chk_dir = Directory.new()
+	if not chk_dir.dir_exists(GameVariables.songs_path):
+		chk_dir.make_dir(GameVariables.songs_path)
+	
 	GameVariables.path = dir + "/Levels/test"
 	GameVariables.difficulty = "ExpertPlusStandard"
 
