@@ -81,26 +81,6 @@ func _ready():
 		_left_hand.queue_free()
 		_right_hand.queue_free()
 		
-	var dir = ""
-	if OS.get_name() == "HTML5":
-		dir = "res:/"
-	else:
-		if OS.has_feature("editor"):
-			dir = ProjectSettings.globalize_path("res://").get_base_dir()
-		else:
-			dir = OS.get_executable_path().get_base_dir()
-	
-	
-	GameVariables.songs_path = dir + "/Levels"
-	
-	#Check to see if the songs_path directory exists, if not create the directory
-	var chk_dir = Directory.new()
-	if not chk_dir.dir_exists(GameVariables.songs_path):
-		chk_dir.make_dir(GameVariables.songs_path)
-	
-	GameVariables.path = dir + "/Levels/test"
-	GameVariables.difficulty = "ExpertPlusStandard"
-
 	match (debug_start_scene):
 		"GGJ2Splash":
 			load_scene(splash_path, "splash")

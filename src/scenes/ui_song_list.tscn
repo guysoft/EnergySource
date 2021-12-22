@@ -5,7 +5,7 @@
 [ext_resource path="res://effects/menu_theme.tres" type="Theme" id=3]
 [ext_resource path="res://fonts/millimetre-font-128.tres" type="DynamicFont" id=4]
 
-[node name="VBoxContainer" type="VBoxContainer"]
+[node name="UI_SongList" type="VBoxContainer"]
 theme = ExtResource( 3 )
 custom_constants/separation = -128
 alignment = 1
@@ -13,8 +13,8 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Label" type="Label" parent="."]
-margin_right = 1500.0
+[node name="SongSelectLabel" type="Label" parent="."]
+margin_right = 1532.0
 margin_bottom = 261.0
 custom_fonts/font = ExtResource( 4 )
 text = "SONG SELECT
@@ -22,33 +22,34 @@ text = "SONG SELECT
 align = 1
 valign = 1
 
-[node name="Panel" type="Panel" parent="."]
+[node name="TabContainer" type="TabContainer" parent="."]
 margin_top = 133.0
-margin_right = 1500.0
-margin_bottom = 933.0
-rect_min_size = Vector2( 1500, 800 )
+margin_right = 1532.0
+margin_bottom = 1062.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="UI_SongList" type="ScrollContainer" parent="Panel"]
+[node name="Original" type="ScrollContainer" parent="TabContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
 margin_left = 32.0
-margin_top = 32.0
+margin_top = 129.0
 margin_right = -32.0
 margin_bottom = -32.0
 rect_min_size = Vector2( 1468, 768 )
 mouse_filter = 1
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme = ExtResource( 3 )
 follow_focus = true
 scroll_horizontal_enabled = false
 script = ExtResource( 2 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
+tab = "Original"
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Panel/UI_SongList"]
+[node name="HBoxContainer" type="HBoxContainer" parent="TabContainer/Original"]
 margin_right = 1436.0
 margin_bottom = 736.0
 rect_min_size = Vector2( 1436, 736 )
@@ -57,7 +58,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="SongList" type="ItemList" parent="Panel/UI_SongList/HBoxContainer"]
+[node name="SongList" type="ItemList" parent="TabContainer/Original/HBoxContainer"]
 self_modulate = Color( 0.341176, 0.341176, 0.341176, 1 )
 show_behind_parent = true
 margin_right = 1436.0
@@ -67,19 +68,20 @@ mouse_filter = 1
 size_flags_horizontal = 3
 size_flags_vertical = 3
 items = [ "Item 0", ExtResource( 1 ), false, "Item 1", ExtResource( 1 ), false ]
+allow_reselect = true
 auto_height = true
 fixed_icon_size = Vector2( 128, 128 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="NoSongsLabel" type="Label" parent="Panel/UI_SongList/HBoxContainer"]
+[node name="NoSongsLabel" type="Label" parent="TabContainer/Original/HBoxContainer"]
 visible = false
 margin_left = 98.0
 margin_top = 303.0
 margin_right = 1337.0
 margin_bottom = 432.0
-custom_colors/font_color = Color( 0.992157, 0, 1, 1 )
+custom_colors/font_color = Color( 1, 0.152941, 0.968627, 1 )
 text = "NO SONGS DETECTED!"
 align = 1
 valign = 1
@@ -87,4 +89,65 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[connection signal="item_selected" from="Panel/UI_SongList/HBoxContainer/SongList" to="Panel/UI_SongList" method="_on_SongList_item_selected"]
+[node name="Custom" type="ScrollContainer" parent="TabContainer"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 32.0
+margin_top = 75.0
+rect_min_size = Vector2( 1468, 768 )
+mouse_filter = 1
+size_flags_horizontal = 3
+size_flags_vertical = 3
+follow_focus = true
+scroll_horizontal_enabled = false
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+tab = "Custom"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="TabContainer/Custom"]
+margin_right = 1436.0
+margin_bottom = 736.0
+rect_min_size = Vector2( 1436, 736 )
+alignment = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="SongList" type="ItemList" parent="TabContainer/Custom/HBoxContainer"]
+self_modulate = Color( 0.341176, 0.341176, 0.341176, 1 )
+show_behind_parent = true
+margin_right = 1436.0
+margin_bottom = 736.0
+rect_min_size = Vector2( 1436, 736 )
+mouse_filter = 1
+size_flags_horizontal = 3
+size_flags_vertical = 3
+items = [ "Item 0", ExtResource( 1 ), false, "Item 1", ExtResource( 1 ), false ]
+allow_reselect = true
+auto_height = true
+fixed_icon_size = Vector2( 128, 128 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="NoSongsLabel" type="Label" parent="TabContainer/Custom/HBoxContainer"]
+visible = false
+margin_left = 98.0
+margin_top = 303.0
+margin_right = 1337.0
+margin_bottom = 432.0
+custom_colors/font_color = Color( 1, 0.152941, 0.968627, 1 )
+text = "NO SONGS DETECTED!"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[connection signal="visibility_changed" from="TabContainer/Original" to="TabContainer/Original" method="_on_visibility_changed"]
+[connection signal="item_selected" from="TabContainer/Original/HBoxContainer/SongList" to="TabContainer/Original" method="_on_SongList_item_selected"]
+[connection signal="visibility_changed" from="TabContainer/Custom" to="TabContainer/Custom" method="_on_visibility_changed"]
+[connection signal="item_selected" from="TabContainer/Custom/HBoxContainer/SongList" to="TabContainer/Custom" method="_on_SongList_item_selected"]
