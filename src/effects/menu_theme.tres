@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=13 format=2]
+[gd_resource type="Theme" load_steps=16 format=2]
 
 [ext_resource path="res://fonts/millimetre-font-64.tres" type="DynamicFont" id=1]
 [ext_resource path="res://fonts/millimetre-font-24.tres" type="DynamicFont" id=2]
@@ -18,13 +18,44 @@
 [sub_resource type="StyleBoxEmpty" id=27]
 
 [sub_resource type="StyleBoxFlat" id=25]
-bg_color = Color( 0.1152, 0.159573, 0.32, 0.501961 )
+bg_color = Color( 0.113725, 0.160784, 0.321569, 0.501961 )
 corner_radius_top_left = 32
 corner_radius_top_right = 32
 corner_radius_bottom_right = 32
 corner_radius_bottom_left = 32
 
 [sub_resource type="StyleBoxEmpty" id=26]
+
+[sub_resource type="StyleBoxFlat" id=31]
+content_margin_left = 32.0
+content_margin_right = 32.0
+content_margin_top = 32.0
+content_margin_bottom = 32.0
+bg_color = Color( 0.113725, 0.160784, 0.321569, 0.501961 )
+corner_radius_top_left = 32
+corner_radius_top_right = 32
+corner_radius_bottom_right = 32
+corner_radius_bottom_left = 32
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id=29]
+content_margin_left = 64.0
+content_margin_right = 64.0
+content_margin_top = 16.0
+content_margin_bottom = 16.0
+bg_color = Color( 0.1088, 0.120747, 0.16, 0.501961 )
+corner_radius_top_left = 32
+corner_radius_top_right = 32
+
+[sub_resource type="StyleBoxFlat" id=30]
+content_margin_left = 64.0
+content_margin_right = 64.0
+content_margin_top = 16.0
+content_margin_bottom = 16.0
+bg_color = Color( 0.113725, 0.160784, 0.321569, 0.501961 )
+corner_radius_top_left = 32
+corner_radius_top_right = 32
+anti_aliasing = false
 
 [resource]
 default_font = ExtResource( 2 )
@@ -62,7 +93,11 @@ RichTextLabel/fonts/italics_font = null
 RichTextLabel/fonts/mono_font = null
 RichTextLabel/fonts/normal_font = null
 ScrollContainer/styles/bg = SubResource( 26 )
-TabContainer/fonts/font = null
+TabContainer/colors/font_color_fg = Color( 1, 0.152941, 0.968627, 1 )
+TabContainer/fonts/font = ExtResource( 1 )
+TabContainer/styles/panel = SubResource( 31 )
+TabContainer/styles/tab_bg = SubResource( 29 )
+TabContainer/styles/tab_fg = SubResource( 30 )
 Tabs/fonts/font = null
 TextEdit/fonts/font = null
 ToolButton/fonts/font = null
