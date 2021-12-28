@@ -56,7 +56,7 @@ __meta__ = {
 }
 
 [node name="UICanvas2" parent="." instance=ExtResource( 6 )]
-transform = Transform( 0.707107, -0.183013, 1.36603, 0, 0.965926, 0.517638, -0.707107, -0.183013, 1.36603, -1.4, 1.1014, -1.13389 )
+transform = Transform( 0.707107, -0.183013, 1.36603, 0, 0.965926, 0.517638, -0.707107, -0.183013, 1.36603, -1.72819, 1.1014, -0.850749 )
 editor_live_update = false
 
 [node name="MainMenuLeft" parent="UICanvas2" instance=ExtResource( 12 )]
