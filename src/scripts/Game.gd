@@ -220,6 +220,8 @@ func setup_map(path:String, difficulty:String)->Map:
 #beatplayer pitch, engine speed and environment satuation control
 #simultaneously
 func set_song_speed(newval, do_lerp = false, lerp_step = 0.05, lerp_delay= 0.05):
+	if Settings.get_setting("game", "disable_time_warp"):
+		return
 	song_speed = newval
 	if song_speed <= MIN_SONG_SPEED: 
 		song_speed = MIN_SONG_SPEED
