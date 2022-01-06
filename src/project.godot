@@ -85,6 +85,7 @@ GameVariables="*res://scenes/GameVariables.tscn"
 Events="*res://scripts/events.gd"
 Global="*res://scripts/global.gd"
 Utility="*res://scripts/Utility.gd"
+Settings="*res://scripts/Settings.gd"
 
 [display]
 
