@@ -64,6 +64,31 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="Weapon" type="ReferenceRect" parent="TabContainer"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.0
+margin_top = 83.0
+margin_right = -4.0
+margin_bottom = -4.0
+
+[node name="Panel" type="Panel" parent="TabContainer/Weapon"]
+margin_right = 40.0
+margin_bottom = 40.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="WeaponList" type="ItemList" parent="TabContainer/Weapon/Panel"]
+margin_top = -1.0
+margin_right = 320.0
+margin_bottom = 265.0
+items = [ "Sabers", null, false, "Hammers", null, false ]
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [node name="Settings" type="ReferenceRect" parent="TabContainer"]
 visible = false
 anchor_right = 1.0
@@ -93,4 +118,5 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[connection signal="item_selected" from="TabContainer/Weapon/Panel/WeaponList" to="." method="_on_WeaponList_item_selected"]
 [connection signal="toggled" from="TabContainer/Settings/DisableTimeWarp" to="." method="_on_DisableTimeWarp_toggled"]

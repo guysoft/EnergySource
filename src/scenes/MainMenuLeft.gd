@@ -18,3 +18,7 @@ func _ready():
 
 func _on_DisableTimeWarp_toggled(button_pressed):
 	Settings.set_setting("game", "disable_time_warp", button_pressed)
+
+
+func _on_WeaponList_item_selected(index):
+	get_parent().get_parent().get_parent().switch_weapon(index)

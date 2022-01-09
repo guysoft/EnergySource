@@ -13,6 +13,9 @@ debug_start_scene = "GGJ2Splash"
 
 [node name="Player" parent="." instance=ExtResource( 2 )]
 
+[node name="ARVRCamera" parent="Player/ARVROrigin" index="0"]
+current = true
+
 [node name="BeatPlayer" type="AudioStreamPlayer" parent="."]
 script = ExtResource( 3 )
 bpm = 109.0

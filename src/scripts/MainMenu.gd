@@ -21,3 +21,25 @@ func _ready():
 	
 	_player.in_game=false
 	_player.game_node=null
+	
+	
+func remove_children(node):
+	for n in node.get_children():
+		node.remove_child(n)
+		n.queue_free()
+
+
+func switch_weapon(index):
+	print("Switching wapon")
+	
+	if GameVariables.ENABLE_VR:
+		var weapon = MeshInstance.new()
+		weapon.mesh = CubeMesh.new()
+		
+		remove_children(_player.get_node("ARVROrigin/LeftHand/Position3D/Position3D/Weapon"))
+		_player.get_node("ARVROrigin/LeftHand/Position3D/Position3D/Weapon").add_child(weapon)
+		
+		remove_children(_player.get_node("ARVROrigin/RightHand/Position3D/Position3D/Weapon"))
+		_player.get_node("ARVROrigin/RightHand/Position3D/Position3D/Weapon").add_child(weapon)
+		
+		
