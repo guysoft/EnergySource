@@ -41,8 +41,8 @@ func populate_list():
 		print("Found song in: " + item)
 		var item_path = path + "/" + item
 		
-		var cover = item_path + "/" + "cover.jpg"
 		var map = Map.new(item_path)
+		var cover = item_path + "/" + map.get_cover_name()
 		var song_name = map.get_name()
 		print("song name: " + song_name)
 		

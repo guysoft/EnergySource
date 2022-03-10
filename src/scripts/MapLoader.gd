@@ -33,7 +33,14 @@ var note_offset = 0
 func _init(path):
 	print ("loading map")
 	self.path = path
-	var info_path = self.path + "/info.dat"
+	var info_path = null
+	if File.new().file_exists(self.path + "/info.dat"):
+		info_path = self.path + "/info.dat"
+	elif File.new().file_exists(self.path + "/Info.dat"):
+		info_path = self.path + "/Info.dat"
+	else:
+		print("Warning: No info.dat found in path " + self.path)
+		return
 	var file = File.new()
 	file.open(info_path, File.READ)
 	self.bs_info_data = parse_json(file.get_as_text())
@@ -42,6 +49,11 @@ func _init(path):
 func get_name():
 	if self.bs_info_data != null and "_songName" in self.bs_info_data:
 		return self.bs_info_data["_songName"]
+	return ""
+
+func get_cover_name():
+	if self.bs_info_data != null and "_coverImageFilename" in self.bs_info_data:
+		return self.bs_info_data["_coverImageFilename"]
 	return ""
 
 func set_difficulty(select_difficulty):
@@ -63,7 +75,9 @@ func get_note_count(difficulty):
 	return self.bs_level_data[difficulty]["_notes"].size()
 
 func get_song():
-	return self.path + "/song.ogg"
+	if self.bs_info_data != null and "_songFilename" in self.bs_info_data:
+		return self.path + "/" + self.bs_info_data["_songFilename"]
+	return self.path + "/song.egg"
 
 func _on_beat_detected(difficulty, beat:int):
 	# assert(typeof(beat) == TYPE_INT)
