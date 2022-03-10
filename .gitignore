@@ -6,5 +6,7 @@
 *.exp
 *.lib
 *.TMP
+*.swp
+*.swo
 logs
 Thumbs.db
