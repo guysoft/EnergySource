@@ -1,6 +1,7 @@
 # TempoVR
 
-Work in progress, game jam entry for Go Godot 2. Now we are actually trying to turn it in to a game.
+Work in progress, originally a game jam entry for Go Godot 2. Now we are actually trying to turn it in to a game.
+Its still open for contributions but project is moving more slowly.
 
 This is a rhythm game that works in vr using OpenXR, and supports WebXR.
 It has a cool mechanic where you can slow down the music inside a level.
