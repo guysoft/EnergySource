@@ -39,7 +39,7 @@ func _ready():
 			print ("export build")
 			dir = OS.get_executable_path().get_base_dir()
 			self.internal_songs_path = ProjectSettings.globalize_path("res:/").get_base_dir() + "/" + custom_levels_foldername
-			self.custom_songs_path = dir + "/" + custom_levels_foldername
+			self.custom_songs_path = "user://Levels"
 
 	print ("internal path: ", self.internal_songs_path)
 	print ("custom path: ", self.custom_songs_path)
