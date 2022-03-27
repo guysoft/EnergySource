@@ -4,7 +4,7 @@ const UI_PIXELS_TO_METER = 1.0 / 512
 
 
 # Don't edit
-export var vr_enabled = false
+export var vr_enabled = true
 
 var ENABLE_VR = true
 

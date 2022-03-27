@@ -33,13 +33,24 @@ func switch_weapon(index):
 	print("Switching wapon")
 	
 	if GameVariables.ENABLE_VR:
-		var weapon = MeshInstance.new()
-		weapon.mesh = CubeMesh.new()
+		var left_weapon = MeshInstance.new()
+		left_weapon.mesh = CubeMesh.new()
+		left_weapon.global_scale(Vector3(0.1, 0.1, 0.1))
 		
-		remove_children(_player.get_node("ARVROrigin/LeftHand/Position3D/Position3D/Weapon"))
-		_player.get_node("ARVROrigin/LeftHand/Position3D/Position3D/Weapon").add_child(weapon)
+		var right_weapon = MeshInstance.new()
+		right_weapon.mesh = CubeMesh.new()
+		right_weapon.global_scale(Vector3(0.1, 0.1, 0.1))
 		
-		remove_children(_player.get_node("ARVROrigin/RightHand/Position3D/Position3D/Weapon"))
-		_player.get_node("ARVROrigin/RightHand/Position3D/Position3D/Weapon").add_child(weapon)
+		
+		var left_controller_node = _player.get_node("ARVROrigin/LeftHand/Position3D/Weapon")
+		var right_controller_node = _player.get_node("ARVROrigin/RightHand/Position3D/Weapon")
+		
+		remove_children(left_controller_node)
+		left_weapon.to_global(left_controller_node.global_transform.origin)
+		left_controller_node.add_child(left_weapon)
+		
+		remove_children(right_controller_node)
+		right_weapon.to_global(right_controller_node.global_transform.origin)
+		right_controller_node.add_child(right_weapon)
 		
 		
