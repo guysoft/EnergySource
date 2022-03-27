@@ -86,7 +86,7 @@ transform = Transform( 1, 0, 0, 0, 1, -2.98023e-08, 0, 2.98023e-08, 1, 0, 0, -0.
 collision_layer = 2
 collision_mask = 28
 
-[node name="CollisionShape3" type="CollisionShape" parent="ARVROrigin/LeftHand/Position3D/Area"]
+[node name="CollisionShape" type="CollisionShape" parent="ARVROrigin/LeftHand/Position3D/Area"]
 shape = SubResource( 16 )
 
 [node name="Feature_UIRayCast" parent="ARVROrigin/LeftHand/Position3D" instance=ExtResource( 5 )]
@@ -126,7 +126,7 @@ transform = Transform( 1, 0, 0, 0, 1, -2.98023e-08, 0, 2.98023e-08, 1, 0, 5.9604
 collision_layer = 2
 collision_mask = 28
 
-[node name="CollisionShape2" type="CollisionShape" parent="ARVROrigin/RightHand/Position3D/Area"]
+[node name="CollisionShape" type="CollisionShape" parent="ARVROrigin/RightHand/Position3D/Area"]
 shape = SubResource( 16 )
 
 [node name="Feature_UIRayCast" parent="ARVROrigin/RightHand/Position3D" instance=ExtResource( 5 )]
