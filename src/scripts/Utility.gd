@@ -16,3 +16,8 @@ func rangef(start: float, end: float, step: float):
 			res.push_back(i)
 			i += step
 	return res
+
+func remove_children(node):
+	for n in node.get_children():
+		node.remove_child(n)
+		n.queue_free()
