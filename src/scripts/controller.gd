@@ -1,6 +1,7 @@
 extends ARVRController
 
 export(NodePath) var velocity_track_point
+export(NodePath) var current_weapon
 
 var track_velocity := true
 
@@ -28,11 +29,22 @@ signal activated
 signal deactivated
 
 onready var webxr_interface = Global.manager().webxr_interface
+onready var palm = $Palm
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	if velocity_track_point:
-		velocity_track_point = get_node(velocity_track_point) as Position3D
+	if current_weapon:
+		current_weapon = get_node(current_weapon) as Weapon
+		velocity_track_point = current_weapon.get_track_point()
+
+
+func equip_weapon(weapon:Weapon):
+	if not weapon: return
+	palm.queue_free(current_weapon)
+	var new_weapon = weapon.instance()
+	palm.add_child(new_weapon)
+	current_weapon = new_weapon
+	
 
 func _on_button_released(button:int):
 #	var btn
