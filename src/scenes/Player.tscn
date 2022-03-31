@@ -54,7 +54,6 @@ ui_raycast_length = 5.0
 transform = Transform( 1, 0, 0, 0, 0.819152, -0.573577, 0, 0.573577, 0.819152, 0, -0.0995175, 0.142936 )
 
 [node name="WeaponSaber" parent="ARVROrigin/LeftHand/Palm" instance=ExtResource( 13 )]
-hand = 1
 
 [node name="RightHand" type="ARVRController" parent="ARVROrigin"]
 controller_id = 2
@@ -70,6 +69,7 @@ ui_raycast_length = 5.0
 transform = Transform( 1, 0, 0, 0, 0.819152, -0.573577, 0, 0.573577, 0.819152, 0, -0.0995175, 0.142936 )
 
 [node name="WeaponSaber" parent="ARVROrigin/RightHand/Palm" instance=ExtResource( 13 )]
+hand = 1
 
 [node name="PauseLabel" parent="ARVROrigin" instance=ExtResource( 9 )]
 pause_mode = 2

@@ -5,9 +5,8 @@ class_name Weapon
 enum HANDS{LEFT,RIGHT}
 
 #TODO: offload to global so player can change weapon color
-const LEFT_COLOR = Color("67f8fd")
-const RIGHT_COLOR = Color("f66df4")
-
+const LEFT_COLOR = Color("f66df4")
+const RIGHT_COLOR = Color("67f8fd")
 
 export(String) var weapon_name="Weapon"
 export(HANDS) var hand
