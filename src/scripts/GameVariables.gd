@@ -2,7 +2,6 @@ extends Node
 
 const UI_PIXELS_TO_METER = 1.0 / 512
 
-
 # Don't edit
 export var vr_enabled = true
 
@@ -24,6 +23,13 @@ var custom_songs_path:String = ""
 var song_selected
 
 var custom_levels_foldername = "Levels"
+
+#WEAPONS LIST
+var weapons = [
+	preload("res://scenes/WeaponSaber.tscn"),
+	preload("res://scenes/WeaponTest.tscn"),
+]
+
 
 func _ready():
 	var dir = ""
