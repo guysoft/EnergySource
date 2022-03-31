@@ -46,7 +46,8 @@ var energy_decay_rate = 7
 
 #REFS
 onready var _camera = $ARVROrigin/ARVRCamera
-
+onready var _left_hand = $ARVROrigin/LeftHand
+onready var _right_hand = $ARVROrigin/RightHand
 
 func reset_player():
 	self.score = 0
