@@ -99,6 +99,8 @@ func _ready():
 		forward_velocity = Walk_Speed
 		set_process(true)
 	
+	Events.connect("weapon_hit", self, "handle_hit")
+	
 
 func _process(delta):
 	

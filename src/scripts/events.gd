@@ -6,3 +6,6 @@ signal current_combo_updated(combo)
 
 signal song_begin
 signal song_end
+
+#gameplay events
+signal weapon_hit
