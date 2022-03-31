@@ -47,7 +47,6 @@ current_weapon = NodePath("Palm/WeaponSaber")
 
 [node name="Feature_UIRayCast" parent="ARVROrigin/LeftHand" instance=ExtResource( 5 )]
 transform = Transform( 1, 0, 0, 0, 0.819152, -0.573577, 0, 0.573577, 0.819152, 0, 0.216239, -0.30882 )
-visible = false
 controller = NodePath("..")
 ui_raycast_length = 5.0
 
@@ -64,7 +63,6 @@ current_weapon = NodePath("Palm/WeaponSaber")
 
 [node name="Feature_UIRayCast" parent="ARVROrigin/RightHand" instance=ExtResource( 5 )]
 transform = Transform( 1, 0, 0, 0, 0.819152, -0.573577, 0, 0.573577, 0.819152, 0, 0.216239, -0.30882 )
-visible = false
 controller = NodePath("..")
 ui_raycast_length = 5.0
 

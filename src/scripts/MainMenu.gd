@@ -30,7 +30,7 @@ func remove_children(node):
 
 
 func switch_weapon(index):
-	print("Switching wapon")
+	print("Switching weapon: ", index)
 	
 	if GameVariables.ENABLE_VR:
 		var left_weapon = MeshInstance.new()

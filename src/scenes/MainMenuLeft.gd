@@ -21,4 +21,5 @@ func _on_DisableTimeWarp_toggled(button_pressed):
 
 
 func _on_WeaponList_item_selected(index):
+	print ("weapon selected: ", index)
 	get_parent().get_parent().get_parent().switch_weapon(index)
