@@ -38,13 +38,19 @@ func _ready():
 		velocity_track_point = current_weapon.get_track_point()
 
 
-func equip_weapon(weapon:Weapon):
-	if not weapon: return
-	palm.queue_free(current_weapon)
-	var new_weapon = weapon.instance()
-	palm.add_child(new_weapon)
-	current_weapon = new_weapon
+func equip_weapon(new_weapon):
+	if not new_weapon is Weapon: return
+	print ("equipping weapon: ", new_weapon.weapon_name)
+	velocity_track_point = new_weapon.get_track_point()
 	
+	if controller_id==1:
+		new_weapon.hand = 0 #LEFT
+	else:
+		new_weapon.hand = 1 #RIGHT
+		
+	palm.add_child(new_weapon)
+	current_weapon.queue_free()
+	current_weapon = new_weapon
 
 func _on_button_released(button:int):
 #	var btn
