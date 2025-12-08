@@ -1,6 +1,6 @@
 extends MarginContainer
 
-export(String) var start_scene
+@export var start_scene: String
 
 var start_pressed := false
 var quit_pressed := false
@@ -26,5 +26,5 @@ func _on_quit_button_pressed():
 	$BackSound.play()
 	var animation = Global.manager()._transition.get_node("AnimationPlayer") as AnimationPlayer
 	animation.play("fade")
-	yield(animation,"animation_finished")
+	await animation.animation_finished
 	get_tree().quit()

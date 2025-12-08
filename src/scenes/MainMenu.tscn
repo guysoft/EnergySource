@@ -1,91 +1,87 @@
-[gd_scene load_steps=13 format=2]
+[gd_scene load_steps=14 format=3 uid="uid://bdvveg1vwed6m"]
 
-[ext_resource path="res://scripts/MainMenu.gd" type="Script" id=1]
-[ext_resource path="res://models/logo.obj" type="ArrayMesh" id=2]
-[ext_resource path="res://effects/menu_logo_material.tres" type="Material" id=3]
-[ext_resource path="res://scenes/UICanvasInteract.tscn" type="PackedScene" id=4]
-[ext_resource path="res://scripts/beat_responder.gd" type="Script" id=5]
-[ext_resource path="res://scenes/UICanvas.tscn" type="PackedScene" id=6]
-[ext_resource path="res://scenes/MainMenuUI.tscn" type="PackedScene" id=7]
-[ext_resource path="res://effects/menu_theme.tres" type="Theme" id=8]
-[ext_resource path="res://music/blockout.ogg" type="AudioStream" id=9]
-[ext_resource path="res://effects/MenuScreen_environment.tres" type="Environment" id=10]
-[ext_resource path="res://scenes/ui_song_list.tscn" type="PackedScene" id=11]
-[ext_resource path="res://scenes/MainMenuLeft.tscn" type="PackedScene" id=12]
+[ext_resource type="Script" uid="uid://pssqyxlbl4px" path="res://scripts/MainMenu.gd" id="1"]
+[ext_resource type="ArrayMesh" uid="uid://cec6d3bfdrslc" path="res://models/logo.obj" id="2"]
+[ext_resource type="Material" uid="uid://117vqvsuqvra" path="res://effects/menu_logo_material.tres" id="3"]
+[ext_resource type="PackedScene" uid="uid://becsllrl52q2f" path="res://scenes/UICanvasInteract.tscn" id="4"]
+[ext_resource type="Script" uid="uid://bfd0a4boxmkre" path="res://scripts/beat_responder.gd" id="5"]
+[ext_resource type="PackedScene" uid="uid://c3vqk8h2r4xcp" path="res://scenes/UICanvas.tscn" id="6"]
+[ext_resource type="PackedScene" uid="uid://cbkm53asq2x43" path="res://scenes/MainMenuUI.tscn" id="7"]
+[ext_resource type="Theme" uid="uid://d1fbglwrn3v44" path="res://effects/menu_theme.tres" id="8"]
+[ext_resource type="AudioStream" uid="uid://8i1scdg5yxpm" path="res://music/blockout.ogg" id="9"]
+[ext_resource type="Environment" uid="uid://d31wwr54a7auv" path="res://effects/MenuScreen_environment.tres" id="10"]
+[ext_resource type="PackedScene" uid="uid://dijimv3ogdn25" path="res://scenes/ui_song_list.tscn" id="11"]
+[ext_resource type="PackedScene" uid="uid://joq00fxkwv8o" path="res://scenes/MainMenuLeft.tscn" id="12"]
+[ext_resource type="PackedScene" uid="uid://ctltchlf2j2r4" path="res://addons/xr-simulator/XRSimulator.tscn" id="13"]
 
-[node name="MainMenu" type="Spatial"]
-pause_mode = 2
-script = ExtResource( 1 )
-environment = ExtResource( 10 )
-music = ExtResource( 9 )
+[node name="MainMenu" type="Node3D"]
+process_mode = 3
+script = ExtResource("1")
+environment = ExtResource("10")
+music = ExtResource("9")
 
-[node name="UICanvas" parent="." instance=ExtResource( 6 )]
-transform = Transform( 0.707107, 0.183013, -0.683013, 0, 0.965926, 0.258819, 0.707107, -0.183013, 0.683013, 1.4, 1.1014, -1.13389 )
+[node name="UICanvas" parent="." instance=ExtResource("6")]
+transform = Transform3D(0.707107, 0.183013, -0.683013, 0, 0.965926, 0.258819, 0.707107, -0.183013, 0.683013, 1.4, 1.1014, -1.13389)
 editor_live_update = false
 
 [node name="ReferenceRect" type="ReferenceRect" parent="UICanvas"]
-margin_right = 654.0
-margin_bottom = 545.0
-theme = ExtResource( 8 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+offset_right = 654.0
+offset_bottom = 545.0
+theme = ExtResource("8")
 
 [node name="Panel" type="Panel" parent="UICanvas/ReferenceRect"]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="RichTextLabel" type="RichTextLabel" parent="UICanvas/ReferenceRect/Panel"]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = 32.0
-margin_top = 32.0
-margin_right = -32.0
-margin_bottom = -32.0
+offset_left = 32.0
+offset_top = 32.0
+offset_right = -32.0
+offset_bottom = -32.0
 text = "Designed and programmed by: Guy Sheffer and Rainer Weston
 
 Art by: Rainer Weston
 Music by: Azarias
 
 Thank you for playing!"
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
-[node name="UICanvasInteract3" parent="." instance=ExtResource( 4 )]
-transform = Transform( 1.41421, -0.366025, 2.73205, 0, 1.93185, 1.03528, -1.41421, -0.366025, 2.73205, -1.728, 1.21667, -0.851 )
+[node name="UICanvasInteract3" parent="." instance=ExtResource("4")]
+transform = Transform3D(1.41421, -0.366025, 2.73205, 0, 1.93185, 1.03528, -1.41421, -0.366025, 2.73205, -1.728, 1.21667, -0.851)
 transparent = true
 
-[node name="MainMenuLeft" parent="UICanvasInteract3" instance=ExtResource( 12 )]
+[node name="MainMenuLeft" parent="UICanvasInteract3" instance=ExtResource("12")]
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="UICanvasInteract" parent="." instance=ExtResource( 4 )]
-pause_mode = 2
-transform = Transform( 1, 0, 0, 0, 0.819152, 0.573577, 0, -0.573577, 0.819152, 2.96831e-05, 0.623599, -1.51071 )
+[node name="UICanvasInteract" parent="." instance=ExtResource("4")]
+process_mode = 3
+transform = Transform3D(1, 0, 0, 0, 0.819152, 0.573577, 0, -0.573577, 0.819152, 2.96831e-05, 0.623599, -1.51071)
 transparent = true
 
-[node name="MainMenuUI" parent="UICanvasInteract" instance=ExtResource( 7 )]
+[node name="MainMenuUI" parent="UICanvasInteract" instance=ExtResource("7")]
 
-[node name="UICanvasInteract2" parent="." instance=ExtResource( 4 )]
-pause_mode = 2
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 2.96831e-05, 1.33693, -1.57602 )
+[node name="UICanvasInteract2" parent="." instance=ExtResource("4")]
+process_mode = 3
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.96831e-05, 1.33693, -1.57602)
 transparent = true
 
-[node name="UI_SongList" parent="UICanvasInteract2" instance=ExtResource( 11 )]
+[node name="UI_SongList" parent="UICanvasInteract2" instance=ExtResource("11")]
 
-[node name="logo" type="MeshInstance" parent="."]
-transform = Transform( 10, 0, 0, 0, 10, 0, 0, 0, 10, 0, 4.31018, -10.2718 )
-material_override = ExtResource( 3 )
-mesh = ExtResource( 2 )
-material/0 = null
+[node name="logo" type="MeshInstance3D" parent="."]
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 0, 4.31018, -10.2718)
+material_override = ExtResource("3")
+mesh = ExtResource("2")
 
 [node name="BeatResponder" type="Node" parent="."]
-script = ExtResource( 5 )
-materials = [ ExtResource( 3 ) ]
+script = ExtResource("5")
+materials = [ExtResource("3")]
 params = {
-"min_displace": 4.0
+"min_displace": 1.0
 }
-lerp_value = 2.0
-set_value = 0.1
+set_value = 0.564
+
+[node name="XRSimulator" parent="." instance=ExtResource("13")]

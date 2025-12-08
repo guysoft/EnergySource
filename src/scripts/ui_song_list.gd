@@ -1,12 +1,19 @@
 extends ScrollContainer
 
-export(String, "Original", "Custom") var tab:String
+@export var tab:String # (String, "Original", "Custom")
 
 
 
-onready var songs_list = []
+@onready var songs_list = []
 
-onready var _beatplayer = Global.manager()._beatplayer
+var _beatplayer = null
+
+func _get_beatplayer():
+	if _beatplayer == null:
+		var manager = Global.manager()
+		if manager:
+			_beatplayer = manager._beatplayer
+	return _beatplayer
 
 var songs_list_ui
 var no_songs_label
@@ -28,8 +35,10 @@ func populate_list():
 		path = GameVariables.custom_songs_path
 	
 	if not path=="":
-		for item in list_files_in_directory(path):
-			songs_list.append(item)
+		var files = list_files_in_directory(path)
+		if files:
+			for item in files:
+				songs_list.append(item)
 	
 	songs_list_ui = $HBoxContainer/SongList
 	no_songs_label = $HBoxContainer/NoSongsLabel
@@ -46,13 +55,11 @@ func populate_list():
 		var song_name = map.get_name()
 		print("song name: " + song_name)
 		
-		var file = File.new()
-		if file.file_exists(cover):
+		if FileAccess.file_exists(cover):
 			var image = Image.new()
 			var err = image.load(cover)
 			image.resize(128, 128)
-			icon = ImageTexture.new()
-			icon.create_from_image(image, 0)
+			icon = ImageTexture.create_from_image(image)
 		
 		var index = songs_list_ui.get_item_count()
 		
@@ -66,6 +73,7 @@ func populate_list():
 	if songs_list_ui.get_item_count()==0:
 		songs_list_ui.visible=false
 		no_songs_label.visible=true
+		return # Added return to avoid selecting from empty list
 	
 	if GameVariables.song_selected == null:
 		songs_list_ui.select(0)
@@ -77,20 +85,20 @@ func populate_list():
 
 func list_files_in_directory(path):
 	var files = []
-	var dir = Directory.new()
-	dir.open(path)
-	dir.list_dir_begin()
+	var dir = DirAccess.open(path)
+	if dir:
+		dir.list_dir_begin() # TODOConverter3To4 fill missing arguments https://github.com/godotengine/godot/pull/40547
 
-	while true:
-		var file = dir.get_next()
-		if file == "":
-			break
-		elif not file.begins_with("."):
-			files.append(file)
-
-	dir.list_dir_end()
-
-	return files
+		while true:
+			var file = dir.get_next()
+			if file == "":
+				break
+			elif not file.begins_with("."):
+				files.append(file)
+	
+		dir.list_dir_end()
+		return files
+	return []
 
 func _on_SongList_item_selected(index):
 	if songs_list_ui.get_item_count()<=0:
@@ -100,14 +108,19 @@ func _on_SongList_item_selected(index):
 	GameVariables.path = path + "/" + selected_song
 	var map = Map.new(GameVariables.path)
 	
+	# Set the first available difficulty for this map
+	var difficulties = map.get_available_difficulties()
+	if difficulties.size() > 0:
+		GameVariables.difficulty = difficulties[0]
+		print("Selected difficulty: " + GameVariables.difficulty)
+	
 	var audio_loader = AudioLoader.new()
-#	if not _beatplayer:
-#		_beatplayer = Global.manager()._beatplayer
-	if _beatplayer:
-		_beatplayer.stop()
-		_beatplayer.stream = audio_loader.loadfile(map.get_song(), false, audio_loader.AUDIO_EXT.OGG)
-		_beatplayer.bpm = map.get_bpm()
-		_beatplayer.play()
+	var beatplayer = _get_beatplayer()
+	if beatplayer:
+		beatplayer.stop_music()
+		beatplayer.stream = audio_loader.loadfile(map.get_song(), false, audio_loader.AUDIO_EXT.OGG)
+		beatplayer.bpm = map.get_bpm()
+		beatplayer.play_music()
 
 
 func _on_visibility_changed():

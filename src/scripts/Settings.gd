@@ -10,8 +10,7 @@ var _settings = {
 	}
 
 func _ready():
-	var file2Check = File.new()
-	if file2Check.file_exists(SAVE_PATH):
+	if FileAccess.file_exists(SAVE_PATH):
 		load_settings()
 	else:
 		save_settings()

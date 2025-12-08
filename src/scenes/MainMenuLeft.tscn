@@ -1,56 +1,47 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=4 format=3 uid="uid://joq00fxkwv8o"]
 
-[ext_resource path="res://effects/menu_theme.tres" type="Theme" id=1]
-[ext_resource path="res://ui_theme.tres" type="Theme" id=2]
-[ext_resource path="res://scenes/MainMenuLeft.gd" type="Script" id=3]
+[ext_resource type="Theme" uid="uid://d1fbglwrn3v44" path="res://effects/menu_theme.tres" id="1"]
+[ext_resource type="Theme" uid="uid://dhxx6nyx60wmn" path="res://ui_theme.tres" id="2"]
+[ext_resource type="Script" uid="uid://dtbp8rwbn2jte" path="res://scenes/MainMenuLeft.gd" id="3"]
 
 [node name="MainMenuLeft" type="Control"]
-modulate = Color( 0.360784, 0.360784, 0.360784, 1 )
+modulate = Color(0.360784, 0.360784, 0.360784, 1)
+layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-rect_pivot_offset = Vector2( -238, -153 )
-theme = ExtResource( 2 )
-script = ExtResource( 3 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+pivot_offset = Vector2(-238, -153)
+theme = ExtResource("2")
+script = ExtResource("3")
 
 [node name="TabContainer" type="TabContainer" parent="."]
-margin_right = 996.0
-margin_bottom = 568.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
+layout_mode = 0
+offset_right = 996.0
+offset_bottom = 568.0
+theme_override_font_sizes/font_size = 41
+current_tab = 0
 
 [node name="Instructions" type="ReferenceRect" parent="TabContainer"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = 4.0
-margin_top = 83.0
-margin_right = -4.0
-margin_bottom = -4.0
-theme = ExtResource( 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+layout_mode = 2
+theme = ExtResource("1")
+metadata/_tab_index = 0
 
 [node name="Panel" type="Panel" parent="TabContainer/Instructions"]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_right = -8.0
-margin_bottom = -36.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
+offset_right = -8.0
+offset_bottom = -36.0
 
 [node name="RichTextLabel" type="RichTextLabel" parent="TabContainer/Instructions/Panel"]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = 32.0
-margin_top = 32.0
-margin_right = 24.0
-margin_bottom = -4.0
-tab_size = 10
+offset_left = 32.0
+offset_top = 32.0
+offset_right = 24.0
+offset_bottom = -4.0
+theme_override_font_sizes/normal_font_size = 33
 text = "Hit notes on time to collect energy and increase your combo. Missing resets your combo so try not to. Use energy to modify your speed.
 
 Avoid walls and bombs which will remove your combo and slow you down!
@@ -60,37 +51,25 @@ Score bonus points based on your clear time.
 Controls
 trigger -> speed up time
 grip -> slow down time"
-__meta__ = {
-"_edit_use_anchors_": false
-}
+tab_size = 10
 
 [node name="Settings" type="ReferenceRect" parent="TabContainer"]
 visible = false
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = 4.0
-margin_top = 83.0
-margin_right = -4.0
-margin_bottom = -4.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
+layout_mode = 2
+metadata/_tab_index = 1
 
 [node name="Panel" type="Panel" parent="TabContainer/Settings"]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_right = -8.0
-margin_bottom = -36.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
+offset_right = -8.0
+offset_bottom = -36.0
 
 [node name="DisableTimeWarp" type="CheckBox" parent="TabContainer/Settings"]
-margin_right = 477.0
-margin_bottom = 257.0
+layout_mode = 0
+offset_right = 477.0
+offset_bottom = 257.0
+theme_override_font_sizes/font_size = 47
 text = "Disable time warp"
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [connection signal="toggled" from="TabContainer/Settings/DisableTimeWarp" to="." method="_on_DisableTimeWarp_toggled"]

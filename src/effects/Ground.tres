@@ -1,21 +1,21 @@
-[gd_resource type="ShaderMaterial" load_steps=7 format=2]
+[gd_resource type="ShaderMaterial" load_steps=7 format=3 uid="uid://ceh5k72kyhean"]
 
-[ext_resource path="res://textures/grid.png" type="Texture" id=1]
-[ext_resource path="res://models/ground/Tiles074_2K_NormalDX.png" type="Texture" id=2]
-[ext_resource path="res://models/ground/Tiles074_2K_Roughness.png" type="Texture" id=3]
+[ext_resource type="Texture2D" uid="uid://bveewmtsbjo0i" path="res://textures/grid.png" id="1"]
+[ext_resource type="Texture2D" uid="uid://drgu3mqyglde3" path="res://models/ground/Tiles074_2K_NormalDX.png" id="2"]
+[ext_resource type="Texture2D" uid="uid://rmp2frw84n6l" path="res://models/ground/Tiles074_2K_Roughness.png" id="3"]
 
-[sub_resource type="Shader" id=17]
-code = "// NOTE: Shader automatically converted from Godot Engine 3.4.stable's SpatialMaterial.
+[sub_resource type="Shader" id="17"]
+code = "// NOTE: Shader automatically converted from Godot Engine 3.4.stable's StandardMaterial3D.
 
 shader_type spatial;
 render_mode blend_mix,depth_draw_opaque,cull_back,diffuse_burley,specular_schlick_ggx;
-uniform vec4 albedo : hint_color;
-uniform sampler2D texture_albedo : hint_albedo;
+uniform vec4 albedo : source_color;
+uniform sampler2D texture_albedo : source_color;
 uniform float specular;
 uniform float metallic;
 uniform float roughness : hint_range(0,1);
 uniform float point_size : hint_range(0,128);
-uniform sampler2D texture_roughness : hint_white;
+uniform sampler2D texture_roughness : hint_default_white;
 uniform vec4 roughness_texture_channel;
 uniform sampler2D texture_normal : hint_normal;
 uniform float normal_scale : hint_range(-16,16);
@@ -111,37 +111,38 @@ void fragment() {
 	float roughness_tex = dot(triplanar_texture(texture_roughness,uv1_power_normal,uv1_triplanar_pos),roughness_texture_channel);
 	ROUGHNESS = roughness_tex * roughness;
 	SPECULAR = specular;
-	NORMALMAP = triplanar_texture(texture_normal,uv1_power_normal,uv1_triplanar_pos).rgb;
-	NORMALMAP_DEPTH = normal_scale;
+	NORMAL_MAP = triplanar_texture(texture_normal,uv1_power_normal,uv1_triplanar_pos).rgb;
+	NORMAL_MAP_DEPTH = normal_scale;
 }
 "
 
-[sub_resource type="OpenSimplexNoise" id=23]
+[sub_resource type="FastNoiseLite" id="23"]
 
-[sub_resource type="NoiseTexture" id=24]
+[sub_resource type="NoiseTexture2D" id="24"]
 width = 1024
 height = 1024
+noise = SubResource("23")
 seamless = true
-noise = SubResource( 23 )
 
 [resource]
-shader = SubResource( 17 )
-shader_param/albedo = Color( 1, 0.72549, 0.376471, 1 )
-shader_param/specular = 0.5
-shader_param/metallic = 1.0
-shader_param/roughness = 1.0
-shader_param/point_size = 1.0
-shader_param/roughness_texture_channel = Plane( 1, 0, 0, 0 )
-shader_param/normal_scale = 1.0
-shader_param/uv1_blend_sharpness = 1.0
-shader_param/uv1_scale = Vector3( 4, 4, 4 )
-shader_param/uv1_offset = Vector3( 0, 0, 0 )
-shader_param/uv2_scale = Vector3( 1, 1, 1 )
-shader_param/uv2_offset = Vector3( 0, 0, 0 )
-shader_param/displace_amount = 10.0
-shader_param/speed_mult = 0.1
-shader_param/emission_mult = 3.0
-shader_param/texture_albedo = ExtResource( 1 )
-shader_param/texture_roughness = ExtResource( 3 )
-shader_param/texture_normal = ExtResource( 2 )
-shader_param/noise = SubResource( 24 )
+render_priority = 0
+shader = SubResource("17")
+shader_parameter/albedo = Color(1, 0.72549, 0.376471, 1)
+shader_parameter/texture_albedo = ExtResource("1")
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 1.0
+shader_parameter/roughness = 1.0
+shader_parameter/point_size = 1.0
+shader_parameter/texture_roughness = ExtResource("3")
+shader_parameter/roughness_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/texture_normal = ExtResource("2")
+shader_parameter/normal_scale = 1.0
+shader_parameter/uv1_blend_sharpness = 1.0
+shader_parameter/uv1_scale = Vector3(4, 4, 4)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+shader_parameter/displace_amount = 10.0
+shader_parameter/noise = SubResource("24")
+shader_parameter/speed_mult = 0.1
+shader_parameter/emission_mult = 3.0

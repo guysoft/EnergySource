@@ -1,7 +1,7 @@
 extends Node
 
 # DEVELOPMENT CONSTS
-export (String, "GGJ2Splash", "Menu","Game") var debug_start_scene
+@export var debug_start_scene: String # (String, "GGJ2Splash", "Menu","Game")
 var splash_path = "res://scenes/GameOffSplash.tscn"
 var menu_path = "res://scenes/MainMenu.tscn"
 var game_path = "res://scenes/Game.tscn"
@@ -16,16 +16,16 @@ var webxr_interface
 var vr_web_supported = false
 
 # OpenXR variables
-export (NodePath) var viewport = null
-var interface : ARVRInterface
+@export var viewport: NodePath
+var interface : XRInterface
 
 # References
-onready var _player = $Player
-onready var _left_hand = $Player/ARVROrigin/LeftHand
-onready var _right_hand = $Player/ARVROrigin/RightHand
-onready var _transition = $Player/ARVROrigin/ARVRCamera/UITransition
-onready var _environment_manager = $EnvironmentManager
-onready var _beatplayer = $BeatPlayer
+@onready var _player = $Player
+@onready var _left_hand = $Player/XROrigin3D/LeftHand
+@onready var _right_hand = $Player/XROrigin3D/RightHand
+@onready var _transition = $Player/XROrigin3D/XRCamera3D/UITransition
+@onready var _environment_manager = $EnvironmentManager
+@onready var _beatplayer = $BeatPlayer
 
 var first = true
 
@@ -52,17 +52,17 @@ func _ready():
 			print ("failed to init OpenXR")
 			
 			# WebXR set up
-			$Button.connect("pressed", self, "_on_Button_pressed")
+			$Button.connect("pressed", Callable(self, "_on_Button_pressed"))
 			
-			webxr_interface = ARVRServer.find_interface("WebXR")
+			webxr_interface = XRServer.find_interface("WebXR")
 			if webxr_interface:
 				print ("found webxr interface")
 				# WebXR uses a lot of asynchronous callbacks, so we connect to various
 				# signals in order to receive them.
-				webxr_interface.connect("session_supported", self, "_webxr_session_supported")
-				webxr_interface.connect("session_started", self, "_webxr_session_started")
-				webxr_interface.connect("session_ended", self, "_webxr_session_ended")
-				webxr_interface.connect("session_failed", self, "_webxr_session_failed")
+				webxr_interface.connect("session_supported", Callable(self, "_webxr_session_supported"))
+				webxr_interface.connect("session_started", Callable(self, "_webxr_session_started"))
+				webxr_interface.connect("session_ended", Callable(self, "_webxr_session_ended"))
+				webxr_interface.connect("session_failed", Callable(self, "_webxr_session_failed"))
 	 
 #				webxr_interface.connect("select", self, "_webxr_on_select")
 #				webxr_interface.connect("selectstart", self, "_webxr_on_select_start")
@@ -89,20 +89,20 @@ func _ready():
 		"Game":
 			load_scene(game_path, "maze")
 	
-	pause_mode = Node.PAUSE_MODE_PROCESS;
-	scenes_holder.pause_mode = Node.PAUSE_MODE_STOP;
+	process_mode = Node.PROCESS_MODE_ALWAYS;
+	scenes_holder.process_mode = Node.PROCESS_MODE_PAUSABLE;
 
 	get_tree().paused=false
 	
 	set_process(false)
 
 # Adds a scene to the tree via load_scene and unloads all other scenes
-func change_scene(scene, unique_id: String) -> bool:
-	return load_scene(scene, unique_id);
+func change_scene_to_file(scene, unique_id: String) -> bool:
+	return await load_scene(scene, unique_id);
 
 # Adds a scene to the tree via load_scene without unloading any other scenes
 func add_scene(scene, unique_id: String) -> bool:
-	return load_scene(scene, unique_id, true)
+	return await load_scene(scene, unique_id, true)
 
 # Loads a scene to the manager with the specified unique_id. If additive is
 # true then the scene will be loaded parallel to other scenes, otherwise all other
@@ -110,12 +110,12 @@ func add_scene(scene, unique_id: String) -> bool:
 # to the resource or a PackedScene. Returns true on success, false otherwise.
 func load_scene(scene, unique_id: String, additive = false) -> bool:
 	
-	_beatplayer.stop()
+	_beatplayer.stop_music()
 	if first==true:
 		_transition.visible=false
 	else:
 		_transition.get_node("AnimationPlayer").play("fade")
-		yield(_transition.get_node("AnimationPlayer"), "animation_finished")
+		await _transition.get_node("AnimationPlayer").animation_finished
 
 	var to_load : PackedScene;
 	
@@ -135,7 +135,7 @@ func load_scene(scene, unique_id: String, additive = false) -> bool:
 	if loaded_scenes_map.has(unique_id):
 		return false
 		
-	var new_scene = to_load.instance()
+	var new_scene = to_load.instantiate()
 	loaded_scenes_map[unique_id] = new_scene
 	loaded_scenes_list.append(new_scene)
 	
@@ -143,7 +143,7 @@ func load_scene(scene, unique_id: String, additive = false) -> bool:
 	print("Memory: " + str(OS.get_static_memory_peak_usage()))
 	#if not first==true:
 	if not first==true:
-		yield(get_tree().create_timer(1.0), "timeout")
+		await get_tree().create_timer(1.0).timeout
 		_transition.get_node("AnimationPlayer").play_backwards("fade")
 	#yield(transition.get_node("AnimationPlayer"), "animation_finished")
 	
@@ -164,7 +164,7 @@ func _webxr_on_select(controller_id: int) -> void:
 	if GameVariables.ENABLE_VR:
 		print("Select: " + str(controller_id))
 	 
-		var controller: ARVRPositionalTracker = webxr_interface.get_controller(controller_id)
+		var controller: XRPositionalTracker = webxr_interface.get_controller(controller_id)
 		print (controller.get_orientation())
 		print (controller.get_position())
  
@@ -176,9 +176,9 @@ func _webxr_on_select_start(controller_id: int) -> void:
 #		else:
 #			controller = _right_hand
 		
-		var controller = webxr_interface.get_controller(controller_id) as ARVRController
+		var controller = webxr_interface.get_controller(controller_id) as XRController3D
 		
-		controller.check_button(JOY_VR_TRIGGER,1)
+		# controller.check_button(JOY_VR_TRIGGER,1)
 		print("Select Start: " + str(controller_id))
  
 func _webxr_on_select_end(controller_id: int) -> void:
@@ -189,7 +189,7 @@ func _webxr_on_select_end(controller_id: int) -> void:
 			controller = _left_hand
 		else:
 			controller = _right_hand
-		controller.check_button(JOY_VR_TRIGGER,0)
+		# controller.check_button(JOY_VR_TRIGGER,0)
 		
 func _webxr_on_squeeze(controller_id: int) -> void:
 	if GameVariables.ENABLE_VR:
@@ -203,7 +203,7 @@ func _webxr_on_squeeze_start(controller_id: int) -> void:
 			controller = _left_hand
 		else:
 			controller = _right_hand
-		controller.check_button(JOY_VR_GRIP,1)
+		# controller.check_button(JOY_VR_GRIP,1)
 		
 func _webxr_on_squeeze_end(controller_id: int) -> void:
 	if GameVariables.ENABLE_VR:
@@ -213,7 +213,7 @@ func _webxr_on_squeeze_end(controller_id: int) -> void:
 			controller = _left_hand
 		else:
 			controller = _right_hand
-		controller.check_button(JOY_VR_GRIP,0)
+		# controller.check_button(JOY_VR_GRIP,0)
 
 func _webxr_session_supported(session_mode: String, supported: bool) -> void:
 	if GameVariables.ENABLE_VR:
@@ -258,25 +258,25 @@ func _webxr_session_started() -> void:
 	if GameVariables.ENABLE_VR:
 		$Button.visible = false
 		# This tells Godot to start rendering to the headset.
-		get_viewport().arvr = true
+		get_viewport().use_xr = true
 		# This will be the reference space type you ultimately got, out of the
 		# types that you requested above. This is useful if you want the game to
 		# work a little differently in 'bounded-floor' versus 'local-floor'.
-		print ("Reference space type: " + webxr_interface.reference_space_type)
+		print ("RefCounted space type: " + webxr_interface.reference_space_type)
  
 func _webxr_session_ended() -> void:
 	if GameVariables.ENABLE_VR:
 		$Button.visible = true
 		# If the user exits immersive mode, then we tell Godot to render to the web
 		# page again.
-		get_viewport().arvr = false
+		get_viewport().use_xr = false
  
 func _webxr_session_failed(message: String) -> void:
 	if GameVariables.ENABLE_VR:
 		OS.alert("Failed to initialize: " + message)
 
 func initialise_OpenXR() -> bool:
-	var interface = ARVRServer.find_interface("OpenXR")
+	interface = XRServer.find_interface("OpenXR")
 	print (interface)
 	if interface and interface.initialize():
 		print("OpenXR Interface initialized")
@@ -286,30 +286,32 @@ func initialise_OpenXR() -> bool:
 
 		var vp : Viewport = null
 		if viewport:
-			vp = get_node(viewport)
+			vp = get_node(viewport) as Viewport
 		else:
 			vp = get_viewport()
 		
 		# Change our viewport so it is tied to our ARVR interface and renders to our HMD
-		vp.arvr = true
+		vp.use_xr = true
 
 		# Our interface will tell us whether we should keep our render buffer in linear color space
 		# If true our preview will be darker.
-		vp.keep_3d_linear = $Configuration.keep_3d_linear()
+		# vp.keep_3d_linear = $Configuration.keep_3d_linear()
 
 		# increase our physics engine update speed
-		var refresh_rate = $Configuration.get_refresh_rate()
+		var refresh_rate = 144.0
+		if interface.has_method("get_display_refresh_rate"):
+			refresh_rate = interface.get_display_refresh_rate()
 		if refresh_rate == 0:
 			# Only Facebook Reality Labs supports this at this time
 			print("No refresh rate given by XR runtime")
 
 			# Use something sufficiently high
-			Engine.iterations_per_second = 144
+			Engine.physics_ticks_per_second = 144
 		else:
 			print("HMD refresh rate is set to " + str(refresh_rate))
 
 			# Match our physics to our HMD
-			Engine.iterations_per_second = refresh_rate
+			Engine.physics_ticks_per_second = refresh_rate
 
 		return true
 	else:
@@ -317,11 +319,11 @@ func initialise_OpenXR() -> bool:
 
 
 func _connect_plugin_signals():
-	ARVRServer.connect("openxr_session_begun", self, "_on_openxr_session_begun")
-	ARVRServer.connect("openxr_session_ending", self, "_on_openxr_session_ending")
-	ARVRServer.connect("openxr_focused_state", self, "_on_openxr_focused_state")
-	ARVRServer.connect("openxr_visible_state", self, "_on_openxr_visible_state")
-	ARVRServer.connect("openxr_pose_recentered", self, "_on_openxr_pose_recentered")
+	interface.connect("session_begun", Callable(self, "_on_openxr_session_begun"))
+	interface.connect("session_ending", Callable(self, "_on_openxr_session_ending"))
+	interface.connect("session_focussed", Callable(self, "_on_openxr_focused_state"))
+	interface.connect("session_visible", Callable(self, "_on_openxr_visible_state"))
+	interface.connect("pose_recentered", Callable(self, "_on_openxr_pose_recentered"))
 
 func _on_openxr_session_begun():
 	print("OpenXR session begun")

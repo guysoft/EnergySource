@@ -1,244 +1,162 @@
-[gd_scene load_steps=21 format=2]
+[gd_scene load_steps=17 format=3 uid="uid://b3mrx5kj7l8vc"]
 
-[ext_resource path="res://addons/godot-openxr/assets/valve_hand_models/right_hand.glb" type="PackedScene" id=1]
-[ext_resource path="res://addons/godot-xr-tools/assets/LeftHand.tscn" type="PackedScene" id=2]
-[ext_resource path="res://scripts/controller.gd" type="Script" id=3]
-[ext_resource path="res://scripts/player.gd" type="Script" id=4]
-[ext_resource path="res://scenes/Feature_UIRayCast.tscn" type="PackedScene" id=5]
-[ext_resource path="res://sfx/RhySD-BackButton.wav" type="AudioStream" id=6]
-[ext_resource path="res://ui_theme.tres" type="Theme" id=7]
-[ext_resource path="res://effects/menu_theme.tres" type="Theme" id=8]
-[ext_resource path="res://scenes/UICanvasInteract.tscn" type="PackedScene" id=9]
-[ext_resource path="res://sfx/RhySD-StartButton.wav" type="AudioStream" id=10]
-[ext_resource path="res://scenes/player_center.tscn" type="PackedScene" id=11]
-[ext_resource path="res://scenes/UITransition.tscn" type="PackedScene" id=12]
+[ext_resource type="PackedScene" uid="uid://l2n30mpbkdyw" path="res://addons/godot-xr-tools/hands/scenes/lowpoly/right_hand_low.tscn" id="1"]
+[ext_resource type="PackedScene" uid="uid://b4kad2kuba1yn" path="res://addons/godot-xr-tools/hands/scenes/lowpoly/left_hand_low.tscn" id="2"]
+[ext_resource type="Script" uid="uid://eyutyjcs6shy" path="res://scripts/controller.gd" id="3"]
+[ext_resource type="Script" uid="uid://doeg578huqb6l" path="res://scripts/player.gd" id="4"]
+[ext_resource type="PackedScene" uid="uid://c6nhx3y7j1vqk" path="res://scenes/Feature_UIRayCast.tscn" id="5"]
+[ext_resource type="AudioStream" uid="uid://c0xrgcajnsyfk" path="res://sfx/RhySD-BackButton.wav" id="6"]
+[ext_resource type="PackedScene" uid="uid://cxmhj7l4qkn5p" path="res://scenes/player_center.tscn" id="11"]
+[ext_resource type="PackedScene" uid="uid://diyc4ru8c1n75" path="res://scenes/UITransition.tscn" id="12"]
 
-[sub_resource type="SphereShape" id=22]
+[sub_resource type="SphereShape3D" id="22"]
 margin = 0.02
 radius = 0.1
 
-[sub_resource type="CylinderMesh" id=20]
+[sub_resource type="CylinderMesh" id="20"]
 top_radius = 0.02
 bottom_radius = 0.015
 height = 0.17
 
-[sub_resource type="SpatialMaterial" id=21]
-albedo_color = Color( 0.180392, 0.180392, 0.180392, 1 )
+[sub_resource type="StandardMaterial3D" id="21"]
+albedo_color = Color(0.180392, 0.180392, 0.180392, 1)
 metallic = 1.0
 roughness = 0.38
 
-[sub_resource type="CapsuleMesh" id=17]
+[sub_resource type="CapsuleMesh" id="17"]
 radius = 0.01
-mid_height = 0.75
+height = 0.75
 
-[sub_resource type="SpatialMaterial" id=19]
-flags_unshaded = true
-albedo_color = Color( 0.964706, 0.427451, 0.956863, 1 )
+[sub_resource type="StandardMaterial3D" id="19"]
+shading_mode = 0
+albedo_color = Color(0.964706, 0.427451, 0.956863, 1)
 
-[sub_resource type="CapsuleShape" id=16]
+[sub_resource type="CapsuleShape3D" id="16"]
 radius = 0.02
 height = 0.7
 
-[sub_resource type="SpatialMaterial" id=18]
-flags_unshaded = true
-albedo_color = Color( 0.403922, 0.972549, 0.992157, 1 )
+[sub_resource type="StandardMaterial3D" id="18"]
+shading_mode = 0
+albedo_color = Color(0.403922, 0.972549, 0.992157, 1)
 
-[sub_resource type="BoxShape" id=15]
+[sub_resource type="BoxShape3D" id="15"]
 
-[node name="Player" type="KinematicBody"]
+[node name="Player" type="CharacterBody3D"]
+process_mode = 3
 collision_mask = 8
-script = ExtResource( 4 )
+script = ExtResource("4")
 
-[node name="ARVROrigin" type="ARVROrigin" parent="."]
+[node name="XROrigin3D" type="XROrigin3D" parent="."]
+process_mode = 3
 
-[node name="ARVRCamera" type="ARVRCamera" parent="ARVROrigin"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0 )
+[node name="XRCamera3D" type="XRCamera3D" parent="XROrigin3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
 far = 200.0
 
-[node name="HeadArea" type="Area" parent="ARVROrigin/ARVRCamera"]
+[node name="HeadArea" type="Area3D" parent="XROrigin3D/XRCamera3D"]
 collision_mask = 8
 
-[node name="CollisionShape" type="CollisionShape" parent="ARVROrigin/ARVRCamera/HeadArea"]
-shape = SubResource( 22 )
+[node name="CollisionShape3D" type="CollisionShape3D" parent="XROrigin3D/XRCamera3D/HeadArea"]
+shape = SubResource("22")
 
-[node name="UITransition" parent="ARVROrigin/ARVRCamera" instance=ExtResource( 12 )]
-transform = Transform( 1.25, 0, 0, 0, 1.25, 0, 0, 0, 1.25, 0, 0, -0.4 )
+[node name="UITransition" parent="XROrigin3D/XRCamera3D" instance=ExtResource("12")]
+transform = Transform3D(1.25, 0, 0, 0, 1.25, 0, 0, 0, 1.25, 0, 0, -0.4)
 visible = false
 
-[node name="Feature_UIRayCast" parent="ARVROrigin/ARVRCamera" instance=ExtResource( 5 )]
+[node name="Feature_UIRayCast" parent="XROrigin3D/XRCamera3D" instance=ExtResource("5")]
 ui_raycast_length = 6.0
 
-[node name="LeftHand" type="ARVRController" parent="ARVROrigin"]
-script = ExtResource( 3 )
-velocity_track_point = NodePath("Position3D2/Position3D/EndTracker")
+[node name="LeftHand" type="XRController3D" parent="XROrigin3D"]
+tracker = &"left_hand"
+script = ExtResource("3")
+velocity_track_point = NodePath("Position3D2/Marker3D/EndTracker")
 
-[node name="LeftHand" parent="ARVROrigin/LeftHand" instance=ExtResource( 2 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0448227, 0.147459 )
+[node name="LeftHand" parent="XROrigin3D/LeftHand" instance=ExtResource("2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0448227, 0.147459)
 visible = false
 
-[node name="Position3D2" type="Position3D" parent="ARVROrigin/LeftHand"]
-transform = Transform( 1, 0, 0, 0, 0.819152, -0.573577, 0, 0.573577, 0.819152, 0, 0, 0 )
+[node name="Position3D2" type="Marker3D" parent="XROrigin3D/LeftHand"]
+transform = Transform3D(1, 0, 0, 0, 0.819152, -0.573577, 0, 0.573577, 0.819152, 0, 0, 0)
 
-[node name="Position3D" type="Position3D" parent="ARVROrigin/LeftHand/Position3D2"]
-transform = Transform( 1, 0, 0, 0, 1, -2.98023e-08, 0, 2.98023e-08, 1, 0, 0, -0.377 )
+[node name="Marker3D" type="Marker3D" parent="XROrigin3D/LeftHand/Position3D2"]
+transform = Transform3D(1, 0, 0, 0, 1, -2.98023e-08, 0, 2.98023e-08, 1, 0, 0, -0.377)
 
-[node name="Handle" type="MeshInstance" parent="ARVROrigin/LeftHand/Position3D2/Position3D"]
-transform = Transform( 1, 0, 0, 0, -8.9407e-08, -1, 0, 1, -8.9407e-08, 0, 1.11759e-08, 0.45 )
-mesh = SubResource( 20 )
-material/0 = SubResource( 21 )
+[node name="Handle" type="MeshInstance3D" parent="XROrigin3D/LeftHand/Position3D2/Marker3D"]
+transform = Transform3D(1, 0, 0, 0, -8.9407e-08, -1, 0, 1, -8.9407e-08, 0, 1.11759e-08, 0.45)
+mesh = SubResource("20")
+surface_material_override/0 = SubResource("21")
 
-[node name="Blade" type="MeshInstance" parent="ARVROrigin/LeftHand/Position3D2/Position3D"]
-mesh = SubResource( 17 )
-material/0 = SubResource( 19 )
+[node name="Blade" type="MeshInstance3D" parent="XROrigin3D/LeftHand/Position3D2/Marker3D"]
+mesh = SubResource("17")
+surface_material_override/0 = SubResource("19")
 
-[node name="EndTracker" type="Position3D" parent="ARVROrigin/LeftHand/Position3D2/Position3D"]
-transform = Transform( 1, 0, 0, 0, 1, -2.98023e-08, 0, 2.98023e-08, 1, 0, 0, -0.37 )
+[node name="EndTracker" type="Marker3D" parent="XROrigin3D/LeftHand/Position3D2/Marker3D"]
+transform = Transform3D(1, 0, 0, 0, 1, -2.98023e-08, 0, 2.98023e-08, 1, 0, 0, -0.37)
 
-[node name="Area" type="Area" parent="ARVROrigin/LeftHand/Position3D2/Position3D"]
+[node name="Area3D" type="Area3D" parent="XROrigin3D/LeftHand/Position3D2/Marker3D"]
 collision_layer = 2
 collision_mask = 28
 
-[node name="CollisionShape3" type="CollisionShape" parent="ARVROrigin/LeftHand/Position3D2/Position3D/Area"]
-shape = SubResource( 16 )
+[node name="CollisionShape3" type="CollisionShape3D" parent="XROrigin3D/LeftHand/Position3D2/Marker3D/Area3D"]
+shape = SubResource("16")
 
-[node name="Feature_UIRayCast" parent="ARVROrigin/LeftHand/Position3D2/Position3D" instance=ExtResource( 5 )]
-controller = NodePath("../../..")
+[node name="Feature_UIRayCast" parent="XROrigin3D/LeftHand/Position3D2/Marker3D" instance=ExtResource("5")]
+controller_path = NodePath("../../..")
 ui_raycast_length = 5.0
 
-[node name="RightHand" type="ARVRController" parent="ARVROrigin"]
-controller_id = 2
-script = ExtResource( 3 )
-velocity_track_point = NodePath("Position3D/Position3D/EndTracker")
+[node name="RightHand" type="XRController3D" parent="XROrigin3D"]
+tracker = &"right_hand"
+script = ExtResource("3")
+velocity_track_point = NodePath("Marker3D/Marker3D/EndTracker")
 
-[node name="HandModel" parent="ARVROrigin/RightHand" instance=ExtResource( 1 )]
-transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, -0.045, 0.147 )
+[node name="HandModel" parent="XROrigin3D/RightHand" instance=ExtResource("1")]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, -0.045, 0.147)
 visible = false
 
-[node name="Position3D" type="Position3D" parent="ARVROrigin/RightHand"]
-transform = Transform( 1, 0, 0, 0, 0.819152, -0.573577, 0, 0.573577, 0.819152, 0, 0, 0 )
+[node name="Marker3D" type="Marker3D" parent="XROrigin3D/RightHand"]
+transform = Transform3D(1, 0, 0, 0, 0.819152, -0.573577, 0, 0.573577, 0.819152, 0, 0, 0)
 
-[node name="Position3D" type="Position3D" parent="ARVROrigin/RightHand/Position3D"]
-transform = Transform( 1, 0, 0, 0, 1, -2.98023e-08, 0, 2.98023e-08, 1, 0, 0, -0.377 )
+[node name="Marker3D" type="Marker3D" parent="XROrigin3D/RightHand/Marker3D"]
+transform = Transform3D(1, 0, 0, 0, 1, -2.98023e-08, 0, 2.98023e-08, 1, 0, 0, -0.377)
 
-[node name="Handle" type="MeshInstance" parent="ARVROrigin/RightHand/Position3D/Position3D"]
-transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0.45 )
-mesh = SubResource( 20 )
+[node name="Handle" type="MeshInstance3D" parent="XROrigin3D/RightHand/Marker3D/Marker3D"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0.45)
+mesh = SubResource("20")
 skeleton = NodePath("../Blade")
-material/0 = SubResource( 21 )
+surface_material_override/0 = SubResource("21")
 
-[node name="Blade" type="MeshInstance" parent="ARVROrigin/RightHand/Position3D/Position3D"]
-mesh = SubResource( 17 )
+[node name="Blade" type="MeshInstance3D" parent="XROrigin3D/RightHand/Marker3D/Marker3D"]
+mesh = SubResource("17")
 skeleton = NodePath("../..")
-material/0 = SubResource( 18 )
+surface_material_override/0 = SubResource("18")
 
-[node name="EndTracker" type="Position3D" parent="ARVROrigin/RightHand/Position3D/Position3D"]
-transform = Transform( 1, 0, 0, 0, 1, -2.98023e-08, 0, 2.98023e-08, 1, 0, 5.96046e-08, -0.37 )
+[node name="EndTracker" type="Marker3D" parent="XROrigin3D/RightHand/Marker3D/Marker3D"]
+transform = Transform3D(1, 0, 0, 0, 1, -2.98023e-08, 0, 2.98023e-08, 1, 0, 5.96046e-08, -0.37)
 
-[node name="Area" type="Area" parent="ARVROrigin/RightHand/Position3D/Position3D"]
+[node name="Area3D" type="Area3D" parent="XROrigin3D/RightHand/Marker3D/Marker3D"]
 collision_layer = 2
 collision_mask = 28
 
-[node name="CollisionShape2" type="CollisionShape" parent="ARVROrigin/RightHand/Position3D/Position3D/Area"]
-shape = SubResource( 16 )
+[node name="CollisionShape2" type="CollisionShape3D" parent="XROrigin3D/RightHand/Marker3D/Marker3D/Area3D"]
+shape = SubResource("16")
 
-[node name="Feature_UIRayCast" parent="ARVROrigin/RightHand/Position3D/Position3D" instance=ExtResource( 5 )]
-controller = NodePath("../../..")
+[node name="Feature_UIRayCast" parent="XROrigin3D/RightHand/Marker3D/Marker3D" instance=ExtResource("5")]
+controller_path = NodePath("../../..")
 ui_raycast_length = 5.0
 
-[node name="PauseLabel" parent="ARVROrigin" instance=ExtResource( 9 )]
-pause_mode = 2
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -2.5 )
-visible = false
-transparent = true
-
-[node name="UnpauseSound" type="AudioStreamPlayer" parent="ARVROrigin/PauseLabel"]
-stream = ExtResource( 6 )
-
-[node name="PauseSound" type="AudioStreamPlayer" parent="ARVROrigin/PauseLabel"]
-stream = ExtResource( 10 )
-
-[node name="PauseContainer" type="VBoxContainer" parent="ARVROrigin/PauseLabel"]
-margin_right = 850.0
-margin_bottom = 313.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="PauseLabel" type="Label" parent="ARVROrigin/PauseLabel/PauseContainer"]
-margin_right = 2716.0
-margin_bottom = 181.0
-rect_pivot_offset = Vector2( -1053, 644 )
-theme = ExtResource( 7 )
-text = "paused"
-align = 1
-valign = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="PauseBtns" type="HBoxContainer" parent="ARVROrigin/PauseLabel/PauseContainer"]
-margin_top = 185.0
-margin_right = 2716.0
-margin_bottom = 442.0
-rect_min_size = Vector2( 512, 0 )
-theme = ExtResource( 8 )
-custom_constants/separation = 128
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="ResumeBtn" type="Button" parent="ARVROrigin/PauseLabel/PauseContainer/PauseBtns"]
-pause_mode = 2
-margin_right = 923.0
-margin_bottom = 257.0
-rect_min_size = Vector2( 350, 128 )
-focus_mode = 0
-disabled = true
-shortcut_in_tooltip = false
-enabled_focus_mode = 0
-text = "resume"
-
-[node name="RestartBtn" type="Button" parent="ARVROrigin/PauseLabel/PauseContainer/PauseBtns"]
-pause_mode = 2
-margin_left = 1051.0
-margin_right = 1921.0
-margin_bottom = 257.0
-rect_min_size = Vector2( 350, 128 )
-focus_mode = 0
-disabled = true
-shortcut_in_tooltip = false
-action_mode = 0
-enabled_focus_mode = 0
-text = "restart"
-
-[node name="MenuBtn" type="Button" parent="ARVROrigin/PauseLabel/PauseContainer/PauseBtns"]
-pause_mode = 2
-margin_left = 2049.0
-margin_right = 2716.0
-margin_bottom = 257.0
-rect_min_size = Vector2( 350, 128 )
-focus_mode = 0
-disabled = true
-shortcut_in_tooltip = false
-enabled_focus_mode = 0
-text = "menu"
-
-[node name="CollisionShape" type="CollisionShape" parent="."]
-transform = Transform( 0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0 )
-shape = SubResource( 15 )
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0)
+shape = SubResource("15")
 
 [node name="BombSound" type="AudioStreamPlayer" parent="."]
-stream = ExtResource( 6 )
+stream = ExtResource("6")
 
-[node name="PlayerCenter" parent="." instance=ExtResource( 11 )]
+[node name="PlayerCenter" parent="." instance=ExtResource("11")]
 
-[connection signal="area_entered" from="ARVROrigin/ARVRCamera/HeadArea" to="." method="_on_HeadArea_area_entered"]
-[connection signal="area_entered" from="ARVROrigin/LeftHand/Position3D2/Position3D/Area" to="." method="_on_Area_area_entered_left"]
-[connection signal="body_entered" from="ARVROrigin/LeftHand/Position3D2/Position3D/Area" to="." method="_on_left_hand_body_entered"]
-[connection signal="body_exited" from="ARVROrigin/LeftHand/Position3D2/Position3D/Area" to="." method="_on_Area_body_exited_left"]
-[connection signal="area_entered" from="ARVROrigin/RightHand/Position3D/Position3D/Area" to="." method="_on_Area_area_entered_right"]
-[connection signal="body_entered" from="ARVROrigin/RightHand/Position3D/Position3D/Area" to="." method="_on_right_hand_body_entered"]
-[connection signal="body_exited" from="ARVROrigin/RightHand/Position3D/Position3D/Area" to="." method="_on_Area_body_exited_right"]
-[connection signal="pressed" from="ARVROrigin/PauseLabel/PauseContainer/PauseBtns/ResumeBtn" to="." method="_on_ResumeBtn_pressed"]
-[connection signal="pressed" from="ARVROrigin/PauseLabel/PauseContainer/PauseBtns/RestartBtn" to="." method="_on_RestartBtn_pressed"]
-[connection signal="pressed" from="ARVROrigin/PauseLabel/PauseContainer/PauseBtns/MenuBtn" to="." method="_on_MenuBtn_pressed"]
+[connection signal="area_entered" from="XROrigin3D/XRCamera3D/HeadArea" to="." method="_on_HeadArea_area_entered"]
+[connection signal="area_entered" from="XROrigin3D/LeftHand/Position3D2/Marker3D/Area3D" to="." method="_on_Area_area_entered_left"]
+[connection signal="body_entered" from="XROrigin3D/LeftHand/Position3D2/Marker3D/Area3D" to="." method="_on_left_hand_body_entered"]
+[connection signal="body_exited" from="XROrigin3D/LeftHand/Position3D2/Marker3D/Area3D" to="." method="_on_Area_body_exited_left"]
+[connection signal="area_entered" from="XROrigin3D/RightHand/Marker3D/Marker3D/Area3D" to="." method="_on_Area_area_entered_right"]
+[connection signal="body_entered" from="XROrigin3D/RightHand/Marker3D/Marker3D/Area3D" to="." method="_on_right_hand_body_entered"]
+[connection signal="body_exited" from="XROrigin3D/RightHand/Marker3D/Marker3D/Area3D" to="." method="_on_Area_body_exited_right"]

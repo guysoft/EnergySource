@@ -34,17 +34,17 @@ func _init(path):
 	print ("loading map")
 	self.path = path
 	var info_path = null
-	if File.new().file_exists(self.path + "/info.dat"):
+	if FileAccess.file_exists(self.path + "/info.dat"):
 		info_path = self.path + "/info.dat"
-	elif File.new().file_exists(self.path + "/Info.dat"):
+	elif FileAccess.file_exists(self.path + "/Info.dat"):
 		info_path = self.path + "/Info.dat"
 	else:
 		print("Warning: No info.dat found in path " + self.path)
 		return
-	var file = File.new()
-	file.open(info_path, File.READ)
-	self.bs_info_data = parse_json(file.get_as_text())
-	file.close()
+	var file = FileAccess.open(info_path, FileAccess.READ)
+	var json = JSON.new()
+	json.parse(file.get_as_text())
+	self.bs_info_data = json.data
 	
 func get_name():
 	if self.bs_info_data != null and "_songName" in self.bs_info_data:
@@ -77,7 +77,17 @@ func get_note_count(difficulty):
 func get_song():
 	if self.bs_info_data != null and "_songFilename" in self.bs_info_data:
 		return self.path + "/" + self.bs_info_data["_songFilename"]
-	return self.path + "/song.egg"
+	return self.path + "/song.ogg"
+
+func get_available_difficulties() -> Array:
+	var difficulties = []
+	if self.bs_info_data != null and "_difficultyBeatmapSets" in self.bs_info_data:
+		for beatmap_set in self.bs_info_data["_difficultyBeatmapSets"]:
+			if "_difficultyBeatmaps" in beatmap_set:
+				for difficulty_map in beatmap_set["_difficultyBeatmaps"]:
+					if "_difficulty" in difficulty_map:
+						difficulties.append(difficulty_map["_difficulty"])
+	return difficulties
 
 func _on_beat_detected(difficulty, beat:int):
 	# assert(typeof(beat) == TYPE_INT)
@@ -102,10 +112,10 @@ func _on_beat_detected(difficulty, beat:int):
 
 func get_level(difficulty):
 	var difficulty_path = self.path + "/" + difficulty + ".dat"
-	var file = File.new()
-	file.open(difficulty_path, File.READ)
-	var level = parse_json(file.get_as_text())
-	file.close()
+	var file = FileAccess.open(difficulty_path, FileAccess.READ)
+	var json = JSON.new()
+	json.parse(file.get_as_text())
+	var level = json.data
 	self.bs_level_data[difficulty] = level
 	
 	for note in self.bs_level_data[difficulty]["_notes"]:

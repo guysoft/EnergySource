@@ -4,7 +4,7 @@ const UI_PIXELS_TO_METER = 1.0 / 512
 
 
 # Don't edit
-export var vr_enabled = false
+@export var vr_enabled = false
 
 var ENABLE_VR = true
 
@@ -45,12 +45,9 @@ func _ready():
 	print ("custom path: ", self.custom_songs_path)
 	
 	#Check to see if the songs_path directory exists, if not create the directory
-	var chk_dir = Directory.new()
-	if not chk_dir.dir_exists(GameVariables.custom_songs_path):
+	if not DirAccess.dir_exists_absolute(GameVariables.custom_songs_path):
 		print ("custom levels folder doesn't exist! Creating...")
-		chk_dir.make_dir(GameVariables.custom_songs_path)
+		DirAccess.make_dir_absolute(GameVariables.custom_songs_path)
 	
 	self.path = dir + "/Levels/test"
-	self.difficulty = "ExpertPlusStandard"
-
-
+	self.difficulty = "Expert"

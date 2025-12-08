@@ -1,12 +1,12 @@
-extends Spatial
+extends Node3D
 
-export(Environment) var environment:Environment
-export(AudioStream) var music:AudioStream
-export var start_delay = 1.0
+@export var environment: Environment
+@export var music: AudioStream
+@export var start_delay = 1.0
 
-onready var _beat_player = Global.manager()._beatplayer
-onready var _player = Global.manager()._player
-onready var _environment_manager = Global.manager()._environment_manager
+@onready var _beat_player = Global.manager()._beatplayer
+@onready var _player = Global.manager()._player
+@onready var _environment_manager = Global.manager()._environment_manager
 
 func _ready():
 	#$AudioStreamPlayer.play()
@@ -16,7 +16,7 @@ func _ready():
 	#yield(get_tree().create_timer(start_delay), "timeout")
 	if _beat_player and music:
 		_beat_player.stream = music
-		_beat_player.play()
+		_beat_player.play_music()
 		#_environment.start_strobe(_music.bpm/2)
 	
 	_player.in_game=false

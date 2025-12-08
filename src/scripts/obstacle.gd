@@ -1,12 +1,12 @@
-extends Area
+extends Area3D
 
 class_name Note
 
 var speed = 2
-export(Vector3) var direction = Vector3(0,0,1)
-export(float) var despawn_z = 12.0
+@export var direction: Vector3 = Vector3(0,0,1)
+@export var despawn_z: float = 12.0
 
-onready var _velocity = Vector3(0,0,0)
+@onready var _velocity = Vector3(0,0,0)
 const bs_level_width = 4
 const bs_level_height = 3
 
@@ -25,11 +25,11 @@ var size_y = 1.0
 var size_z = 1.0
 
 #Refs
-onready var _audio_stream_player = $HitSound
-onready var _animation_player = $AnimationPlayer
-onready var _mesh = $MeshInstance as MeshInstance
-onready var _collision = $CollisionShape
-onready var _spawn_timer = $Timer
+@onready var _audio_stream_player = $HitSound
+@onready var _animation_player = $AnimationPlayer
+@onready var _mesh = $MeshInstance3D as MeshInstance3D
+@onready var _collision = $CollisionShape3D
+@onready var _spawn_timer = $Timer
 
 func _ready():
 	deactivate(false)
@@ -81,8 +81,8 @@ func setup_obstacle(obstacle, speed, bpm, distance):
 		
 	var z = obstacle["duration"] * bpm / 60 * (1/size_z) / 2
 	#self.scale_object_local(Vector3(scale_x, scale_y, z))
-	$MeshInstance.scale = (Vector3(scale_x, scale_y, z))
-	$CollisionShape.scale = (Vector3(scale_x, scale_y, z))
+	$MeshInstance3D.scale = (Vector3(scale_x, scale_y, z))
+	$CollisionShape3D.scale = (Vector3(scale_x, scale_y, z))
 	transform.origin = Vector3(x, y, -z)
 	
 	
@@ -104,14 +104,14 @@ func setup_obstacle(obstacle, speed, bpm, distance):
 	#set the material based on the note type
 	var mat = _mesh.get_active_material(0)
 	if note["_type"] == 0:
-		mat.albedo_color = Color.red
-		mat.emission = Color.red
+		mat.albedo_color = Color.RED
+		mat.emission = Color.RED
 	elif note["_type"] == 1:
-		mat.albedo_color = Color.blue
-		mat.emission = Color.blue
+		mat.albedo_color = Color.BLUE
+		mat.emission = Color.BLUE
 	elif note["_type"] == 3:
-		mat.albedo_color = Color.white
-		mat.emission = Color.white
+		mat.albedo_color = Color.WHITE
+		mat.emission = Color.WHITE
 	"""
 
 func activate():
@@ -124,7 +124,7 @@ func activate():
 	
 	if _spawn_timer.wait_time > 0.001:
 		_spawn_timer.start()
-		yield(_spawn_timer, "timeout")
+		await _spawn_timer.timeout
 	
 	set_physics_process(true)
 	_collision.set_deferred("disabled", false)
@@ -134,7 +134,7 @@ func deactivate(delete:bool = true, delete_delay:float=1.0):
 	set_physics_process(false)
 	_collision.set_deferred("disabled", true)
 	if delete:
-		yield (get_tree().create_timer(delete_delay), "timeout")
+		await get_tree().create_timer(delete_delay).timeout
 		queue_free()
 
 #TODO: Take into account the controller position of the hit?
@@ -148,7 +148,7 @@ func despawn():
 	alive = false
 	
 	_animation_player.play("despawn")
-	yield(_animation_player, "animation_finished")
+	await _animation_player.animation_finished
 	deactivate()
 
 func _physics_process(delta):
