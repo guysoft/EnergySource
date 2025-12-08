@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://ct72cwa3y1yhm"]
+
+[ext_resource type="PackedScene" uid="uid://dijimv3ogdn25" path="res://scenes/ui_song_list.tscn" id="1_7hdi1"]
+[ext_resource type="Theme" uid="uid://d1fbglwrn3v44" path="res://effects/menu_theme.tres" id="2_3ufq2"]
+
+[node name="TestSongList" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="SongList" type="VBoxContainer" parent="." instance=ExtResource("1_7hdi1")]
+layout_mode = 0
+theme = ExtResource("2_3ufq2")
+theme_override_constants/separation = -128
+alignment = 1

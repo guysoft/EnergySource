@@ -1,16 +1,14 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=2 format=3 uid="uid://dm6ln1wr7hmcs"]
 
-[ext_resource path="res://scripts/ui_combo.gd" type="Script" id=1]
+[ext_resource type="Script" uid="uid://v8n4ftdgyg4m" path="res://scripts/ui_combo.gd" id="1"]
 
 [node name="UICombo" type="Label"]
-margin_top = 219.0
-margin_right = 659.0
-margin_bottom = 434.0
-custom_colors/font_color = Color( 0.309804, 0.658824, 0.639216, 1 )
+offset_top = 219.0
+offset_right = 659.0
+offset_bottom = 434.0
+theme_override_colors/font_color = Color(0.309804, 0.658824, 0.639216, 1)
+theme_override_font_sizes/font_size = 64
 text = "COMBO X 4"
-align = 1
-valign = 1
-script = ExtResource( 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+horizontal_alignment = 1
+vertical_alignment = 1
+script = ExtResource("1")

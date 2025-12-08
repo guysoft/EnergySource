@@ -7,20 +7,20 @@ class_name BeatPlayer
 # - knowledge of bpm and beat
 # - supports minus playback offset
 
-var playback_position: float setget _set_playback_position, get_playback_position
+var song_position: float: get = get_song_position, set = set_song_position
 var _playback_position_last_known: float = 0
 var _playback_position_interpolated: float = 0 # interpolated offset by physics_process or process
 
-export(float) var bpm: float = 100.0 # this can be set anytime since this value dosesn't affect other variables
+@export var bpm: float = 100.0 # this can be set anytime since this value dosesn't affect other variables
 
-export(float) var offset: float = 0.0 # beat calculation offset in second. does not affect to playback position
-var beat: float setget set_beat, get_beat # calculated value!
+@export var offset: float = 0.0 # beat calculation offset in second. does not affect to playback position
+var _beat: float: get = get_beat, set = set_beat # calculated value!
 
-export(float) var lerp_val: float = 0.5
-export(float) var pop_filter: float = 0.8
+@export var lerp_val: float = 0.5
+@export var pop_filter: float = 0.8
 
 #CUSTOM
-export(float) var beat_subdivisions := 0.25
+@export var beat_subdivisions := 0.25
 var last_beat:float = 0.0
 
 signal beat
@@ -30,27 +30,27 @@ signal reset
 # setter, getter #
 ##################
 
-func set_beat(beat: float):
+func set_beat(beat_pos: float):
 	var beat_per_second: float = ((bpm) / 60.0)
-	self.playback_position = beat / beat_per_second
+	self.song_position = beat_pos / beat_per_second
 func get_beat():
 	var beat_per_second: float = ((bpm) / 60.0)
-	return (self.playback_position) * beat_per_second
+	return (self.song_position) * beat_per_second
 
 # this doesn't set seek
-func _set_playback_position(playback_position: float) -> void:
-	_playback_position_last_known = playback_position
-	_playback_position_interpolated = playback_position
+func set_song_position(playback_pos: float) -> void:
+	_playback_position_last_known = playback_pos
+	_playback_position_interpolated = playback_pos
 	
-func get_playback_position() -> float: return _playback_position_interpolated
+func get_song_position() -> float: return _playback_position_interpolated
 
 ############
 # utillity #
 ############
 
-func beat_to_playback(beat: float) -> float:
+func beat_to_playback(beat_val: float) -> float:
 	var beat_per_second: float = (bpm / 60.0)
-	return beat / beat_per_second
+	return beat_val / beat_per_second
 	
 func playback_to_beat(playback_pos: float) -> float:
 	var beat_per_second: float = (bpm / 60.0)
@@ -61,9 +61,9 @@ func playback_to_beat(playback_pos: float) -> float:
 ##################################
 
 func play_absolute(from_position: float = 0.0) -> void:
-	play(from_position - offset)
+	play_music(from_position - offset)
 
-func play(from_position: float = 0.0):
+func play_music(from_position: float = 0.0):
 	if self.stream == null:
 		return
 		
@@ -72,29 +72,29 @@ func play(from_position: float = 0.0):
 	last_beat = playback_to_beat(from_position)
 	emit_signal("reset",last_beat)
 	
-	self.playback_position = from_position
+	self.song_position = from_position
 	if from_position + offset >= 0.0:
-		.play(from_position + offset)
+		super.play(from_position + offset)
 	set_process(true)
 
-func seek(to_position: float) -> void:
-	self.playback_position = to_position
+func seek_music(to_position: float) -> void:
+	self.song_position = to_position
 	last_beat = playback_to_beat(to_position)
 	emit_signal("reset",last_beat)
 	if to_position + offset < 0.0:
 		set_process(true)
-		.stop()
+		super.stop()
 	else:
-		.seek(to_position + offset)
+		super.seek(to_position + offset)
 
-func seek_to_beat(beat: float) -> void:
-	self.beat = beat # this calls setter and changes playback_position
-	self.last_beat = beat
+func seek_to_beat(beat_target: float) -> void:
+	set_beat(beat_target) # this calls setter and changes playback_position
+	self.last_beat = beat_target
 	emit_signal("reset",last_beat)
-	self.seek(self.playback_position)
+	self.seek_music(self.song_position)
 	
-func stop() -> void:
-	.stop()
+func stop_music() -> void:
+	super.stop()
 	last_beat=0
 	emit_signal("reset",last_beat)
 	set_process(false)
@@ -104,8 +104,8 @@ func stop() -> void:
 #####################
 
 func _ready() -> void:
-	yield(owner,"ready")
-	var error: int = connect("finished", self, "__finished_beatplayer")
+	await owner.ready
+	var error: int = connect("finished", Callable(self, "__finished_beatplayer"))
 	if error != OK:
 		print_debug(error)
 	
@@ -115,6 +115,7 @@ func _process(delta: float) -> void:
 	if !stream_paused:
 		_interpolate_playback_position(delta)
 		beat_pulse()
+	# Removed flooding print_debug message when paused
 
 ###############
 # own methods #
@@ -122,11 +123,11 @@ func _process(delta: float) -> void:
 
 func beat_pulse():
 
-	var beat_pulse = int(get_beat())
+	var beat_pulse_val = int(get_beat())
 	#print (beat_pulse)
-	if beat_pulse>last_beat:
-		last_beat=beat_pulse
-		print ("beat! ", last_beat)
+	if beat_pulse_val>last_beat:
+		last_beat=beat_pulse_val
+		# Removed flooding print message - beat signal still emitted
 		emit_signal("beat", last_beat)
 
 
@@ -137,11 +138,11 @@ func _interpolate_playback_position(delta: float) -> void:
 	if not _playback_position_interpolated < 0.0:
 		# if processing but not playing, play it
 		if not playing:
-			.play(0)
+			super.play(0)
 			return
 
 		# if actual playback pos is changed, apply it
-		var super_pos: float = .get_playback_position() - offset
+		var super_pos: float = super.get_playback_position() - offset
 		if super_pos != _playback_position_last_known and super_pos != 0.0: # 0.0 when started. we ignore that
 			_playback_position_last_known = super_pos
 			
@@ -157,15 +158,15 @@ func _interpolate_playback_position(delta: float) -> void:
 				_playback_position_interpolated = super_pos
 
 func __finished_beatplayer() -> void:
-	self.playback_position = .get_playback_position()
+	self.song_position = super.get_playback_position()
 	set_process(false)
 	
 func _prevent_loop():
-	var stream = .get_stream()
-	if stream is AudioStreamOGGVorbis:
-		var stream_ogg: AudioStreamOGGVorbis = stream as AudioStreamOGGVorbis
+	var stream_obj = stream
+	if stream_obj is AudioStreamOggVorbis:
+		var stream_ogg: AudioStreamOggVorbis = stream_obj as AudioStreamOggVorbis
 		if stream_ogg != null: stream_ogg.loop = false
 	
-	if stream is AudioStreamSample:
-		var stream_sample: AudioStreamSample = stream as AudioStreamSample
-		if stream_sample != null: stream_sample.loop_mode = AudioStreamSample.LOOP_DISABLED
+	if stream_obj is AudioStreamWAV:
+		var stream_sample: AudioStreamWAV = stream_obj as AudioStreamWAV
+		if stream_sample != null: stream_sample.loop_mode = AudioStreamWAV.LOOP_DISABLED

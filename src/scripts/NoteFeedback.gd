@@ -1,10 +1,10 @@
-extends Spatial
+extends Node3D
 
-export(Texture) var miss_texture
-export(Texture) var early_texture
-export(Texture) var perfect_texture
-export(Texture) var late_texture
-export(Texture) var bomb_texture
+@export var miss_texture: Texture2D
+@export var early_texture: Texture2D
+@export var perfect_texture: Texture2D
+@export var late_texture: Texture2D
+@export var bomb_texture: Texture2D
 
 
 #var hit_range = Vector2(-0.25, 0.25)
@@ -16,8 +16,13 @@ func show_feedback(position, accuracy):
 	print ("accuracy: ", accuracy)
 	global_transform.origin = position
 	
-	var mat = $MeshInstance.get_surface_material(0)
-	
+	var mat = $MeshInstance3D.get_surface_override_material(0)
+	if mat == null:
+		mat = $MeshInstance3D.get_active_material(0)
+	if mat == null:
+		push_warning("NoteFeedback: No material found on MeshInstance3D")
+		queue_free()
+		return
 	
 	#EARLY
 	if accuracy>0.0 and accuracy < 1.0:
@@ -50,5 +55,5 @@ func show_feedback(position, accuracy):
 	
 	$AnimationPlayer.play("show")
 	
-	yield($AnimationPlayer, "animation_finished")
+	await $AnimationPlayer.animation_finished
 	queue_free()

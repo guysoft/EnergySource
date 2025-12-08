@@ -1,9 +1,9 @@
 extends WorldEnvironment
 
-export var strobe:bool = false
+@export var strobe:bool = false
 
 func _ready() -> void:
-	yield(owner,"ready")
+	await owner.ready
 	if environment:
 		change_environment(environment)
 

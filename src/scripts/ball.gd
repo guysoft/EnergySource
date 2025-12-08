@@ -1,9 +1,9 @@
-extends Spatial
+extends Node3D
 
-export(float) var speed = 2
-export(Vector3) var direction = Vector3(0,0,1)
+@export var speed: float = 2
+@export var direction: Vector3 = Vector3(0,0,1)
 
-onready var _velocity = Vector3(0,0,0)
+@onready var _velocity = Vector3(0,0,0)
 
 func _ready():
 	pass

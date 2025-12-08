@@ -1,4 +1,4 @@
-extends Area
+extends Area3D
 
 class_name Obstacle
 
@@ -6,13 +6,13 @@ enum {HIT, MISS}
 
 var speed = 2
 
-export(Array, ShaderMaterial) var materials = []
-export(PackedScene) var hit_effect
-export(PackedScene) var feedback_effect
-export(Vector3) var direction = Vector3(0,0,1)
-export(float) var despawn_z = 12.0
+@export var materials = [] # (Array, ShaderMaterial)
+@export var hit_effect: PackedScene
+@export var feedback_effect: PackedScene
+@export var direction: Vector3 = Vector3(0,0,1)
+@export var despawn_z: float = 12.0
 
-onready var _velocity = Vector3(0,0,0)
+@onready var _velocity = Vector3(0,0,0)
 
 #Values used for note bounce
 var _bpm
@@ -31,11 +31,11 @@ var alive = false
 var been_hit = false
 
 #Refs
-onready var _audio_stream_player = $AudioStreamPlayer3D
-onready var _animation_player = $AnimationPlayer
-onready var _mesh = $MeshInstance as MeshInstance
-onready var _collision = $CollisionShape
-onready var _spawn_timer = $Timer
+@onready var _audio_stream_player = $AudioStreamPlayer3D
+@onready var _animation_player = $AnimationPlayer
+@onready var _mesh = $MeshInstance3D as MeshInstance3D
+@onready var _collision = $CollisionShape3D
+@onready var _spawn_timer = $Timer
 
 func _ready():
 	deactivate(false)
@@ -94,7 +94,7 @@ func activate():
 	
 	if _spawn_timer.wait_time > 0.001:
 		_spawn_timer.start()
-		yield(_spawn_timer, "timeout")
+		await _spawn_timer.timeout
 	
 	set_physics_process(true)
 	_collision.set_deferred("disabled", false)
@@ -104,7 +104,7 @@ func deactivate(delete:bool = true, delete_delay:float=1.0):
 	set_physics_process(false)
 	_collision.set_deferred("disabled", true)
 	if delete:
-		yield (get_tree().create_timer(delete_delay), "timeout")
+		await get_tree().create_timer(delete_delay).timeout
 		queue_free()
 
 #TODO: Take into account the controller position of the hit?
@@ -114,7 +114,8 @@ func on_hit(velocity, linear_velocity, hit_accuracy):
 	
 	been_hit = true
 	
-	#_audio_stream_player.play()
+	# Play hit sound
+	_audio_stream_player.play()
 	if velocity:
 		direction = velocity.normalized()
 	if linear_velocity:
@@ -132,14 +133,20 @@ func on_hit(velocity, linear_velocity, hit_accuracy):
 	despawn(HIT)
 
 func spawn_hit_effect():
-	var hit_effect_instance = hit_effect.instance()
+	if hit_effect == null:
+		push_warning("Note: hit_effect is not assigned")
+		return
+	var hit_effect_instance = hit_effect.instantiate()
 	get_tree().current_scene.add_child(hit_effect_instance)
 
 	var spawn_position = global_transform.origin
 	hit_effect_instance.setup_effect(spawn_position, speed)
 
 func spawn_feedback(offset, accuracy):
-	var feedback_instance = feedback_effect.instance()
+	if feedback_effect == null:
+		push_warning("Note: feedback_effect is not assigned")
+		return
+	var feedback_instance = feedback_effect.instantiate()
 	get_tree().current_scene.add_child(feedback_instance)
 	
 	var marker_position = Global.manager()._player.game_node._hit_marker.global_transform.origin.z
@@ -169,7 +176,7 @@ func despawn(type):
 		Global.manager()._player.score -= 50
 		Global.manager()._player.energy -= 1
 		
-	yield(_animation_player, "animation_finished")
+	await _animation_player.animation_finished
 	deactivate()
 
 #DISABLED AS IT DOESN'T WORK

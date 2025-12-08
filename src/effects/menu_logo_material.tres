@@ -1,11 +1,11 @@
-[gd_resource type="ShaderMaterial" load_steps=4 format=2]
+[gd_resource type="ShaderMaterial" load_steps=4 format=3 uid="uid://117vqvsuqvra"]
 
-[sub_resource type="Shader" id=3]
+[sub_resource type="Shader" id="3"]
 code = "shader_type spatial;
 render_mode depth_draw_always,cull_back,world_vertex_coords;
 
-uniform vec4 emission_color : hint_color = vec4(1.0,1.0,1.0,1.0) ;
-uniform vec4 albedo_color : hint_color = vec4(1.0,1.0,1.0,1.0);
+uniform vec4 emission_color : source_color = vec4(1.0,1.0,1.0,1.0) ;
+uniform vec4 albedo_color : source_color = vec4(1.0,1.0,1.0,1.0);
 
 uniform vec2 noise_stretch = vec2(0.0,0.0);
 
@@ -14,7 +14,7 @@ uniform float mid_level : hint_range(0, 1);
 
 uniform float scale;
 uniform vec2 offset;
-uniform sampler2D noise : hint_albedo;
+uniform sampler2D noise : source_color;
 
 uniform vec2 scroll;
 
@@ -52,7 +52,7 @@ void vertex() {
 	 
 }
 
-const float PI = 3.14159265358979323846;
+// const float PI = 3.14159265358979323846;
 
 vec4 hsv_to_rgb(float h, float s, float v, float a){
     //based on 
@@ -159,23 +159,24 @@ void fragment() {
 	//ALBEDO = tex.rgb;
 }"
 
-[sub_resource type="OpenSimplexNoise" id=1]
+[sub_resource type="FastNoiseLite" id="1"]
 
-[sub_resource type="NoiseTexture" id=2]
+[sub_resource type="NoiseTexture2D" id="2"]
+noise = SubResource("1")
 seamless = true
-noise = SubResource( 1 )
 
 [resource]
-shader = SubResource( 3 )
-shader_param/emission_color = Color( 0, 0, 0, 1 )
-shader_param/albedo_color = Color( 0.521569, 1, 0.964706, 1 )
-shader_param/noise_stretch = Vector2( 0.01, 1 )
-shader_param/displace_scale = 0.148
-shader_param/mid_level = 0.15
-shader_param/scale = null
-shader_param/offset = null
-shader_param/scroll = Vector2( 0.1, 0.25 )
-shader_param/object_position = null
-shader_param/max_distance_clamp = 0.5
-shader_param/min_displace = 0.564
-shader_param/noise = SubResource( 2 )
+render_priority = 0
+shader = SubResource("3")
+shader_parameter/emission_color = Color(0, 0, 0, 1)
+shader_parameter/albedo_color = Color(0.521569, 1, 0.964706, 1)
+shader_parameter/noise_stretch = Vector2(0.01, 1)
+shader_parameter/displace_scale = 0.0
+shader_parameter/mid_level = 0.0
+shader_parameter/scale = 0.0
+shader_parameter/offset = Vector2(0, 0)
+shader_parameter/noise = SubResource("2")
+shader_parameter/scroll = Vector2(0.1, 0.25)
+shader_parameter/object_position = Vector3(0, 0, 0)
+shader_parameter/max_distance_clamp = 0.5
+shader_parameter/min_displace = 0.564

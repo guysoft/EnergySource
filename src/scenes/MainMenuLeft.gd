@@ -8,7 +8,7 @@ extends Control
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	$TabContainer/Settings/DisableTimeWarp.pressed = Settings.get_setting("game", "disable_time_warp")
+	$TabContainer/Settings/DisableTimeWarp.button_pressed = Settings.get_setting("game", "disable_time_warp")
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
