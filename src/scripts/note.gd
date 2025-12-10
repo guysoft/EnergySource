@@ -128,13 +128,34 @@ func on_hit(velocity, linear_velocity, hit_level):
 	
 	spawn_feedback(0, hit_level)
 	
-	# Spawn hit effect for valid hits (semi or full impact)
-	if hit_level == HIT_LEVEL_MINIMUMIMPACT or hit_level == HIT_LEVEL_FULLIMPACT:
+	# Visual feedback based on hit level
+	if hit_level == HIT_LEVEL_TOOLOW:
+		# Turn ball black to indicate weak hit (didn't score)
+		_set_ball_dark()
+	elif hit_level == HIT_LEVEL_MINIMUMIMPACT or hit_level == HIT_LEVEL_FULLIMPACT:
+		# Spawn hit effect for valid hits (semi or full impact)
 		spawn_hit_effect()
 	
 	_collision.set_deferred("disabled", true)
 	
 	despawn(HIT)
+
+
+# Turn the ball black/dark to indicate a weak hit that didn't score
+func _set_ball_dark():
+	var mat = _mesh.material_override
+	if mat:
+		# Create a dark copy of the material
+		var dark_mat = mat.duplicate()
+		if dark_mat is ShaderMaterial:
+			dark_mat.set_shader_parameter("albedo_color", Color.BLACK)
+			# Also dim emission if present
+			if dark_mat.get_shader_parameter("emission_color") != null:
+				dark_mat.set_shader_parameter("emission_color", Color.BLACK)
+		elif dark_mat is StandardMaterial3D:
+			dark_mat.albedo_color = Color.BLACK
+			dark_mat.emission = Color.BLACK
+		_mesh.material_override = dark_mat
 
 func spawn_hit_effect():
 	if hit_effect == null:
