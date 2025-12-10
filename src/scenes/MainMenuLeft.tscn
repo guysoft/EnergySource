@@ -68,8 +68,17 @@ offset_bottom = -36.0
 [node name="DisableTimeWarp" type="CheckBox" parent="TabContainer/Settings"]
 layout_mode = 0
 offset_right = 477.0
-offset_bottom = 257.0
+offset_bottom = 80.0
 theme_override_font_sizes/font_size = 47
 text = "Disable time warp"
 
+[node name="OnlyPowerBalls" type="CheckBox" parent="TabContainer/Settings"]
+layout_mode = 0
+offset_top = 90.0
+offset_right = 477.0
+offset_bottom = 170.0
+theme_override_font_sizes/font_size = 47
+text = "Only power balls"
+
 [connection signal="toggled" from="TabContainer/Settings/DisableTimeWarp" to="." method="_on_DisableTimeWarp_toggled"]
+[connection signal="toggled" from="TabContainer/Settings/OnlyPowerBalls" to="." method="_on_OnlyPowerBalls_toggled"]

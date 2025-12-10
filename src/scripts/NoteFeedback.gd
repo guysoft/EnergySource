@@ -1,19 +1,19 @@
 extends Node3D
 
 @export var miss_texture: Texture2D
-@export var early_texture: Texture2D
-@export var perfect_texture: Texture2D
-@export var late_texture: Texture2D
+@export var semi_texture: Texture2D    # Used for MINIMUMIMPACT (semi-hit)
+@export var perfect_texture: Texture2D # Used for FULLIMPACT (full hit)
+@export var late_texture: Texture2D    # Legacy, kept for compatibility
 @export var bomb_texture: Texture2D
 
+# HitLevel enum values (must match player.gd)
+const HIT_LEVEL_TOOLOW = 0
+const HIT_LEVEL_MINIMUMIMPACT = 1
+const HIT_LEVEL_FULLIMPACT = 2
 
-#var hit_range = Vector2(-0.25, 0.25)
-#var increment = 17.0
-#var increment = (abs(hit_range.x) + abs(hit_range.y)) / 3
-
-func show_feedback(position, accuracy):
+func show_feedback(position, hit_level):
 	
-	print ("accuracy: ", accuracy)
+	print ("hit_level: ", hit_level)
 	global_transform.origin = position
 	
 	var mat = $MeshInstance3D.get_surface_override_material(0)
@@ -24,34 +24,20 @@ func show_feedback(position, accuracy):
 		queue_free()
 		return
 	
-	#EARLY
-	if accuracy>0.0 and accuracy < 1.0:
-		#print ("EARLY")
-		mat.albedo_texture = early_texture
-		#$AnimationPlayer.play("Early")
-	
-	#PERFECT
-	if accuracy>1.0 and accuracy<2.0:
-		#print ("PERFECT")
-		mat.albedo_texture = perfect_texture
-		#$AnimationPlayer.play("Perfect")
-	
-	#LATE
-	if accuracy>2.0 and accuracy<3.0:
-		#print ("LATE")
-		mat.albedo_texture = late_texture
-		#$AnimationPlayer.play("Late")
-	
-	#MISS
-	if accuracy<0.0 or accuracy>3.0:
-		#print ("MISS")
-		mat.albedo_texture = miss_texture
-		#$AnimationPlayer.play("Miss")
-
-	#special case for bombs
-	if accuracy==25:
-		#print ("BOMB")
-		mat.albedo_texture = bomb_texture
+	# PowerBeatsVR style feedback based on hit level
+	match hit_level:
+		HIT_LEVEL_TOOLOW:
+			# Too weak / miss
+			mat.albedo_texture = miss_texture
+		HIT_LEVEL_MINIMUMIMPACT:
+			# Semi-hit (minimum impact)
+			mat.albedo_texture = semi_texture if semi_texture else miss_texture
+		HIT_LEVEL_FULLIMPACT:
+			# Full impact (perfect!)
+			mat.albedo_texture = perfect_texture
+		_:
+			# Unknown - show miss
+			mat.albedo_texture = miss_texture
 	
 	$AnimationPlayer.play("show")
 	

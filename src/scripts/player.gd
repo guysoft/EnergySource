@@ -1,10 +1,24 @@
 extends CharacterBody3D
 
-# velocity mechanics settnings
-const HIT_VELOCITY = 0.2
+# PowerBeatsVR velocity mechanics (Expert difficulty)
+# These are SQUARED velocity thresholds for performance
+const HIT_SPEED_SQUARED_MIN = 1.0      # Minimum for semi-hit (normal balls)
+const HIT_SPEED_SQUARED_FULL = 3.0     # For full impact hit
+const HIT_SPEED_SQUARED_POWER = 3.0    # Required when "only power balls" enabled
+
+# PowerBeatsVR scoring constants
+const SCORE_SEMI = 10       # Partial/semi hit
+const SCORE_COMPLETE = 20   # Full impact hit
+
+# Combo system
+const MIN_COMBO_FOR_MULTIPLIER = 5  # Need 5+ combo for score multiplier
+
+# Hit level enum (from PowerBeatsVR)
+enum HitLevel { TOOLOW, MINIMUMIMPACT, FULLIMPACT }
+
 const BOMB_SCORE_VALUE = 100 
 const BOMB_ENERGY_VALUE = 25
-const MAX_COMBO = 8
+const MAX_COMBO = 99  # Increased max combo for PowerBeatsVR style
 
 # Payer movement in non-vr mode settings
 @export var mouse_sensitivity = 0.03
@@ -40,8 +54,9 @@ var song_acceleration = 0.00:
 var song_deceleration = 1.0 #rate at which we return to zero
 var acceleration_rate = 0.25
 
-var hit_range = Vector2(-0.25, 0.25)
-var accuracy_range = Vector2(0.0, 3.0)
+# Legacy timing ranges (kept for reference, no longer used)
+#var hit_range = Vector2(-0.25, 0.25)
+#var accuracy_range = Vector2(0.0, 3.0)
 
 var score = 0:
 	set(value):
@@ -223,12 +238,6 @@ func handle_hit(body, hand):
 		controller = Global.manager()._right_hand
 	#print("hit " + hand + " "  + body.name)
 	
-#	if body.is_in_group("obstacle"):
-#		$BombSound.play()
-#		game_node.toggle_speed(0.5, 0.1, 1.0, 0.01)
-#		self.combo = 0
-#		self.score -= 100
-	
 	if body.is_in_group("note"):
 		
 		#if it's a bomb
@@ -238,70 +247,73 @@ func handle_hit(body, hand):
 			self.energy -= BOMB_ENERGY_VALUE
 			self.combo = 0
 			if body.has_method("on_hit"):
-				body.on_hit(0, 0, 25) #sufficiently high accuracy value to trigger bomb 
+				body.on_hit(0, 0, HitLevel.TOOLOW)
 			else:
 				body.queue_free()
 		else:
 			velocity = controller.get("velocity")
-		
 			var linear_velocity = velocity.length()
 			
-			#print ("Controller velocity vector: ", velocity)
-			#print ("Controller linear velocity: ", linear_velocity)
+			# Calculate velocity squared for hit detection (PowerBeatsVR style)
+			var velocity_squared = linear_velocity * linear_velocity
 			
-			if linear_velocity >= HIT_VELOCITY:
-				#print ("Hit threshold passed!")
-				
-				var beat = 0
-				if _beat_player:
-					beat = _beat_player.get_beat()
-				
-				
-				
-				var hit_offset = beat - body._time
-				var hit_accuracy = Utility.remap_value(hit_offset, hit_range, accuracy_range)
-				#print ("accuracy:", hit_accuracy)
-				
-				
-				self.combo+=1
-				
-				#calculate score value based on accuracy
-				#if the value is outside the range, it's a miss!
-				var score_value = 0
-				
-				if hit_accuracy<0.0 or hit_accuracy>3.0:
-					self.combo = 0
-					self.energy-= 1
-					score_value = -50
-					
-				else:
-					
-					#if controller.is_simple_rumbling():
-					#	controller._rumble_duration = 0.25
-					#else:
-					#	controller.simple_rumble(0.5, 0.25)
-					
-					#note is early
-					if hit_accuracy>0.0 and hit_accuracy<1.0:
-						score_value = 50
-						self.energy += 1
-					#note is perfect
-					if hit_accuracy>1.0 and hit_accuracy<2.0:
-						score_value = 100
-						self.energy += 2
-					#note is late
-					if hit_accuracy>2.0 and hit_accuracy<3.0:
-						score_value = 50
-						self.energy += 1
-	
-				score_value *= combo
-				
-				self.score += score_value
-
+			# Determine hit level based on velocity squared
+			var hit_level = _calculate_hit_level(velocity_squared)
+			
+			#print ("Controller velocity: ", linear_velocity, " squared: ", velocity_squared, " hit_level: ", hit_level)
+			
+			if hit_level == HitLevel.TOOLOW:
+				# Too weak - miss
+				self.combo = 0
+				self.energy -= 1
 				if body.has_method("on_hit"):
-					body.on_hit(velocity, linear_velocity, hit_accuracy)
+					body.on_hit(velocity, linear_velocity, hit_level)
 				else:
 					body.queue_free()
+			else:
+				# Valid hit - calculate score
+				self.combo += 1
+				
+				var base_score = SCORE_SEMI if hit_level == HitLevel.MINIMUMIMPACT else SCORE_COMPLETE
+				var score_value = base_score
+				
+				# Combo multiplier only applies after MIN_COMBO_FOR_MULTIPLIER hits
+				if combo >= MIN_COMBO_FOR_MULTIPLIER:
+					var multiplier = combo - MIN_COMBO_FOR_MULTIPLIER + 2  # x2 at combo 5, x3 at 6, etc.
+					score_value = base_score * multiplier
+				
+				self.score += score_value
+				
+				# Energy gain based on hit level
+				if hit_level == HitLevel.FULLIMPACT:
+					self.energy += 2
+				else:
+					self.energy += 1
+
+				if body.has_method("on_hit"):
+					body.on_hit(velocity, linear_velocity, hit_level)
+				else:
+					body.queue_free()
+
+
+# Calculate hit level based on velocity squared (PowerBeatsVR Expert difficulty)
+func _calculate_hit_level(velocity_squared: float) -> int:
+	var only_power_balls = Settings.get_setting("game", "only_power_balls")
+	
+	if only_power_balls:
+		# Power balls mode: need full impact velocity for any hit
+		if velocity_squared >= HIT_SPEED_SQUARED_POWER:
+			return HitLevel.FULLIMPACT
+		else:
+			return HitLevel.TOOLOW
+	else:
+		# Normal mode: tiered hit levels
+		if velocity_squared >= HIT_SPEED_SQUARED_FULL:
+			return HitLevel.FULLIMPACT
+		elif velocity_squared >= HIT_SPEED_SQUARED_MIN:
+			return HitLevel.MINIMUMIMPACT
+		else:
+			return HitLevel.TOOLOW
 		
 #			if controller.get_rumble() == 0.0:
 #				print("rumble")

@@ -119,7 +119,7 @@ _data = {
 [node name="NoteFeedback" type="Node3D"]
 script = ExtResource( 3 )
 miss_texture = ExtResource( 4 )
-early_texture = ExtResource( 1 )
+semi_texture = ExtResource( 1 )
 perfect_texture = ExtResource( 5 )
 late_texture = ExtResource( 2 )
 bomb_texture = ExtResource( 6 )

@@ -107,8 +107,13 @@ func deactivate(delete:bool = true, delete_delay:float=1.0):
 		await get_tree().create_timer(delete_delay).timeout
 		queue_free()
 
+# HitLevel enum values (must match player.gd)
+const HIT_LEVEL_TOOLOW = 0
+const HIT_LEVEL_MINIMUMIMPACT = 1
+const HIT_LEVEL_FULLIMPACT = 2
+
 #TODO: Take into account the controller position of the hit?
-func on_hit(velocity, linear_velocity, hit_accuracy):
+func on_hit(velocity, linear_velocity, hit_level):
 	if been_hit:
 		return
 	
@@ -121,12 +126,11 @@ func on_hit(velocity, linear_velocity, hit_accuracy):
 	if linear_velocity:
 		speed = linear_velocity
 	
-	spawn_feedback(0,hit_accuracy)
+	spawn_feedback(0, hit_level)
 	
-	if hit_accuracy>0.0 and hit_accuracy<3.0:
+	# Spawn hit effect for valid hits (semi or full impact)
+	if hit_level == HIT_LEVEL_MINIMUMIMPACT or hit_level == HIT_LEVEL_FULLIMPACT:
 		spawn_hit_effect()
-	#if hit_accuracy==25:
-		#spawn_bomb_effect()
 	
 	_collision.set_deferred("disabled", true)
 	
@@ -142,7 +146,7 @@ func spawn_hit_effect():
 	var spawn_position = global_transform.origin
 	hit_effect_instance.setup_effect(spawn_position, speed)
 
-func spawn_feedback(offset, accuracy):
+func spawn_feedback(offset, hit_level):
 	if feedback_effect == null:
 		push_warning("Note: feedback_effect is not assigned")
 		return
@@ -153,7 +157,7 @@ func spawn_feedback(offset, accuracy):
 	var note_transform = global_transform.origin
 	var spawn_position = Vector3(note_transform.x,note_transform.y,marker_position)
 	#var spawn_position = global_transform.origin + Vector3(0,0,offset)
-	feedback_instance.show_feedback(spawn_position, accuracy)
+	feedback_instance.show_feedback(spawn_position, hit_level)
 
 func despawn(type):
 	if not alive:
@@ -170,10 +174,9 @@ func despawn(type):
 		
 	elif type==MISS and not been_hit and _type!=3:
 		#print ("miss")
-		spawn_feedback(-speed*0.25,-10) #sufficiently high value to ensure a miss
+		spawn_feedback(-speed*0.25, HIT_LEVEL_TOOLOW) # TOOLOW = miss
 		#bad reference, replace with signal
 		Global.manager()._player.combo = 0
-		Global.manager()._player.score -= 50
 		Global.manager()._player.energy -= 1
 		
 	await _animation_player.animation_finished
