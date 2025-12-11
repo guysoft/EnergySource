@@ -2,9 +2,12 @@ extends CharacterBody3D
 
 # PowerBeatsVR velocity mechanics (Expert difficulty)
 # These are SQUARED velocity thresholds for performance
-const HIT_SPEED_SQUARED_MIN = 1.0      # Minimum for semi-hit (normal balls)
-const HIT_SPEED_SQUARED_FULL = 3.0     # For full impact hit
-const HIT_SPEED_SQUARED_POWER = 3.0    # Required when "only power balls" enabled
+# Normal balls thresholds:
+const HIT_SPEED_SQUARED_MIN = 1.0       # Minimum for semi-hit
+const HIT_SPEED_SQUARED_FULL = 3.0      # For full impact hit
+# Power balls thresholds (4x multiplier from PowerBeatsVR):
+const HIT_SPEED_SQUARED_POWER_MIN = 4.0   # Minimum for semi-hit (4x normal)
+const HIT_SPEED_SQUARED_POWER_FULL = 12.0 # For full impact (4x normal)
 
 # PowerBeatsVR scoring constants
 const SCORE_SEMI = 10       # Partial/semi hit
@@ -301,13 +304,17 @@ func _calculate_hit_level(velocity_squared: float) -> int:
 	var only_power_balls = Settings.get_setting("game", "only_power_balls")
 	
 	if only_power_balls:
-		# Power balls mode: need full impact velocity for any hit
-		if velocity_squared >= HIT_SPEED_SQUARED_POWER:
+		# Power balls mode: 4x velocity required (from PowerBeatsVR)
+		# Min: 4.0 (2.0 m/s), Full: 12.0 (3.46 m/s)
+		if velocity_squared >= HIT_SPEED_SQUARED_POWER_FULL:
 			return HitLevel.FULLIMPACT
+		elif velocity_squared >= HIT_SPEED_SQUARED_POWER_MIN:
+			return HitLevel.MINIMUMIMPACT
 		else:
 			return HitLevel.TOOLOW
 	else:
 		# Normal mode: tiered hit levels
+		# Min: 1.0 (1.0 m/s), Full: 3.0 (1.73 m/s)
 		if velocity_squared >= HIT_SPEED_SQUARED_FULL:
 			return HitLevel.FULLIMPACT
 		elif velocity_squared >= HIT_SPEED_SQUARED_MIN:
