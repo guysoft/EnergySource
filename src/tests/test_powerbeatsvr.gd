@@ -23,6 +23,7 @@ func _init():
 	all_passed = test_map_factory_detection() and all_passed
 	all_passed = test_wellerman_level() and all_passed
 	all_passed = test_wall_type_mapping() and all_passed
+	all_passed = test_ball_flight_duration() and all_passed
 	
 	# Summary
 	print("\n=== Test Summary ===")
@@ -357,6 +358,58 @@ func test_wall_type_mapping() -> bool:
 		print("  ✓ BarAcrossTheForehead (7) correctly maps to 'crouch'")
 	else:
 		print("  ✗ BarAcrossTheForehead (7) should map to 'crouch'")
+		passed = false
+	
+	return passed
+
+
+func test_ball_flight_duration() -> bool:
+	print("--- Testing Ball Flight Duration ---")
+	var passed = true
+	
+	# Test Wellerman (96 BPM = Low BPM range)
+	# Expert difficulty should have 2 beats flight duration
+	var global_path = ProjectSettings.globalize_path(WELLERMAN_PATH)
+	var wellerman_map = PowerBeatsVRMapScript.new(global_path)
+	
+	var wellerman_duration = wellerman_map.get_ball_flight_duration()
+	var wellerman_bpm = wellerman_map.get_bpm()
+	
+	print("  Wellerman BPM: " + str(wellerman_bpm))
+	print("  Ball flight duration: " + str(wellerman_duration) + " beats")
+	
+	# Wellerman is 96 BPM which is Low range (< 100)
+	# Expert difficulty should be 2 beats
+	if wellerman_duration == 2:
+		print("  ✓ Low BPM (96) correctly returns 2 beats")
+	else:
+		print("  ✗ Low BPM (96) should return 2 beats, got: " + str(wellerman_duration))
+		passed = false
+	
+	# Test BPM threshold logic by creating mock maps with different BPMs
+	# We can't easily create maps with different BPMs, so we test the thresholds directly
+	
+	# Verify threshold constants exist
+	if PowerBeatsVRMapScript.BPM_HIGH_THRESHOLD == 145:
+		print("  ✓ BPM_HIGH_THRESHOLD is 145")
+	else:
+		print("  ✗ BPM_HIGH_THRESHOLD should be 145")
+		passed = false
+	
+	if PowerBeatsVRMapScript.BPM_MID_THRESHOLD == 100:
+		print("  ✓ BPM_MID_THRESHOLD is 100")
+	else:
+		print("  ✗ BPM_MID_THRESHOLD should be 100")
+		passed = false
+	
+	# Calculate expected flight time for Wellerman
+	var flight_time = 60.0 / wellerman_bpm * wellerman_duration
+	print("  Expected flight time: " + str(snapped(flight_time, 0.01)) + " seconds")
+	
+	if flight_time < 1.5:  # Should be about 1.25 seconds for 96 BPM with 2 beats
+		print("  ✓ Flight time is reasonable (~1.25s for 96 BPM)")
+	else:
+		print("  ✗ Flight time seems too long: " + str(flight_time))
 		passed = false
 	
 	return passed

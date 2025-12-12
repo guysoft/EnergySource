@@ -74,6 +74,10 @@ func get_offset():
 func get_note_count(difficulty):
 	return self.bs_level_data[difficulty]["_notes"].size()
 
+func get_ball_flight_duration() -> int:
+	# Beat Saber levels use the original 4-beat timing from EnergySource
+	return 4
+
 func get_song():
 	if self.bs_info_data != null and "_songFilename" in self.bs_info_data:
 		return self.path + "/" + self.bs_info_data["_songFilename"]
