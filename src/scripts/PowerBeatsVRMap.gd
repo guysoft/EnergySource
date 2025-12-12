@@ -266,6 +266,10 @@ func _add_note(diff: String, beat_no: int, offset: float, position: Array, actio
 	# Determine note type based on X position (left vs right)
 	var note_type = NOTE_TYPE_LEFT if pos.x < 0 else NOTE_TYPE_RIGHT
 	
+	# Check if this is a PowerBall or if "Only Power Balls" mode forces all to be PowerBalls
+	var force_power_balls = _get_only_power_balls_setting()
+	var is_power_ball = (action_type == ACTION_POWER_BALL) or force_power_balls
+	
 	var note = {
 		"x": pos.x,
 		"y": pos.y,
@@ -275,7 +279,8 @@ func _add_note(diff: String, beat_no: int, offset: float, position: Array, actio
 		"_lineLayer": 0,  # Not used but kept for compatibility
 		"_cutDirection": 8,  # Any direction
 		"offset": offset,
-		"_pbvr_action": action_type  # Store original action for potential future use
+		"_pbvr_action": action_type,  # Store original action for potential future use
+		"_is_power_ball": is_power_ball  # PowerBalls require 4x velocity to hit
 	}
 	
 	notes[diff][beat_no].append(note)
@@ -383,4 +388,12 @@ func _on_beat_detected(diff: String, beat: int) -> Array:
 	
 	return [return_notes, return_obstacles, return_events]
 
+
+# Helper to safely get the "only_power_balls" setting
+# Returns false if Settings autoload is not available (e.g., headless testing)
+static func _get_only_power_balls_setting() -> bool:
+	var settings_node = Engine.get_singleton("Settings") if Engine.has_singleton("Settings") else null
+	if settings_node and settings_node.has_method("get_setting"):
+		return settings_node.get_setting("game", "only_power_balls")
+	return false
 

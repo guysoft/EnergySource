@@ -26,6 +26,7 @@ var _line_layer:int
 var _type:int
 var _cut_direction:int
 var _custom_data = {}
+var _is_power_ball: bool = false  # PowerBalls require 4x velocity to hit
 
 var alive = false
 var been_hit = false
@@ -66,6 +67,9 @@ func setup_note(note, speed, bpm, distance):
 		#print ("Note offset: ", note["offset"])
 		#print ("wait time: ", _spawn_timer.wait_time)
 		
+	# Check if this is a PowerBall (requires 4x velocity to hit)
+	_is_power_ball = note.get("_is_power_ball", false)
+	
 	#set the material based on the note type
 	#var mat = _mesh.get_active_material(0) as ShaderMaterial
 	if note["_type"] == 0:
@@ -83,6 +87,10 @@ func setup_note(note, speed, bpm, distance):
 #		mat.set_shader_param("emission_color", Color.aquamarine * 1.0)
 #		mat.albedo_color = Color.white
 #		mat.emission = Color.white * 5.0
+	
+	# Apply purple tint for PowerBalls (must be after material is set)
+	if _is_power_ball:
+		_set_ball_purple()
 
 func activate():
 	#if the spawn timer has been setup with an offset
@@ -156,6 +164,23 @@ func _set_ball_dark():
 			dark_mat.albedo_color = Color.BLACK
 			dark_mat.emission = Color.BLACK
 		_mesh.material_override = dark_mat
+
+
+# Turn the ball purple to indicate a PowerBall (requires 4x velocity to hit)
+func _set_ball_purple():
+	var mat = _mesh.material_override
+	if mat:
+		# Create a purple copy of the material
+		var purple_mat = mat.duplicate()
+		if purple_mat is ShaderMaterial:
+			purple_mat.set_shader_parameter("albedo_color", Color.PURPLE)
+			# Set emission to purple glow
+			if purple_mat.get_shader_parameter("emission_color") != null:
+				purple_mat.set_shader_parameter("emission_color", Color.PURPLE * 0.5)
+		elif purple_mat is StandardMaterial3D:
+			purple_mat.albedo_color = Color.PURPLE
+			purple_mat.emission = Color.PURPLE * 0.5
+		_mesh.material_override = purple_mat
 
 func spawn_hit_effect():
 	if hit_effect == null:
