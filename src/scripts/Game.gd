@@ -77,7 +77,8 @@ func _connect_pause_menu_signals():
 		menu_btn.pressed.connect(_player._on_MenuBtn_pressed)
 	
 
-func setup_song(map:Map):
+func setup_song(map):
+	# map can be Map (Beat Saber) or PowerBeatsVRMap
 	if not map:
 		return
 	_beat_player.stop()
@@ -102,7 +103,7 @@ func setup_song(map:Map):
 	set_song_speed(song_speed)
 
 #setup the visual elements
-func setup_environment(map:Map):
+func setup_environment(map):
 	_environment_manager.change_environment(environment)
 	
 	#enable the saturation adjustment
@@ -233,9 +234,11 @@ func _on_beat_detected(beat):
 			$GroundBeatResponse.disabled=false
 
 #simple helper to setup the map
-func setup_map(path:String, difficulty:String)->Map:
-	var map = Map.new(path)
-	map.get_level(difficulty)
+# Uses MapFactory to create the appropriate loader (Beat Saber or PowerBeatsVR)
+func setup_map(path:String, difficulty:String):
+	var map = MapFactory.create_map(path)
+	if map:
+		map.get_level(difficulty)
 	return map
 
 

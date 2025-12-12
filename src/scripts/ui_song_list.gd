@@ -1,10 +1,12 @@
 extends ScrollContainer
 
-@export var tab:String # (String, "Original", "Custom")
+@export var tab:String # (String, "Original", "Custom", "PowerBeatsVR")
 
 
 
 @onready var songs_list = []
+# Store full paths for each song to handle different formats
+@onready var songs_paths = []
 
 var _beatplayer = null
 
@@ -24,42 +26,63 @@ func _ready():
 	populate_list()
 
 func populate_list():
-		#replace with custom icon
+	#replace with custom icon
 	var icon = preload("res://icon.png")
 	
-	if tab == "Original":
-		# Populate Item List with internal levels
-		path = GameVariables.internal_songs_path
-	elif tab == "Custom":
-		# Populate Item List with user levels
-		path = GameVariables.custom_songs_path
+	# Clear previous data
+	songs_list.clear()
+	songs_paths.clear()
 	
-	if not path=="":
-		var files = list_files_in_directory(path)
-		if files:
-			for item in files:
-				songs_list.append(item)
+	if tab == "Original":
+		# Populate Item List with internal levels (Beat Saber format)
+		path = GameVariables.internal_songs_path
+		_add_beatsaber_songs(path)
+	elif tab == "Custom":
+		# Populate Item List with user levels (Beat Saber format)
+		path = GameVariables.custom_songs_path
+		_add_beatsaber_songs(path)
+		# Also add PowerBeatsVR levels to Custom tab
+		_add_powerbeatsvr_songs(GameVariables.pbvr_layouts_path)
+	elif tab == "PowerBeatsVR":
+		# Dedicated PowerBeatsVR tab
+		_add_powerbeatsvr_songs(GameVariables.pbvr_layouts_path)
 	
 	songs_list_ui = $HBoxContainer/SongList
 	no_songs_label = $HBoxContainer/NoSongsLabel
 	
-	songs_list.sort()
 	songs_list_ui.clear()
 
-	for item in songs_list:
-		print("Found song in: " + item)
-		var item_path = path + "/" + item
+	for i in range(songs_list.size()):
+		var item = songs_list[i]
+		var item_path = songs_paths[i]
 		
-		var map = Map.new(item_path)
-		var cover = item_path + "/" + map.get_cover_name()
+		print("Found song: " + item + " at: " + item_path)
+		
+		# Use MapFactory to create the appropriate loader
+		var map = MapFactory.create_map(item_path)
+		if not map:
+			push_warning("Failed to load map: " + item_path)
+			continue
+		
 		var song_name = map.get_name()
+		var cover_name = map.get_cover_name()
 		print("song name: " + song_name)
 		
-		if FileAccess.file_exists(cover):
-			var image = Image.new()
-			var err = image.load(cover)
-			image.resize(128, 128)
-			icon = ImageTexture.create_from_image(image)
+		# Try to load cover image (Beat Saber format has covers)
+		if cover_name != "":
+			var cover = item_path.get_base_dir() + "/" + cover_name
+			if item_path.ends_with(".json"):
+				# PowerBeatsVR - cover would be in same dir as JSON (not typically available)
+				cover = item_path.get_base_dir() + "/" + cover_name
+			else:
+				# Beat Saber - cover is in the folder
+				cover = item_path + "/" + cover_name
+			
+			if FileAccess.file_exists(cover):
+				var image = Image.new()
+				var err = image.load(cover)
+				image.resize(128, 128)
+				icon = ImageTexture.create_from_image(image)
 		
 		var index = songs_list_ui.get_item_count()
 		
@@ -79,13 +102,47 @@ func populate_list():
 		songs_list_ui.select(0)
 		GameVariables.song_selected = 0
 	else:
+		# Make sure selected index is valid
+		if GameVariables.song_selected >= songs_list_ui.get_item_count():
+			GameVariables.song_selected = 0
 		songs_list_ui.select(GameVariables.song_selected)
 		
 	_on_SongList_item_selected(GameVariables.song_selected)
 
-func list_files_in_directory(path):
+
+func _add_beatsaber_songs(search_path: String):
+	"""Add Beat Saber format songs (folders with info.dat)"""
+	if search_path == "":
+		return
+	
+	var files = list_files_in_directory(search_path)
+	if files:
+		for item in files:
+			var item_path = search_path + "/" + item
+			# Check if it's a Beat Saber level (folder with info.dat)
+			if DirAccess.dir_exists_absolute(item_path):
+				if FileAccess.file_exists(item_path + "/info.dat") or FileAccess.file_exists(item_path + "/Info.dat"):
+					songs_list.append(item)
+					songs_paths.append(item_path)
+
+
+func _add_powerbeatsvr_songs(search_path: String):
+	"""Add PowerBeatsVR format songs (.json files)"""
+	if search_path == "":
+		return
+	
+	var files = list_files_in_directory(search_path)
+	if files:
+		for item in files:
+			if item.ends_with(".json"):
+				var item_path = search_path + "/" + item
+				songs_list.append(item.get_basename())  # Remove .json extension for display
+				songs_paths.append(item_path)
+
+
+func list_files_in_directory(dir_path):
 	var files = []
-	var dir = DirAccess.open(path)
+	var dir = DirAccess.open(dir_path)
 	if dir:
 		dir.list_dir_begin() # TODOConverter3To4 fill missing arguments https://github.com/godotengine/godot/pull/40547
 
@@ -97,16 +154,25 @@ func list_files_in_directory(path):
 				files.append(file)
 	
 		dir.list_dir_end()
+		files.sort()
 		return files
 	return []
 
 func _on_SongList_item_selected(index):
 	if songs_list_ui.get_item_count()<=0:
 		return
+	if index < 0 or index >= songs_paths.size():
+		return
+		
 	GameVariables.song_selected = index
-	var selected_song = songs_list[index]
-	GameVariables.path = path + "/" + selected_song
-	var map = Map.new(GameVariables.path)
+	var selected_path = songs_paths[index]
+	GameVariables.path = selected_path
+	
+	# Use MapFactory to create the appropriate loader
+	var map = MapFactory.create_map(selected_path)
+	if not map:
+		push_error("Failed to load map: " + selected_path)
+		return
 	
 	# Set the first available difficulty for this map
 	var difficulties = map.get_available_difficulties()
@@ -118,9 +184,13 @@ func _on_SongList_item_selected(index):
 	var beatplayer = _get_beatplayer()
 	if beatplayer:
 		beatplayer.stop_music()
-		beatplayer.stream = audio_loader.loadfile(map.get_song(), false, audio_loader.AUDIO_EXT.OGG)
-		beatplayer.bpm = map.get_bpm()
-		beatplayer.play_music()
+		var song_path = map.get_song()
+		if song_path != "":
+			beatplayer.stream = audio_loader.loadfile(song_path, false, audio_loader.AUDIO_EXT.OGG)
+			beatplayer.bpm = map.get_bpm()
+			beatplayer.play_music()
+		else:
+			push_warning("No audio file found for: " + selected_path)
 
 
 func _on_visibility_changed():
