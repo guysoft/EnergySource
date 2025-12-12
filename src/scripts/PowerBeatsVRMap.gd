@@ -18,6 +18,19 @@ const PBVR_Y_MAX = 1.3
 const BPM_MID_THRESHOLD = 100
 const BPM_HIGH_THRESHOLD = 145
 
+# Position adjustment constants (tune these if needed)
+# VERTICAL_OFFSET: From PowerBeatsVR Util.cs - stored Y is offset by -1.3
+# JSON stores Y values like -0.5, 0.25 which need +1.3 to get actual position
+const PBVR_VERTICAL_OFFSET = 1.3
+
+# Optional scaling if coordinate ranges don't match
+const PBVR_X_SCALE = 1.0  # Multiply X by this
+const PBVR_Y_SCALE = 1.0  # Multiply Y by this (after offset)
+
+# Optional additional offset for fine-tuning
+const PBVR_X_OFFSET = 0.0  # Add to X after scaling
+const PBVR_Y_OFFSET = 0.0  # Add to Y after offset+scaling
+
 # Action type constants
 const ACTION_NORMAL_BALL = "NormalBall"
 const ACTION_POWER_BALL = "PowerBall"
@@ -322,10 +335,22 @@ func _add_wall(diff: String, beat_no: int, offset: float, position: Array, actio
 
 
 func _pbvr_to_es_position(position: Array) -> Vector2:
-	# Direct passthrough - same approach as BS->PBVR converter
-	# PowerBeatsVR coordinates map directly to game world coordinates
+	# Convert PowerBeatsVR stored coordinates to actual game coordinates
+	# PowerBeatsVR stores Y with a -1.3 offset (from Util.cs VERTICAL_OFFSET)
 	var x = float(position[0]) if position.size() > 0 else 0.0
 	var y = float(position[1]) if position.size() > 1 else 0.0
+	
+	# Apply PowerBeatsVR vertical offset (stored Y is offset by -1.3)
+	y += PBVR_VERTICAL_OFFSET
+	
+	# Apply optional scaling
+	x *= PBVR_X_SCALE
+	y *= PBVR_Y_SCALE
+	
+	# Apply optional fine-tuning offset
+	x += PBVR_X_OFFSET
+	y += PBVR_Y_OFFSET
+	
 	return Vector2(x, y)
 
 

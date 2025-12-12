@@ -33,16 +33,56 @@ LEVEL_HIGH = 1.05   # Y range: 0.6 to 2.1
 
 ### Mapping Approach
 
-Following the same approach as the Beat Saber to PowerBeatsVR converter:
-**Coordinates pass through directly without transformation.**
+**Important Discovery:** PowerBeatsVR stores Y coordinates with a -1.3 offset internally. This is defined in `Util.cs`:
 
-```gdscript
-static func pbvr_to_es_position(pbvr_x: float, pbvr_y: float) -> Vector2:
-    # Direct passthrough - preserves original level designer's intent
-    return Vector2(pbvr_x, pbvr_y)
+```csharp
+// From PowerBeatsVR decompiled Util.cs
+private static readonly float VERTICAL_OFFSET = 1.3f;
+
+public static Vector3 AdjustActionPositionGet(Vector3 input)
+{
+    return new Vector3(input.x, input.y + VERTICAL_OFFSET, input.z);
+}
 ```
 
-This means PowerBeatsVR levels may use a slightly wider coordinate range than native EnergySource levels, but this preserves the original gameplay feel.
+So JSON coordinates like `position: [1.1, -0.5]` actually display at Y = 0.8 (not -0.5).
+
+**Our conversion applies this offset:**
+
+```gdscript
+func _pbvr_to_es_position(position: Array) -> Vector2:
+    var x = float(position[0])
+    var y = float(position[1])
+    
+    # Apply PowerBeatsVR vertical offset
+    y += PBVR_VERTICAL_OFFSET  # 1.3
+    
+    # Apply optional scaling and fine-tuning
+    x = x * PBVR_X_SCALE + PBVR_X_OFFSET
+    y = y * PBVR_Y_SCALE + PBVR_Y_OFFSET
+    
+    return Vector2(x, y)
+```
+
+### Tunable Constants
+
+If positions don't feel right, adjust these in `PowerBeatsVRMap.gd`:
+
+| Constant | Default | Purpose |
+|----------|---------|---------|
+| `PBVR_VERTICAL_OFFSET` | 1.3 | Core Y offset from PowerBeatsVR |
+| `PBVR_X_SCALE` | 1.0 | Horizontal scaling |
+| `PBVR_Y_SCALE` | 1.0 | Vertical scaling |
+| `PBVR_X_OFFSET` | 0.0 | Fine-tune X position |
+| `PBVR_Y_OFFSET` | 0.0 | Fine-tune Y position |
+
+### Example Transformations
+
+| JSON Y | After Offset (+1.3) | Final Position |
+|--------|---------------------|----------------|
+| -0.5 | 0.8 | 0.8 |
+| 0.0 | 1.3 | 1.3 |
+| 0.25 | 1.55 | 1.55 |
 
 ## File Structure
 
