@@ -10,11 +10,14 @@ layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 pivot_offset = Vector2(-238, -153)
 theme = ExtResource("2")
 script = ExtResource("3")
 
 [node name="TabContainer" type="TabContainer" parent="."]
+top_level = true
 layout_mode = 0
 offset_right = 996.0
 offset_bottom = 568.0
@@ -54,7 +57,6 @@ grip -> slow down time"
 tab_size = 10
 
 [node name="Settings" type="ReferenceRect" parent="TabContainer"]
-visible = false
 layout_mode = 2
 metadata/_tab_index = 1
 
