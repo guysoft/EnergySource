@@ -142,10 +142,49 @@ PowerBeatsVRLevels/
 | PowerBeatsVR Action | EnergySource `_type` | Description |
 |---------------------|----------------------|-------------|
 | `NormalBall` | `0` (left) or `1` (right) | Standard hittable ball. Type determined by X position (negative = left, positive = right) |
-| `PowerBall` | `0` or `1` | Same as NormalBall (future: could add visual distinction) |
+| `PowerBall` | `0` or `1` | Purple ball requiring 4x velocity to hit. Type determined by X position |
 | `BallObstacle` | `3` (bomb) | Avoid hitting these |
 | `WallObstacle` | obstacle | Wall/barrier to dodge |
 | `Stream` | (not implemented) | Logged and skipped |
+
+## PowerBall Mechanics
+
+PowerBalls are harder to hit than NormalBalls. From PowerBeatsVR `GameManager.cs`:
+
+```csharp
+bool flag2 = mv is PowerBall;
+if (flag2) {
+    num3 /= 4f;  // Divide velocity by 4 for PowerBalls
+}
+HitResult hitResult = GetHitLevel(num3);
+```
+
+### How It Works
+
+1. **Per-ball detection**: Each ball stores `_is_power_ball` flag
+2. **Velocity adjustment**: PowerBall velocity is divided by 4 before threshold check
+3. **Same thresholds**: Both ball types use same thresholds after adjustment
+
+### Velocity Requirements (Expert Difficulty)
+
+| Ball Type | Minimum Hit | Full Impact |
+|-----------|-------------|-------------|
+| NormalBall | 1.0 m/s | 1.73 m/s |
+| PowerBall | 2.0 m/s | 3.46 m/s |
+
+### Visual Distinction
+
+- **NormalBall**: Blue (left) or Red (right)
+- **PowerBall**: Purple glow
+- **Missed hit**: Ball turns black
+
+### "Only Power Balls" Setting
+
+When enabled, ALL balls become PowerBalls:
+- NormalBalls in PowerBeatsVR levels → converted to PowerBalls
+- Beat Saber levels → all notes become PowerBalls
+- Visual: all balls render purple
+- Difficulty: all balls require 4x velocity
 
 ## Wall Type Mapping
 

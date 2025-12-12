@@ -174,6 +174,9 @@ func add_note(difficulty, note):
 	note["y"] = tmp[1]
 	note["offset"] = offset
 	
+	# Beat Saber maps don't have PowerBalls natively, but "Only Power Balls" setting can force it
+	note["_is_power_ball"] = _get_only_power_balls_setting()
+	
 	self.notes[difficulty][beat_number].append(note)
 	return
 
@@ -227,3 +230,12 @@ func add_event(difficulty, event):
 	
 	self.events[difficulty][beat_number].append(event)
 	return
+
+
+# Helper to safely get the "only_power_balls" setting
+# Returns false if Settings autoload is not available (e.g., headless testing)
+static func _get_only_power_balls_setting() -> bool:
+	var settings_node = Engine.get_singleton("Settings") if Engine.has_singleton("Settings") else null
+	if settings_node and settings_node.has_method("get_setting"):
+		return settings_node.get_setting("game", "only_power_balls")
+	return false
