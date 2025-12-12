@@ -25,6 +25,11 @@ var song_selected
 
 var custom_levels_foldername = "Levels"
 
+# PowerBeatsVR level paths
+var pbvr_layouts_path: String = ""
+var pbvr_music_path: String = ""
+var pbvr_levels_foldername = "PowerBeatsVRLevels"
+
 func _ready():
 	var dir = ""
 	if OS.get_name() == "HTML5":
@@ -48,6 +53,13 @@ func _ready():
 	if not DirAccess.dir_exists_absolute(GameVariables.custom_songs_path):
 		print ("custom levels folder doesn't exist! Creating...")
 		DirAccess.make_dir_absolute(GameVariables.custom_songs_path)
+	
+	# Setup PowerBeatsVR paths
+	var pbvr_base = dir + "/" + pbvr_levels_foldername
+	self.pbvr_layouts_path = pbvr_base + "/Layouts"
+	self.pbvr_music_path = pbvr_base + "/music"
+	print ("PowerBeatsVR layouts path: ", self.pbvr_layouts_path)
+	print ("PowerBeatsVR music path: ", self.pbvr_music_path)
 	
 	self.path = dir + "/Levels/test"
 	self.difficulty = "Expert"
