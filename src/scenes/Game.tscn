@@ -246,6 +246,7 @@ light_energy = 1.5
 
 [node name="PauseMenu" parent="." instance=ExtResource("24_jbgew")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3676617, -3.7702389)
+visible = false
 disable_collision = true
 
 [connection signal="pressed" from="BigScore/ReferenceRect/VBoxContainer/HBoxContainer/RestartButton" to="." method="_on_RestartButton_pressed"]
