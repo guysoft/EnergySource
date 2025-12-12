@@ -13,6 +13,11 @@ const PBVR_X_MAX = 1.3
 const PBVR_Y_MIN = 0.5
 const PBVR_Y_MAX = 1.3
 
+# BPM Range thresholds (from PowerBeatsVR GameManager.cs)
+# Used to determine ball flight duration
+const BPM_MID_THRESHOLD = 100
+const BPM_HIGH_THRESHOLD = 145
+
 # Action type constants
 const ACTION_NORMAL_BALL = "NormalBall"
 const ACTION_POWER_BALL = "PowerBall"
@@ -118,6 +123,19 @@ func get_bpm() -> float:
 
 func get_offset() -> float:
 	return float(json_data.get("offset", 0))
+
+
+func get_ball_flight_duration() -> int:
+	# Ball flight duration in beats - how long balls take to fly from spawn to player
+	# From PowerBeatsVR GameManager.cs - Expert difficulty timing
+	# BPM < 100  (Low):  2 beats
+	# BPM 100-145 (Mid): 2 beats
+	# BPM >= 145 (High): 3 beats
+	var bpm = get_bpm()
+	if bpm >= BPM_HIGH_THRESHOLD:
+		return 3  # High BPM songs need more time
+	else:
+		return 2  # Low and Mid BPM songs
 
 
 func get_song() -> String:
@@ -339,4 +357,5 @@ func _on_beat_detected(diff: String, beat: int) -> Array:
 		return_events = events[diff][int(beat)]
 	
 	return [return_notes, return_obstacles, return_events]
+
 

@@ -124,6 +124,25 @@ PowerBeatsVRLevels/
 
 ## Timing
 
+### Ball Flight Duration
+
+PowerBeatsVR adjusts how long balls take to fly from spawn to player based on BPM. This is critical for proper gameplay feel.
+
+**From PowerBeatsVR `GameManager.cs` (Expert difficulty):**
+
+| BPM Range | Threshold | Flight Duration |
+|-----------|-----------|-----------------|
+| Low | BPM < 100 | 2 beats |
+| Mid | 100 <= BPM < 145 | 2 beats |
+| High | BPM >= 145 | 3 beats |
+
+**Example - Wellerman (96 BPM):**
+- BPM Range: Low (96 < 100)
+- Flight Duration: 2 beats
+- Flight Time: 60/96 * 2 = **1.25 seconds**
+
+Beat Saber levels use a fixed 4-beat flight duration.
+
 ### Beat Number
 The `beatNo` field indicates which beat (integer) the actions occur on.
 
@@ -181,4 +200,5 @@ var notes = map._on_beat_detected("Expert", beat_number)
 - Stream support (bezier path rendering)
 - Unique visuals for each wall type
 - Cover image support
+
 

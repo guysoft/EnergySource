@@ -16,7 +16,8 @@ var obstaclescene = preload("res://scenes/Obstacle.tscn")
 @onready var travel_distance = $HitMarker.global_transform.origin.distance_to($SpawnLocation.global_transform.origin)
 
 # how many beats does it take the spawned notes to travel to arvr origin
-@onready var notes_delay = 4
+# This is set from the map's get_ball_flight_duration() method
+var notes_delay = 4
 
 const MIN_SONG_SPEED = 0.5
 const MAX_SONG_SPEED = 1.5
@@ -50,6 +51,13 @@ func _ready():
 	var path = GameVariables.path
 	
 	_map = setup_map(path, difficulty)
+	
+	# Set notes_delay from map's ball flight duration
+	# PowerBeatsVR uses 2-3 beats depending on BPM, Beat Saber uses 4
+	if _map and _map.has_method("get_ball_flight_duration"):
+		notes_delay = _map.get_ball_flight_duration()
+		print("Game: Using ball flight duration from map: ", notes_delay, " beats")
+	
 	setup_song(_map)
 	setup_environment(_map)
 
