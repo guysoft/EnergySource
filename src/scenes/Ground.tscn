@@ -5,8 +5,8 @@
 
 [sub_resource type="PlaneMesh" id="27"]
 size = Vector2(8, 8)
-subdivide_width = 128
-subdivide_depth = 128
+subdivide_width = 1024
+subdivide_depth = 1024
 
 [sub_resource type="BoxShape3D" id="9"]
 size = Vector3(14, 2, 16)
