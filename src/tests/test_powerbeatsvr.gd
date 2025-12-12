@@ -72,42 +72,44 @@ func test_position_mapping() -> bool:
 	print("--- Testing Position Mapping ---")
 	var passed = true
 	
-	# Test that positions pass through directly (per plan)
-	# PowerBeatsVR uses: posx = -1.3 to 1.3, posy = 0.5 to 1.3
+	# Test position mapping with VERTICAL_OFFSET of 1.3
+	# PowerBeatsVR stores Y with -1.3 offset, so we add 1.3 back
+	# JSON Y -0.5 -> actual 0.8, JSON Y 0.0 -> actual 1.3
 	
 	var map = PowerBeatsVRMapScript.new("")
+	var VERTICAL_OFFSET = 1.3
 	
-	# Test center position
+	# Test center position: Y=0.0 -> Y=1.3
 	var center = map._pbvr_to_es_position([0.0, 0.0])
-	if not is_equal_approx(center.x, 0.0) or not is_equal_approx(center.y, 0.0):
+	if not is_equal_approx(center.x, 0.0) or not is_equal_approx(center.y, 0.0 + VERTICAL_OFFSET):
 		print("  ✗ Center position mapping failed: ", center)
 		passed = false
 	else:
 		print("  ✓ Center position maps correctly: ", center)
 	
-	# Test left position
+	# Test left position: Y=0.5 -> Y=1.8
 	var left = map._pbvr_to_es_position([-1.3, 0.5])
-	if not is_equal_approx(left.x, -1.3) or not is_equal_approx(left.y, 0.5):
+	if not is_equal_approx(left.x, -1.3) or not is_equal_approx(left.y, 0.5 + VERTICAL_OFFSET):
 		print("  ✗ Left position mapping failed: ", left)
 		passed = false
 	else:
 		print("  ✓ Left position maps correctly: ", left)
 	
-	# Test right position
+	# Test right position: Y=1.3 -> Y=2.6
 	var right = map._pbvr_to_es_position([1.3, 1.3])
-	if not is_equal_approx(right.x, 1.3) or not is_equal_approx(right.y, 1.3):
+	if not is_equal_approx(right.x, 1.3) or not is_equal_approx(right.y, 1.3 + VERTICAL_OFFSET):
 		print("  ✗ Right position mapping failed: ", right)
 		passed = false
 	else:
 		print("  ✓ Right position maps correctly: ", right)
 	
-	# Test typical Wellerman position from the JSON
+	# Test typical Wellerman position: Y=-0.5 -> Y=0.8
 	var typical = map._pbvr_to_es_position([1.10000002384186, -0.5])
-	if not is_equal_approx(typical.x, 1.1) or not is_equal_approx(typical.y, -0.5):
+	if not is_equal_approx(typical.x, 1.1) or not is_equal_approx(typical.y, -0.5 + VERTICAL_OFFSET):
 		print("  ✗ Typical position mapping failed: ", typical)
 		passed = false
 	else:
-		print("  ✓ Typical position maps correctly: ", typical)
+		print("  ✓ Typical position maps correctly (Y=-0.5 -> 0.8): ", typical)
 	
 	return passed
 
