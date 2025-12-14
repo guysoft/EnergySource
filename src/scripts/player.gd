@@ -279,6 +279,10 @@ func handle_hit(body, hand):
 				# Valid hit - calculate score
 				self.combo += 1
 				
+				# Haptic feedback on successful hit
+				if controller:
+					controller.simple_rumble(0.5, 0.15)  # Intensity 0.5, duration 0.15s
+				
 				var base_score = SCORE_SEMI if hit_level == HitLevel.MINIMUMIMPACT else SCORE_COMPLETE
 				var score_value = base_score
 				
