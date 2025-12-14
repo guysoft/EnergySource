@@ -23,6 +23,9 @@ const BOMB_SCORE_VALUE = 100
 const BOMB_ENERGY_VALUE = 25
 const MAX_COMBO = 99  # Increased max combo for PowerBeatsVR style
 
+# Floating score text scene
+var _floating_score_scene = preload("res://scenes/FloatingScore.tscn")
+
 # Payer movement in non-vr mode settings
 @export var mouse_sensitivity = 0.03
 @export var Invert_Y_Axis = true
@@ -293,6 +296,9 @@ func handle_hit(body, hand):
 				
 				self.score += score_value
 				
+				# Spawn floating score text at hit location
+				_spawn_floating_score(body.global_position, score_value, hit_level)
+				
 				# Energy gain based on hit level
 				if hit_level == HitLevel.FULLIMPACT:
 					self.energy += 2
@@ -333,6 +339,13 @@ func _calculate_hit_level(velocity_squared: float, is_power_ball: bool = false) 
 ##remaps a value from input range to output range
 #func remap_value(value, input_range:Vector2, output_range:Vector2)->float:
 #	return (value-input_range.x) / (input_range.y - input_range.x) * (output_range.y - output_range.x) + output_range.x
+
+# Spawn floating score text at the hit position
+# Shows green for perfect hits (FULLIMPACT), white for partial hits (MINIMUMIMPACT)
+func _spawn_floating_score(hit_position: Vector3, score_value: int, hit_level: int):
+	var floating = _floating_score_scene.instantiate()
+	get_tree().root.add_child(floating)
+	floating.show_score(hit_position, score_value, hit_level == HitLevel.FULLIMPACT)
 
 #SIGNAL CALLBACKS
 

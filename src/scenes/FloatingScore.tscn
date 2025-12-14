@@ -1,0 +1,16 @@
+[gd_scene load_steps=2 format=3 uid="uid://bfl3x8nqky5qe"]
+
+[ext_resource type="Script" path="res://scripts/floating_score.gd" id="1"]
+
+[node name="FloatingScore" type="Node3D"]
+script = ExtResource("1")
+
+[node name="Label3D" type="Label3D" parent="."]
+pixel_size = 0.005
+billboard = 1
+no_depth_test = true
+text = "20"
+font_size = 64
+outline_size = 8
+modulate = Color(1, 1, 1, 1)
+outline_modulate = Color(0, 0, 0, 1)
