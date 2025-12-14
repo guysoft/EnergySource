@@ -13,11 +13,7 @@ debug_start_scene = "Menu"
 
 [node name="Player" parent="." instance=ExtResource("2")]
 
-[node name="LeftHand" parent="Player/XROrigin3D" index="1"]
-visible = false
-
 [node name="LeftHand" parent="Player/XROrigin3D/LeftHand" index="0"]
-visible = true
 script = null
 
 [node name="Position3D2" parent="Player/XROrigin3D/LeftHand" index="1"]
@@ -28,6 +24,16 @@ transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0
 
 [node name="Handle" parent="Player/XROrigin3D/LeftHand/Position3D2/Marker3D" index="0"]
 transform = Transform3D(1, 0, 0, 0, 0.99999976, 0, 0, 0, 0.99999976, 0, 0.446, 0)
+visible = false
+
+[node name="Blade" parent="Player/XROrigin3D/LeftHand/Position3D2/Marker3D" index="1"]
+visible = false
+
+[node name="CollisionShape3" parent="Player/XROrigin3D/LeftHand/Position3D2/Marker3D/Area3D" index="0"]
+transform = Transform3D(0.9408844, 0, 0, 0, 1.0513035, 0.023507386, 0, -0.024720252, 0.99972296, 0.26639932, 0.02099529, -0.0004937053)
+
+[node name="RightHand" parent="Player/XROrigin3D" index="2"]
+visible = false
 
 [node name="HandModel" parent="Player/XROrigin3D/RightHand" index="0"]
 script = null
@@ -41,7 +47,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.446, 0)
 [node name="CollisionShape3D" parent="Player" index="1"]
 visible = false
 
-[node name="PlayerCenter" parent="Player" index="2"]
+[node name="PlayerCenter" parent="Player" index="3"]
 visible = false
 
 [node name="BeatPlayer" type="AudioStreamPlayer" parent="."]
