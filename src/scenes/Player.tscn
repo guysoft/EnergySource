@@ -141,24 +141,36 @@ transform = Transform3D(1, 0, 0, 0, 1, -2.98023e-08, 0, 2.98023e-08, 1, 0, 0, -0
 
 [node name="Handle" type="MeshInstance3D" parent="XROrigin3D/RightHand/Marker3D/Marker3D"]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0.45)
+visible = false
 mesh = SubResource("20")
 skeleton = NodePath("../Blade")
 surface_material_override/0 = SubResource("21")
 
 [node name="Blade" type="MeshInstance3D" parent="XROrigin3D/RightHand/Marker3D/Marker3D"]
+visible = false
 mesh = SubResource("17")
 skeleton = NodePath("../..")
 surface_material_override/0 = SubResource("18")
+
+[node name="hammer_smaller_hand_right" parent="XROrigin3D/RightHand/Marker3D/Marker3D" instance=ExtResource("6_bruh7")]
+transform = Transform3D(-1.0741881e-08, -7.521546e-09, 0.29999998, -0.0037905872, -0.29997593, -7.656669e-09, 0.29997593, -0.0037905872, 1.0645973e-08, 0.0012979591, 0.5424671, -0.0019629896)
 
 [node name="EndTracker" type="Marker3D" parent="XROrigin3D/RightHand/Marker3D/Marker3D"]
 transform = Transform3D(1, 0, 0, 0, 1, -2.98023e-08, 0, 2.98023e-08, 1, 0, 5.96046e-08, -0.37)
 
 [node name="Area3D" type="Area3D" parent="XROrigin3D/RightHand/Marker3D/Marker3D"]
+transform = Transform3D(0.9974904, 0.056038313, -0.043272354, -0.040609844, 0.047810316, 0.9980298, 0.057996813, -0.9972824, 0.045414835, -0.00042785704, 0.25550413, 0.033929378)
+visible = false
 collision_layer = 2
 collision_mask = 28
 
-[node name="CollisionShape2" type="CollisionShape3D" parent="XROrigin3D/RightHand/Marker3D/Marker3D/Area3D"]
-shape = SubResource("16")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="XROrigin3D/RightHand/Marker3D/Marker3D/Area3D"]
+transform = Transform3D(0.9996111, 0.015502767, 0.023180475, -0.022843475, 0.021573007, -0.9995061, -0.01599519, 0.9996465, 0.02121067, 0.0144622065, -0.017327636, -0.3287332)
+shape = SubResource("CapsuleShape3D_6eyey")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="XROrigin3D/RightHand/Marker3D/Marker3D/Area3D"]
+transform = Transform3D(0.9996111, -0.02360816, 0.014843287, -0.02284348, 0.9984998, 0.04973373, -0.015995193, -0.049375504, 0.99865043, 0.0052563716, -0.03350851, -0.05804631)
+shape = SubResource("BoxShape3D_d3wef")
 
 [node name="Feature_UIRayCast" parent="XROrigin3D/RightHand/Marker3D/Marker3D" instance=ExtResource("5")]
 controller_path = NodePath("../../..")

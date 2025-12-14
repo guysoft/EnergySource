@@ -41,9 +41,10 @@ func _apply_controller_model_glow() -> void:
 	# enabling emission on its existing material (uses the material's own
 	# albedo texture as the emission texture).
 	#
-	# Currently the left controller model is a hammer instance named
-	# "hammer_smaller_hand_left" (see Player.tscn).
+	# Both left and right controllers use hammer models (see Player.tscn).
 	var model_root := find_child("hammer_smaller_hand_left", true, false)
+	if model_root == null:
+		model_root = find_child("hammer_smaller_hand_right", true, false)
 	if model_root == null:
 		return
 
