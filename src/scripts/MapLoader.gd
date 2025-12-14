@@ -235,7 +235,13 @@ func add_event(difficulty, event):
 # Helper to safely get the "only_power_balls" setting
 # Returns false if Settings autoload is not available (e.g., headless testing)
 static func _get_only_power_balls_setting() -> bool:
-	var settings_node = Engine.get_singleton("Settings") if Engine.has_singleton("Settings") else null
+	# Settings is an autoload Node (not an Engine singleton). In headless/unit tests,
+	# it may not exist, so default to false.
+	var main_loop = Engine.get_main_loop()
+	var tree := main_loop as SceneTree
+	if tree == null:
+		return false
+	var settings_node = tree.root.get_node_or_null("Settings")
 	if settings_node and settings_node.has_method("get_setting"):
-		return settings_node.get_setting("game", "only_power_balls")
+		return bool(settings_node.get_setting("game", "only_power_balls"))
 	return false

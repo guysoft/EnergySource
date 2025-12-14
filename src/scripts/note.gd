@@ -151,35 +151,44 @@ func on_hit(velocity, linear_velocity, hit_level):
 
 # Turn the ball black/dark to indicate a weak hit that didn't score
 func _set_ball_dark():
+	# IMPORTANT:
+	# Don't duplicate materials here. The beat effect (BeatResponder) animates shader
+	# parameters on the shared note materials. Duplicating would "disconnect" this
+	# ball from beat updates, causing the beat displacement to get stuck.
+	#
+	# Instead, override only the per-instance visual parameters.
 	var mat = _mesh.material_override
-	if mat:
-		# Create a dark copy of the material
+	if mat is ShaderMaterial:
+		_mesh.set_instance_shader_parameter("albedo_color", Color.BLACK)
+		# Also dim emission if present
+		if mat.get_shader_parameter("emission_color") != null:
+			_mesh.set_instance_shader_parameter("emission_color", Color.BLACK)
+	elif mat is StandardMaterial3D:
+		# Fallback (StandardMaterial3D doesn't support instance shader params).
+		# This may still create a per-ball material, but our note materials are ShaderMaterials.
 		var dark_mat = mat.duplicate()
-		if dark_mat is ShaderMaterial:
-			dark_mat.set_shader_parameter("albedo_color", Color.BLACK)
-			# Also dim emission if present
-			if dark_mat.get_shader_parameter("emission_color") != null:
-				dark_mat.set_shader_parameter("emission_color", Color.BLACK)
-		elif dark_mat is StandardMaterial3D:
-			dark_mat.albedo_color = Color.BLACK
-			dark_mat.emission = Color.BLACK
+		dark_mat.albedo_color = Color.BLACK
+		dark_mat.emission = Color.BLACK
 		_mesh.material_override = dark_mat
 
 
 # Turn the ball purple to indicate a PowerBall (requires 4x velocity to hit)
 func _set_ball_purple():
+	# IMPORTANT:
+	# Use per-instance shader parameters instead of duplicating the material, so
+	# the shared BeatResponder-driven shader params (like min_displace) continue
+	# to animate and don't get "stuck" on PowerBalls.
 	var mat = _mesh.material_override
-	if mat:
-		# Create a purple copy of the material
+	if mat is ShaderMaterial:
+		_mesh.set_instance_shader_parameter("albedo_color", Color.PURPLE)
+		# Set emission to purple glow if present
+		if mat.get_shader_parameter("emission_color") != null:
+			_mesh.set_instance_shader_parameter("emission_color", Color.PURPLE * 0.5)
+	elif mat is StandardMaterial3D:
+		# Fallback (StandardMaterial3D doesn't support instance shader params).
 		var purple_mat = mat.duplicate()
-		if purple_mat is ShaderMaterial:
-			purple_mat.set_shader_parameter("albedo_color", Color.PURPLE)
-			# Set emission to purple glow
-			if purple_mat.get_shader_parameter("emission_color") != null:
-				purple_mat.set_shader_parameter("emission_color", Color.PURPLE * 0.5)
-		elif purple_mat is StandardMaterial3D:
-			purple_mat.albedo_color = Color.PURPLE
-			purple_mat.emission = Color.PURPLE * 0.5
+		purple_mat.albedo_color = Color.PURPLE
+		purple_mat.emission = Color.PURPLE * 0.5
 		_mesh.material_override = purple_mat
 
 func spawn_hit_effect():
