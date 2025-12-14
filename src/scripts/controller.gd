@@ -34,6 +34,42 @@ func _ready():
 	if velocity_track_point:
 		pass
 		# velocity_track_point = get_node(velocity_track_point) as Marker3D
+	call_deferred("_apply_controller_model_glow")
+
+func _apply_controller_model_glow() -> void:
+	# Make the controller model easier to read in dark environments by
+	# enabling emission on its existing material (uses the material's own
+	# albedo texture as the emission texture).
+	#
+	# Currently the left controller model is a hammer instance named
+	# "hammer_smaller_hand_left" (see Player.tscn).
+	var model_root := find_child("hammer_smaller_hand_left", true, false)
+	if model_root == null:
+		return
+
+	var meshes := model_root.find_children("*", "MeshInstance3D", true, false)
+	for n in meshes:
+		var mi := n as MeshInstance3D
+		if mi == null or mi.mesh == null:
+			continue
+		# Subtle glow: enough to read details, not enough to blow out textures.
+		_make_mesh_emissive(mi, 0.15)
+
+func _make_mesh_emissive(mi: MeshInstance3D, energy_multiplier: float) -> void:
+	var surface_count := mi.mesh.get_surface_count()
+	for surface_i in range(surface_count):
+		var mat: Material = mi.get_active_material(surface_i)
+		if mat == null:
+			continue
+		var dup: Material = mat.duplicate()
+		if dup is BaseMaterial3D:
+			var bm := dup as BaseMaterial3D
+			bm.emission_enabled = true
+			# Keep emission low so we don't wash out the albedo/texture.
+			bm.emission = Color(0.15, 0.15, 0.15, 1)
+			bm.emission_texture = bm.albedo_texture
+			bm.emission_energy_multiplier = energy_multiplier
+			mi.set_surface_override_material(surface_i, bm)
 
 func _get_button_name_from_index(index: int) -> String:
 	match index:
