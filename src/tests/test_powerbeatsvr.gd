@@ -9,6 +9,43 @@ const TEST_BS_PATH = "res://Levels/test"
 # Load scripts manually for headless testing (class_name not available without full editor)
 var PowerBeatsVRMapScript = preload("res://scripts/PowerBeatsVRMap.gd")
 var MapFactoryScript = preload("res://scripts/MapFactory.gd")
+var BeatSaberMapScript = preload("res://scripts/MapLoader.gd")
+
+
+# Minimal fake Settings autoload for headless tests.
+class FakeSettings extends Node:
+	var only_power_balls_enabled := false
+
+	func _init(enabled: bool = false):
+		only_power_balls_enabled = enabled
+
+	func get_setting(section: String, key: String):
+		if section == "game" and key == "only_power_balls":
+			return only_power_balls_enabled
+		return null
+
+
+func _install_fake_settings(only_power_balls_enabled: bool) -> void:
+	# Avoid clobbering a real autoload if tests are ever run inside the editor.
+	var root := get_root()
+	var existing := root.get_node_or_null("Settings")
+	if existing != null:
+		# If a Settings node already exists, do not replace it.
+		# The new loaders default to false when Settings isn't available, so tests that
+		# require Settings should be run headless.
+		return
+	var settings := FakeSettings.new(only_power_balls_enabled)
+	settings.name = "Settings"
+	settings.set_meta("__fake_settings", true)
+	root.add_child(settings)
+
+
+func _remove_fake_settings() -> void:
+	var root := get_root()
+	var existing := root.get_node_or_null("Settings")
+	if existing != null and existing.has_meta("__fake_settings"):
+		root.remove_child(existing)
+		existing.free()
 
 func _init():
 	print("\n=== PowerBeatsVR Level Loading Tests ===\n")
@@ -24,6 +61,9 @@ func _init():
 	all_passed = test_wellerman_level() and all_passed
 	all_passed = test_wall_type_mapping() and all_passed
 	all_passed = test_ball_flight_duration() and all_passed
+	all_passed = test_only_power_balls_default_false_beatsaber() and all_passed
+	all_passed = test_only_power_balls_forces_powerballs_pbvr() and all_passed
+	all_passed = test_only_power_balls_forces_powerballs_beatsaber() and all_passed
 	
 	# Summary
 	print("\n=== Test Summary ===")
@@ -65,6 +105,100 @@ func test_json_loading() -> bool:
 	else:
 		print("  ✓ BPM: " + str(map.get_bpm()))
 	
+	return passed
+
+
+func test_only_power_balls_default_false_beatsaber() -> bool:
+	print("--- Testing Only Power Balls Default (Beat Saber) ---")
+	_remove_fake_settings()
+	var passed = true
+
+	var bs_path = ProjectSettings.globalize_path(TEST_BS_PATH)
+	if not DirAccess.dir_exists_absolute(bs_path):
+		print("  ⚠ Beat Saber test path not found, skipping: " + bs_path)
+		return true
+
+	var map = BeatSaberMapScript.new(bs_path)
+	map.get_level("Expert")
+
+	var found_ball = false
+	for beat_no in map.notes.get("Expert", {}):
+		for note in map.notes["Expert"][beat_no]:
+			if int(note.get("_type", -1)) == 3:
+				continue # bomb
+			found_ball = true
+			if note.get("_is_power_ball", false) != false:
+				print("  ✗ Expected _is_power_ball == false by default, got: ", note.get("_is_power_ball"))
+				passed = false
+
+	if found_ball:
+		print("  ✓ Beat Saber notes default to non-PowerBall when Settings is missing")
+	else:
+		print("  ⚠ No non-bomb notes found in Beat Saber test map")
+
+	return passed
+
+
+func test_only_power_balls_forces_powerballs_pbvr() -> bool:
+	print("--- Testing Only Power Balls Forces PowerBalls (PowerBeatsVR) ---")
+	_remove_fake_settings()
+	_install_fake_settings(true)
+	var passed = true
+
+	var global_path = ProjectSettings.globalize_path(WELLERMAN_PATH)
+	var map = PowerBeatsVRMapScript.new(global_path)
+	map.get_level("Beginner")
+
+	var found_ball = false
+	for beat_no in map.notes.get("Beginner", {}):
+		for note in map.notes["Beginner"][beat_no]:
+			if int(note.get("_type", -1)) == 3:
+				continue # bomb
+			found_ball = true
+			if note.get("_is_power_ball", false) != true:
+				print("  ✗ Expected PowerBall flag to be forced true, got: ", note.get("_is_power_ball"))
+				passed = false
+
+	if found_ball:
+		print("  ✓ PowerBeatsVR notes are flagged as PowerBalls when only_power_balls is enabled")
+	else:
+		print("  ⚠ No non-bomb notes found in PowerBeatsVR map to validate")
+
+	_remove_fake_settings()
+	return passed
+
+
+func test_only_power_balls_forces_powerballs_beatsaber() -> bool:
+	print("--- Testing Only Power Balls Forces PowerBalls (Beat Saber) ---")
+	_remove_fake_settings()
+	_install_fake_settings(true)
+	var passed = true
+
+	var bs_path = ProjectSettings.globalize_path(TEST_BS_PATH)
+	if not DirAccess.dir_exists_absolute(bs_path):
+		print("  ⚠ Beat Saber test path not found, skipping: " + bs_path)
+		_remove_fake_settings()
+		return true
+
+	var map = BeatSaberMapScript.new(bs_path)
+	map.get_level("Expert")
+
+	var found_ball = false
+	for beat_no in map.notes.get("Expert", {}):
+		for note in map.notes["Expert"][beat_no]:
+			if int(note.get("_type", -1)) == 3:
+				continue # bomb
+			found_ball = true
+			if note.get("_is_power_ball", false) != true:
+				print("  ✗ Expected PowerBall flag to be forced true, got: ", note.get("_is_power_ball"))
+				passed = false
+
+	if found_ball:
+		print("  ✓ Beat Saber notes are flagged as PowerBalls when only_power_balls is enabled")
+	else:
+		print("  ⚠ No non-bomb notes found in Beat Saber test map to validate")
+
+	_remove_fake_settings()
 	return passed
 
 
