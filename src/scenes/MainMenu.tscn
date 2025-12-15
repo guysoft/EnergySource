@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://bdvveg1vwed6m"]
+[gd_scene load_steps=15 format=3 uid="uid://bdvveg1vwed6m"]
 
 [ext_resource type="Script" uid="uid://pssqyxlbl4px" path="res://scripts/MainMenu.gd" id="1"]
 [ext_resource type="ArrayMesh" uid="uid://cec6d3bfdrslc" path="res://models/logo.obj" id="2"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://becsllrl52q2f" path="res://scenes/UICanvasInteract.tscn" id="4"]
 [ext_resource type="Script" uid="uid://bfd0a4boxmkre" path="res://scripts/beat_responder.gd" id="5"]
 [ext_resource type="PackedScene" uid="uid://c3vqk8h2r4xcp" path="res://scenes/UICanvas.tscn" id="6"]
+[ext_resource type="Theme" uid="uid://bqrtdp16pwtjk" path="res://Themes/MainMenuText.tres" id="6_5faoh"]
 [ext_resource type="PackedScene" uid="uid://cbkm53asq2x43" path="res://scenes/MainMenuUI.tscn" id="7"]
 [ext_resource type="Theme" uid="uid://d1fbglwrn3v44" path="res://effects/menu_theme.tres" id="8"]
 [ext_resource type="AudioStream" uid="uid://8i1scdg5yxpm" path="res://music/blockout.ogg" id="9"]
@@ -30,18 +31,24 @@ offset_bottom = 545.0
 theme = ExtResource("8")
 
 [node name="Panel" type="Panel" parent="UICanvas/ReferenceRect"]
-layout_mode = 0
+layout_mode = 1
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="RichTextLabel" type="RichTextLabel" parent="UICanvas/ReferenceRect/Panel"]
-layout_mode = 0
+layout_mode = 1
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 32.0
-offset_top = 32.0
-offset_right = -32.0
-offset_bottom = -32.0
+offset_left = 22.0
+offset_top = 410.0
+offset_right = -42.0
+offset_bottom = -13.0
+grow_horizontal = 2
+grow_vertical = 2
 text = "Designed and programmed by: Guy Sheffer and Rainer Weston
 
 Art by: Rainer Weston
@@ -49,13 +56,29 @@ Music by: Azarias
 
 Thank you for playing!"
 
+[node name="TodayPlayTimeLabel" type="Label" parent="UICanvas/ReferenceRect/Panel"]
+layout_mode = 0
+offset_left = 46.0
+offset_top = 39.0
+offset_right = 526.0
+offset_bottom = 83.0
+theme = ExtResource("6_5faoh")
+text = "Today Play time"
+
+[node name="TodayPlayTime" type="Label" parent="UICanvas/ReferenceRect/Panel/TodayPlayTimeLabel"]
+layout_mode = 0
+offset_left = 182.0
+offset_top = 63.0
+offset_right = 313.0
+offset_bottom = 96.0
+theme = ExtResource("6_5faoh")
+text = "00:00:00"
+
 [node name="UICanvasInteract3" parent="." instance=ExtResource("4")]
 transform = Transform3D(1.41421, -0.366025, 2.73205, 0, 1.93185, 1.03528, -1.41421, -0.366025, 2.73205, -1.728, 1.21667, -0.851)
 transparent = true
 
 [node name="MainMenuLeft" parent="UICanvasInteract3" instance=ExtResource("12")]
-grow_horizontal = 2
-grow_vertical = 2
 
 [node name="UICanvasInteract" parent="." instance=ExtResource("4")]
 process_mode = 3

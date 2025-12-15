@@ -21,3 +21,12 @@ func _ready():
 	
 	_player.in_game=false
 	_player.game_node=null
+	
+	_update_playtime_display()
+
+func _update_playtime_display():
+	# UICanvas moves the Control into SubViewport at runtime
+	var playtime_label = $UICanvas/SubViewport/ReferenceRect/Panel/TodayPlayTimeLabel/TodayPlayTime
+	if playtime_label:
+		var seconds = PlaytimeTracker.get_playtime_today()
+		playtime_label.text = PlaytimeTracker.format_playtime(seconds)
