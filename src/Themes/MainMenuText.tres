@@ -1,0 +1,8 @@
+[gd_resource type="Theme" load_steps=2 format=3 uid="uid://bqrtdp16pwtjk"]
+
+[ext_resource type="FontFile" uid="uid://byemkjra3kgch" path="res://fonts/millimetre-font-128.tres" id="1_df767"]
+
+[resource]
+resource_name = "MainMenuText"
+default_font = ExtResource("1_df767")
+default_font_size = 32
