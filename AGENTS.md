@@ -257,3 +257,37 @@ grep -r "font_size" scenes/*.tscn
 # Check project font settings  
 cat project.godot | grep -A5 "\[gui\]"
 ```
+
+## 10. VR UI Button Configuration
+
+### Button Signals for VR Raycast
+The VR raycast system (`Feature_UIRayCast.gd` + `UIArea.gd`) pushes mouse events to SubViewport UIs. However, button release events don't always properly trigger the `pressed` signal.
+
+**Rule:** For buttons in VR UI, use `button_down` signal instead of `pressed`:
+```gdscript
+# WRONG - may not fire with VR raycast
+button.pressed.connect(_on_button_pressed)
+
+# CORRECT - fires immediately on click
+button.button_down.connect(_on_button_pressed)
+```
+
+### Button Properties for VR
+When adding buttons to VR-compatible UI scenes:
+1. **mouse_filter = 0** (STOP) - Ensures button captures input instead of passing through
+2. **Connect signals in code** - Scene file signal connections may not work reliably with VR raycast input
+3. **Use `button_down` signal** - The `pressed` signal (which fires on release) doesn't work reliably with VR raycast
+
+### Example: Connecting Buttons in Code
+```gdscript
+func _ready():
+    var my_button = $Path/To/Button
+    if my_button and not my_button.button_down.is_connected(_on_button_pressed):
+        my_button.button_down.connect(_on_button_pressed)
+```
+
+### ItemList in VR UI
+When using ItemList with scroll buttons:
+- **Remove `size_flags_vertical = 3`** (EXPAND_FILL) from ItemList - otherwise it expands to fit all content and pushes buttons off-screen
+- Set a fixed height via `custom_minimum_size`
+- Disable parent ScrollContainer scrolling (`horizontal_scroll_mode = 0`, `vertical_scroll_mode = 0`) if ItemList handles its own scrolling
