@@ -2,11 +2,16 @@ extends ScrollContainer
 
 @export var tab:String # (String, "Original", "Custom", "PowerBeatsVR")
 
-
+# Item types for tracking what each list entry represents
+enum ItemType { FOLDER, PARENT_DIR, MUSIC_FILE, BEATSABER_SONG }
 
 @onready var songs_list = []
 # Store full paths for each song to handle different formats
 @onready var songs_paths = []
+# Store item types to handle selection differently
+@onready var item_types = []
+# Track which items are disabled (no layout)
+@onready var disabled_items = []
 
 var _beatplayer = null
 
@@ -19,46 +24,72 @@ func _get_beatplayer():
 
 var songs_list_ui
 var no_songs_label
+var path_label = null
 
 var path = ""
+
+# Folder navigation state for PowerBeatsVR music browser
+var current_music_folder: String = ""  # Relative to pbvr_music_path
+
+# Music file extensions
+const MUSIC_EXTENSIONS = ["ogg", "mp3", "wav"]
+
+# Grey color for disabled items
+const DISABLED_COLOR = Color(0.5, 0.5, 0.5)
+
 
 func _ready():
 	populate_list()
 
+
 func populate_list():
-	#replace with custom icon
-	var icon = preload("res://icon.png")
-	
 	# Clear previous data
 	songs_list.clear()
 	songs_paths.clear()
+	item_types.clear()
+	disabled_items.clear()
+	
+	# Get UI nodes based on tab structure
+	_setup_ui_nodes()
 	
 	if tab == "Original":
 		# Populate Item List with internal levels (Beat Saber format)
 		path = GameVariables.internal_songs_path
 		_add_beatsaber_songs(path)
+		_populate_beatsaber_ui()
 	elif tab == "Custom":
-		# Populate Item List with user levels (Beat Saber format)
-		path = GameVariables.custom_songs_path
-		_add_beatsaber_songs(path)
-		# Also add PowerBeatsVR levels to Custom tab
-		_add_powerbeatsvr_songs(GameVariables.pbvr_layouts_path)
+		# Custom tab uses PowerBeatsVR music folder browser
+		_populate_powerbeatsvr_browser()
 	elif tab == "PowerBeatsVR":
-		# Dedicated PowerBeatsVR tab
-		_add_powerbeatsvr_songs(GameVariables.pbvr_layouts_path)
-	
-	songs_list_ui = $HBoxContainer/SongList
-	no_songs_label = $HBoxContainer/NoSongsLabel
+		# Dedicated PowerBeatsVR tab - also uses music folder browser
+		_populate_powerbeatsvr_browser()
+
+
+func _setup_ui_nodes():
+	"""Setup UI node references based on tab type"""
+	if tab == "Custom":
+		# Custom tab has VBoxContainer structure with PathLabel
+		songs_list_ui = $VBoxContainer/SongList
+		no_songs_label = $VBoxContainer/NoSongsLabel
+		path_label = $VBoxContainer/HBoxContainer/PathLabel
+	else:
+		# Original tab has HBoxContainer structure
+		songs_list_ui = $HBoxContainer/SongList
+		no_songs_label = $HBoxContainer/NoSongsLabel
+		path_label = null
+
+
+func _populate_beatsaber_ui():
+	"""Populate UI for Beat Saber format songs"""
+	var icon = preload("res://icon.png")
 	
 	songs_list_ui.clear()
-
+	
 	for i in range(songs_list.size()):
 		var item = songs_list[i]
 		var item_path = songs_paths[i]
 		
-		print("Found song: " + item + " at: " + item_path)
-		
-		# Use MapFactory to create the appropriate loader
+		# Use MapFactory to load Beat Saber maps (they need info.dat parsing)
 		var map = MapFactory.create_map(item_path)
 		if not map:
 			push_warning("Failed to load map: " + item_path)
@@ -66,21 +97,13 @@ func populate_list():
 		
 		var song_name = map.get_name()
 		var cover_name = map.get_cover_name()
-		print("song name: " + song_name)
 		
 		# Try to load cover image (Beat Saber format has covers)
 		if cover_name != "":
-			var cover = item_path.get_base_dir() + "/" + cover_name
-			if item_path.ends_with(".json"):
-				# PowerBeatsVR - cover would be in same dir as JSON (not typically available)
-				cover = item_path.get_base_dir() + "/" + cover_name
-			else:
-				# Beat Saber - cover is in the folder
-				cover = item_path + "/" + cover_name
-			
+			var cover = item_path + "/" + cover_name
 			if FileAccess.file_exists(cover):
 				var image = Image.new()
-				var err = image.load(cover)
+				var _err = image.load(cover)
 				image.resize(128, 128)
 				icon = ImageTexture.create_from_image(image)
 		
@@ -92,12 +115,107 @@ func populate_list():
 			songs_list_ui.add_item(song_name, icon)
 			songs_list_ui.set_item_tooltip_enabled(index, false)
 	
-	#if there are no songs, display the no songs label
-	if songs_list_ui.get_item_count()==0:
-		songs_list_ui.visible=false
-		no_songs_label.visible=true
-		return # Added return to avoid selecting from empty list
+	_finalize_list_ui()
+
+
+func _populate_powerbeatsvr_browser():
+	"""Populate UI for PowerBeatsVR music folder browser"""
+	songs_list_ui.clear()
 	
+	var music_root = GameVariables.pbvr_music_path
+	if music_root == "":
+		_show_no_songs()
+		return
+	
+	var current_path = music_root
+	if current_music_folder != "":
+		current_path = music_root + "/" + current_music_folder
+	
+	# Update path label
+	if path_label:
+		if current_music_folder == "":
+			path_label.text = "/"
+		else:
+			path_label.text = "/" + current_music_folder
+	
+	# Check if directory exists
+	if not DirAccess.dir_exists_absolute(current_path):
+		_show_no_songs()
+		return
+	
+	# Add ".." entry if not at root
+	if current_music_folder != "":
+		songs_list.append("..")
+		songs_paths.append("")
+		item_types.append(ItemType.PARENT_DIR)
+		disabled_items.append(false)
+		songs_list_ui.add_item("[..]", null)
+	
+	# List directory contents
+	var items = list_files_in_directory(current_path)
+	
+	# First add folders
+	for item in items:
+		var item_path = current_path + "/" + item
+		if DirAccess.dir_exists_absolute(item_path):
+			songs_list.append(item)
+			songs_paths.append(item_path)
+			item_types.append(ItemType.FOLDER)
+			disabled_items.append(false)
+			songs_list_ui.add_item("[DIR] " + item, null)
+	
+	# Then add music files
+	for item in items:
+		var item_path = current_path + "/" + item
+		if _is_music_file(item):
+			var has_layout = _has_matching_layout(item)
+			songs_list.append(item)
+			songs_paths.append(item_path)
+			item_types.append(ItemType.MUSIC_FILE)
+			disabled_items.append(not has_layout)
+			
+			# Add to UI
+			var display_name = item.get_basename()  # Remove extension for display
+			var index = songs_list_ui.get_item_count()
+			songs_list_ui.add_item(display_name, null)
+			
+			# Grey out if no layout
+			if not has_layout:
+				songs_list_ui.set_item_custom_fg_color(index, DISABLED_COLOR)
+				songs_list_ui.set_item_tooltip(index, "No layout available")
+				songs_list_ui.set_item_selectable(index, false)
+	
+	_finalize_list_ui()
+
+
+func _show_no_songs():
+	"""Show the 'no songs' message"""
+	songs_list_ui.visible = false
+	no_songs_label.visible = true
+
+
+func _finalize_list_ui():
+	"""Finalize the list UI after populating"""
+	# If there are no songs, display the no songs label
+	if songs_list_ui.get_item_count() == 0:
+		_show_no_songs()
+		return
+	
+	songs_list_ui.visible = true
+	no_songs_label.visible = false
+	
+	# For PowerBeatsVR browser, don't auto-select
+	if tab in ["Custom", "PowerBeatsVR"]:
+		# Find first selectable item
+		for i in range(songs_list_ui.get_item_count()):
+			if i < disabled_items.size() and not disabled_items[i]:
+				if i < item_types.size() and item_types[i] == ItemType.MUSIC_FILE:
+					songs_list_ui.select(i)
+					_on_SongList_item_selected(i)
+					return
+		return
+	
+	# Original Beat Saber behavior
 	if GameVariables.song_selected == null:
 		songs_list_ui.select(0)
 		GameVariables.song_selected = 0
@@ -124,27 +242,34 @@ func _add_beatsaber_songs(search_path: String):
 				if FileAccess.file_exists(item_path + "/info.dat") or FileAccess.file_exists(item_path + "/Info.dat"):
 					songs_list.append(item)
 					songs_paths.append(item_path)
+					item_types.append(ItemType.BEATSABER_SONG)
+					disabled_items.append(false)
 
 
-func _add_powerbeatsvr_songs(search_path: String):
-	"""Add PowerBeatsVR format songs (.json files)"""
-	if search_path == "":
-		return
-	
-	var files = list_files_in_directory(search_path)
-	if files:
-		for item in files:
-			if item.ends_with(".json"):
-				var item_path = search_path + "/" + item
-				songs_list.append(item.get_basename())  # Remove .json extension for display
-				songs_paths.append(item_path)
+func _is_music_file(filename: String) -> bool:
+	"""Check if a filename is a music file"""
+	var ext = filename.get_extension().to_lower()
+	return ext in MUSIC_EXTENSIONS
+
+
+func _has_matching_layout(music_filename: String) -> bool:
+	"""Check if a music file has a matching JSON layout in the Layouts folder"""
+	var base_name = music_filename.get_basename()  # "song.ogg" -> "song"
+	var json_path = GameVariables.pbvr_layouts_path + "/" + base_name + ".json"
+	return FileAccess.file_exists(json_path)
+
+
+func _get_layout_path(music_filename: String) -> String:
+	"""Get the JSON layout path for a music file"""
+	var base_name = music_filename.get_basename()
+	return GameVariables.pbvr_layouts_path + "/" + base_name + ".json"
 
 
 func list_files_in_directory(dir_path):
 	var files = []
 	var dir = DirAccess.open(dir_path)
 	if dir:
-		dir.list_dir_begin() # TODOConverter3To4 fill missing arguments https://github.com/godotengine/godot/pull/40547
+		dir.list_dir_begin()
 
 		while true:
 			var file = dir.get_next()
@@ -158,12 +283,38 @@ func list_files_in_directory(dir_path):
 		return files
 	return []
 
+
 func _on_SongList_item_selected(index):
-	if songs_list_ui.get_item_count()<=0:
+	if songs_list_ui.get_item_count() <= 0:
 		return
-	if index < 0 or index >= songs_paths.size():
+	if index < 0 or index >= songs_list.size():
 		return
+	
+	# Check item type for PowerBeatsVR browser
+	if index < item_types.size():
+		var item_type = item_types[index]
 		
+		match item_type:
+			ItemType.PARENT_DIR:
+				# Navigate up
+				_navigate_up()
+				return
+			ItemType.FOLDER:
+				# Navigate into folder
+				_navigate_into(songs_list[index])
+				return
+			ItemType.MUSIC_FILE:
+				# Check if disabled
+				if index < disabled_items.size() and disabled_items[index]:
+					return  # Can't select disabled items
+				# Select PowerBeatsVR song
+				_select_powerbeatsvr_song(index)
+				return
+			ItemType.BEATSABER_SONG:
+				# Fall through to Beat Saber handling
+				pass
+	
+	# Beat Saber song selection (Original tab or fallback)
 	GameVariables.song_selected = index
 	var selected_path = songs_paths[index]
 	GameVariables.path = selected_path
@@ -178,7 +329,6 @@ func _on_SongList_item_selected(index):
 	var difficulties = map.get_available_difficulties()
 	if difficulties.size() > 0:
 		GameVariables.difficulty = difficulties[0]
-		print("Selected difficulty: " + GameVariables.difficulty)
 	
 	var audio_loader = AudioLoader.new()
 	var beatplayer = _get_beatplayer()
@@ -191,6 +341,61 @@ func _on_SongList_item_selected(index):
 			beatplayer.play_music()
 		else:
 			push_warning("No audio file found for: " + selected_path)
+
+
+func _navigate_up():
+	"""Navigate to parent folder"""
+	if current_music_folder == "":
+		return  # Already at root
+	
+	# Go up one level
+	var parts = current_music_folder.split("/")
+	parts.remove_at(parts.size() - 1)
+	current_music_folder = "/".join(parts)
+	
+	populate_list()
+
+
+func _navigate_into(folder_name: String):
+	"""Navigate into a subfolder"""
+	if current_music_folder == "":
+		current_music_folder = folder_name
+	else:
+		current_music_folder = current_music_folder + "/" + folder_name
+	
+	populate_list()
+
+
+func _select_powerbeatsvr_song(index: int):
+	"""Select a PowerBeatsVR song from the music browser"""
+	var music_filename = songs_list[index]
+	var music_path = songs_paths[index]
+	var layout_path = _get_layout_path(music_filename)
+	
+	# Set game variables to use the layout path
+	GameVariables.song_selected = index
+	GameVariables.path = layout_path
+	
+	# Use MapFactory to load the layout
+	var map = MapFactory.create_map(layout_path)
+	if not map:
+		push_error("Failed to load map: " + layout_path)
+		return
+	
+	# Set the first available difficulty for this map
+	var difficulties = map.get_available_difficulties()
+	if difficulties.size() > 0:
+		GameVariables.difficulty = difficulties[0]
+	
+	# Play preview audio
+	var audio_loader = AudioLoader.new()
+	var beatplayer = _get_beatplayer()
+	if beatplayer:
+		beatplayer.stop_music()
+		# Use the actual music file path we browsed to
+		beatplayer.stream = audio_loader.loadfile(music_path, false, audio_loader.AUDIO_EXT.OGG)
+		beatplayer.bpm = map.get_bpm()
+		beatplayer.play_music()
 
 
 func _on_visibility_changed():

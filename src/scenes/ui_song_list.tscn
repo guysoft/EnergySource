@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://dijimv3ogdn25"]
+[gd_scene load_steps=6 format=3 uid="uid://dijimv3ogdn25"]
 
 [ext_resource type="Texture2D" uid="uid://cueyksdx44iot" path="res://icon.png" id="1"]
 [ext_resource type="Script" uid="uid://dtpeks4fqvcd0" path="res://scripts/ui_song_list.gd" id="2"]
 [ext_resource type="Theme" uid="uid://d1fbglwrn3v44" path="res://effects/menu_theme.tres" id="3"]
 [ext_resource type="FontFile" uid="uid://byemkjra3kgch" path="res://fonts/millimetre-font-128.tres" id="4"]
+[ext_resource type="Theme" uid="uid://bqrtdp16pwtjk" path="res://Themes/MainMenuText.tres" id="5_qigl8"]
 
 [node name="UI_SongList" type="VBoxContainer"]
 theme = ExtResource("3")
@@ -76,12 +77,23 @@ script = ExtResource("2")
 tab = "Custom"
 metadata/_tab_index = 1
 
-[node name="HBoxContainer" type="HBoxContainer" parent="TabContainer/Custom"]
-custom_minimum_size = Vector2(1436, 736)
+[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Custom"]
 layout_mode = 2
-alignment = 1
 
-[node name="SongList" type="ItemList" parent="TabContainer/Custom/HBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="TabContainer/Custom/VBoxContainer"]
+layout_mode = 2
+
+[node name="PathLabelStart" type="Label" parent="TabContainer/Custom/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme = ExtResource("5_qigl8")
+text = "Path:"
+
+[node name="PathLabel" type="Label" parent="TabContainer/Custom/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme = ExtResource("5_qigl8")
+text = "/"
+
+[node name="SongList" type="ItemList" parent="TabContainer/Custom/VBoxContainer"]
 show_behind_parent = true
 custom_minimum_size = Vector2(1436, 736)
 layout_mode = 2
@@ -98,10 +110,11 @@ item_0/icon = ExtResource("1")
 item_1/text = "Item 1"
 item_1/icon = ExtResource("1")
 
-[node name="NoSongsLabel" type="Label" parent="TabContainer/Custom/HBoxContainer"]
+[node name="NoSongsLabel" type="Label" parent="TabContainer/Custom/VBoxContainer"]
 visible = false
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.152941, 0.968627, 1)
+theme_override_font_sizes/font_size = 64
 text = "NO SONGS DETECTED!"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -109,4 +122,4 @@ vertical_alignment = 1
 [connection signal="visibility_changed" from="TabContainer/Original" to="TabContainer/Original" method="_on_visibility_changed"]
 [connection signal="item_selected" from="TabContainer/Original/HBoxContainer/SongList" to="TabContainer/Original" method="_on_SongList_item_selected"]
 [connection signal="visibility_changed" from="TabContainer/Custom" to="TabContainer/Custom" method="_on_visibility_changed"]
-[connection signal="item_selected" from="TabContainer/Custom/HBoxContainer/SongList" to="TabContainer/Custom" method="_on_SongList_item_selected"]
+[connection signal="item_selected" from="TabContainer/Custom/VBoxContainer/SongList" to="TabContainer/Custom" method="_on_SongList_item_selected"]
