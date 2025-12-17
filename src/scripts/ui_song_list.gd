@@ -232,7 +232,6 @@ func _finalize_list_ui():
 			if i < disabled_items.size() and not disabled_items[i]:
 				if i < item_types.size() and item_types[i] == ItemType.MUSIC_FILE:
 					songs_list_ui.select(i)
-					songs_list_ui.ensure_current_is_visible()
 					_on_SongList_item_selected(i)
 					return
 		return
@@ -247,7 +246,6 @@ func _finalize_list_ui():
 			GameVariables.song_selected = 0
 		songs_list_ui.select(GameVariables.song_selected)
 	
-	songs_list_ui.ensure_current_is_visible()
 	_on_SongList_item_selected(GameVariables.song_selected)
 
 
@@ -313,8 +311,8 @@ func _on_SongList_item_selected(index):
 	if index < 0 or index >= songs_list.size():
 		return
 	
-	# Ensure the selected item is visible and update scroll buttons
-	songs_list_ui.ensure_current_is_visible()
+	# Defer scroll to ensure UI has been laid out
+	call_deferred("_ensure_selected_visible")
 	call_deferred("_update_scroll_button_visibility")
 	
 	# Check item type for PowerBeatsVR browser
@@ -475,6 +473,13 @@ func _on_scroll_down_pressed():
 func _on_scroll_changed(_value: float):
 	"""Called when scroll position changes"""
 	_update_scroll_button_visibility()
+
+
+func _ensure_selected_visible():
+	"""Ensure the currently selected item is visible (deferred call)"""
+	if not songs_list_ui:
+		return
+	songs_list_ui.ensure_current_is_visible()
 
 
 func _update_scroll_button_visibility():
