@@ -76,6 +76,11 @@ func _setup_ui_nodes():
 		path_label = $VBoxContainer/HBoxContainer/PathLabel
 		scroll_up_btn = $VBoxContainer/ListContainer/ScrollUpBtn
 		scroll_down_btn = $VBoxContainer/ListContainer/ScrollDownBtn
+		# Manually connect button signals - use button_down for immediate response
+		if scroll_up_btn and not scroll_up_btn.button_down.is_connected(_on_scroll_up_pressed):
+			scroll_up_btn.button_down.connect(_on_scroll_up_pressed)
+		if scroll_down_btn and not scroll_down_btn.button_down.is_connected(_on_scroll_down_pressed):
+			scroll_down_btn.button_down.connect(_on_scroll_down_pressed)
 	else:
 		# Original tab has HBoxContainer structure
 		songs_list_ui = $HBoxContainer/ListContainer/SongList
@@ -83,6 +88,11 @@ func _setup_ui_nodes():
 		path_label = null
 		scroll_up_btn = $HBoxContainer/ListContainer/ScrollUpBtn
 		scroll_down_btn = $HBoxContainer/ListContainer/ScrollDownBtn
+		# Manually connect button signals - use button_down for immediate response
+		if scroll_up_btn and not scroll_up_btn.button_down.is_connected(_on_scroll_up_pressed):
+			scroll_up_btn.button_down.connect(_on_scroll_up_pressed)
+		if scroll_down_btn and not scroll_down_btn.button_down.is_connected(_on_scroll_down_pressed):
+			scroll_down_btn.button_down.connect(_on_scroll_down_pressed)
 	
 	# Connect to scroll changes to update button visibility
 	if songs_list_ui:
