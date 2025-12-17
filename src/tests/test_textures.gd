@@ -49,6 +49,9 @@ func _init():
 	# Test 14: Menu to Game flow (UICanvasInteract instantiation)
 	all_passed = test_menu_to_game_flow() and all_passed
 	
+	# Test 15: Song list scroll buttons
+	all_passed = test_song_list_scroll_buttons() and all_passed
+	
 	print("\n=== Test Summary ===")
 	if all_passed:
 		print("✓ ALL TESTS PASSED")
@@ -874,4 +877,171 @@ func test_menu_to_game_flow() -> bool:
 			print("  ✓ ScoreCanvas: UIMeshInstance found")
 	
 	game_instance.queue_free()
+	return passed
+
+
+func test_song_list_scroll_buttons() -> bool:
+	print("--- Testing Song List Scroll Buttons ---")
+	var passed = true
+	
+	# Test 1: ui_song_list.tscn loads
+	var song_list_scene = load("res://scenes/ui_song_list.tscn")
+	if song_list_scene == null:
+		print("  ✗ ui_song_list.tscn failed to load")
+		return false
+	else:
+		print("  ✓ ui_song_list.tscn loads successfully")
+	
+	var instance = song_list_scene.instantiate()
+	if instance == null:
+		print("  ✗ ui_song_list.tscn failed to instantiate")
+		return false
+	else:
+		print("  ✓ ui_song_list.tscn instantiates successfully")
+	
+	# Test 2: Original tab has scroll buttons
+	var original_tab = instance.get_node_or_null("TabContainer/Original")
+	if original_tab == null:
+		print("  ✗ Original tab not found")
+		passed = false
+	else:
+		var original_scroll_up = original_tab.get_node_or_null("HBoxContainer/ListContainer/ScrollUpBtn")
+		var original_scroll_down = original_tab.get_node_or_null("HBoxContainer/ListContainer/ScrollDownBtn")
+		
+		if original_scroll_up == null:
+			print("  ✗ Original tab: ScrollUpBtn not found")
+			passed = false
+		else:
+			print("  ✓ Original tab: ScrollUpBtn found")
+			# Check initial visibility is false
+			if original_scroll_up.visible:
+				print("  ✗ Original tab: ScrollUpBtn should start hidden")
+				passed = false
+			else:
+				print("  ✓ Original tab: ScrollUpBtn starts hidden")
+		
+		if original_scroll_down == null:
+			print("  ✗ Original tab: ScrollDownBtn not found")
+			passed = false
+		else:
+			print("  ✓ Original tab: ScrollDownBtn found")
+			# Check initial visibility is false
+			if original_scroll_down.visible:
+				print("  ✗ Original tab: ScrollDownBtn should start hidden")
+				passed = false
+			else:
+				print("  ✓ Original tab: ScrollDownBtn starts hidden")
+		
+		# Check SongList exists in ListContainer
+		var original_song_list = original_tab.get_node_or_null("HBoxContainer/ListContainer/SongList")
+		if original_song_list == null:
+			print("  ✗ Original tab: SongList not found in ListContainer")
+			passed = false
+		else:
+			print("  ✓ Original tab: SongList found in ListContainer")
+	
+	# Test 3: Custom tab has scroll buttons
+	var custom_tab = instance.get_node_or_null("TabContainer/Custom")
+	if custom_tab == null:
+		print("  ✗ Custom tab not found")
+		passed = false
+	else:
+		var custom_scroll_up = custom_tab.get_node_or_null("VBoxContainer/ListContainer/ScrollUpBtn")
+		var custom_scroll_down = custom_tab.get_node_or_null("VBoxContainer/ListContainer/ScrollDownBtn")
+		
+		if custom_scroll_up == null:
+			print("  ✗ Custom tab: ScrollUpBtn not found")
+			passed = false
+		else:
+			print("  ✓ Custom tab: ScrollUpBtn found")
+			# Check initial visibility is false
+			if custom_scroll_up.visible:
+				print("  ✗ Custom tab: ScrollUpBtn should start hidden")
+				passed = false
+			else:
+				print("  ✓ Custom tab: ScrollUpBtn starts hidden")
+		
+		if custom_scroll_down == null:
+			print("  ✗ Custom tab: ScrollDownBtn not found")
+			passed = false
+		else:
+			print("  ✓ Custom tab: ScrollDownBtn found")
+			# Check initial visibility is false
+			if custom_scroll_down.visible:
+				print("  ✗ Custom tab: ScrollDownBtn should start hidden")
+				passed = false
+			else:
+				print("  ✓ Custom tab: ScrollDownBtn starts hidden")
+		
+		# Check SongList exists in ListContainer
+		var custom_song_list = custom_tab.get_node_or_null("VBoxContainer/ListContainer/SongList")
+		if custom_song_list == null:
+			print("  ✗ Custom tab: SongList not found in ListContainer")
+			passed = false
+		else:
+			print("  ✓ Custom tab: SongList found in ListContainer")
+	
+	# Test 4: Check scroll button signal connections exist in scene file
+	var file = FileAccess.open("res://scenes/ui_song_list.tscn", FileAccess.READ)
+	if file == null:
+		print("  ✗ Could not open ui_song_list.tscn for reading")
+		passed = false
+	else:
+		var content = file.get_as_text()
+		file.close()
+		
+		# Check Original tab signal connections
+		if content.find("signal=\"pressed\" from=\"TabContainer/Original/HBoxContainer/ListContainer/ScrollUpBtn\"") != -1:
+			print("  ✓ Original tab: ScrollUpBtn pressed signal connected")
+		else:
+			print("  ✗ Original tab: ScrollUpBtn pressed signal not connected")
+			passed = false
+		
+		if content.find("signal=\"pressed\" from=\"TabContainer/Original/HBoxContainer/ListContainer/ScrollDownBtn\"") != -1:
+			print("  ✓ Original tab: ScrollDownBtn pressed signal connected")
+		else:
+			print("  ✗ Original tab: ScrollDownBtn pressed signal not connected")
+			passed = false
+		
+		# Check Custom tab signal connections
+		if content.find("signal=\"pressed\" from=\"TabContainer/Custom/VBoxContainer/ListContainer/ScrollUpBtn\"") != -1:
+			print("  ✓ Custom tab: ScrollUpBtn pressed signal connected")
+		else:
+			print("  ✗ Custom tab: ScrollUpBtn pressed signal not connected")
+			passed = false
+		
+		if content.find("signal=\"pressed\" from=\"TabContainer/Custom/VBoxContainer/ListContainer/ScrollDownBtn\"") != -1:
+			print("  ✓ Custom tab: ScrollDownBtn pressed signal connected")
+		else:
+			print("  ✗ Custom tab: ScrollDownBtn pressed signal not connected")
+			passed = false
+	
+	# Test 5: Check script has scroll handler methods
+	var script_file = FileAccess.open("res://scripts/ui_song_list.gd", FileAccess.READ)
+	if script_file == null:
+		print("  ✗ Could not open ui_song_list.gd for reading")
+		passed = false
+	else:
+		var script_content = script_file.get_as_text()
+		script_file.close()
+		
+		if script_content.find("func _on_scroll_up_pressed()") != -1:
+			print("  ✓ Script has _on_scroll_up_pressed method")
+		else:
+			print("  ✗ Script missing _on_scroll_up_pressed method")
+			passed = false
+		
+		if script_content.find("func _on_scroll_down_pressed()") != -1:
+			print("  ✓ Script has _on_scroll_down_pressed method")
+		else:
+			print("  ✗ Script missing _on_scroll_down_pressed method")
+			passed = false
+		
+		if script_content.find("func _update_scroll_button_visibility()") != -1:
+			print("  ✓ Script has _update_scroll_button_visibility method")
+		else:
+			print("  ✗ Script missing _update_scroll_button_visibility method")
+			passed = false
+	
+	instance.queue_free()
 	return passed

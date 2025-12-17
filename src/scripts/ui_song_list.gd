@@ -25,6 +25,8 @@ func _get_beatplayer():
 var songs_list_ui
 var no_songs_label
 var path_label = null
+var scroll_up_btn = null
+var scroll_down_btn = null
 
 var path = ""
 
@@ -69,14 +71,24 @@ func _setup_ui_nodes():
 	"""Setup UI node references based on tab type"""
 	if tab == "Custom":
 		# Custom tab has VBoxContainer structure with PathLabel
-		songs_list_ui = $VBoxContainer/SongList
+		songs_list_ui = $VBoxContainer/ListContainer/SongList
 		no_songs_label = $VBoxContainer/NoSongsLabel
 		path_label = $VBoxContainer/HBoxContainer/PathLabel
+		scroll_up_btn = $VBoxContainer/ListContainer/ScrollUpBtn
+		scroll_down_btn = $VBoxContainer/ListContainer/ScrollDownBtn
 	else:
 		# Original tab has HBoxContainer structure
-		songs_list_ui = $HBoxContainer/SongList
+		songs_list_ui = $HBoxContainer/ListContainer/SongList
 		no_songs_label = $HBoxContainer/NoSongsLabel
 		path_label = null
+		scroll_up_btn = $HBoxContainer/ListContainer/ScrollUpBtn
+		scroll_down_btn = $HBoxContainer/ListContainer/ScrollDownBtn
+	
+	# Connect to scroll changes to update button visibility
+	if songs_list_ui:
+		var v_scroll = songs_list_ui.get_v_scroll_bar()
+		if v_scroll and not v_scroll.is_connected("value_changed", _on_scroll_changed):
+			v_scroll.connect("value_changed", _on_scroll_changed)
 
 
 func _populate_beatsaber_ui():
@@ -199,10 +211,19 @@ func _finalize_list_ui():
 	# If there are no songs, display the no songs label
 	if songs_list_ui.get_item_count() == 0:
 		_show_no_songs()
+		# Hide scroll buttons when no songs
+		if scroll_up_btn:
+			scroll_up_btn.visible = false
+		if scroll_down_btn:
+			scroll_down_btn.visible = false
 		return
 	
 	songs_list_ui.visible = true
 	no_songs_label.visible = false
+	
+	# Update scroll button visibility after list is populated
+	# Use call_deferred to ensure UI has been laid out
+	call_deferred("_update_scroll_button_visibility")
 	
 	# For PowerBeatsVR browser, don't auto-select
 	if tab in ["Custom", "PowerBeatsVR"]:
@@ -410,3 +431,76 @@ func _on_visibility_changed():
 	pass
 	#if not visible:
 		#songs_list_ui.unselect_all()
+
+
+func _on_scroll_up_pressed():
+	"""Scroll the list up by one page"""
+	if not songs_list_ui:
+		return
+	
+	var v_scroll = songs_list_ui.get_v_scroll_bar()
+	if not v_scroll:
+		return
+	
+	# Calculate page size based on visible area
+	var page_size = songs_list_ui.size.y
+	var new_value = max(0, v_scroll.value - page_size)
+	v_scroll.value = new_value
+	_update_scroll_button_visibility()
+
+
+func _on_scroll_down_pressed():
+	"""Scroll the list down by one page"""
+	if not songs_list_ui:
+		return
+	
+	var v_scroll = songs_list_ui.get_v_scroll_bar()
+	if not v_scroll:
+		return
+	
+	# Calculate page size based on visible area
+	var page_size = songs_list_ui.size.y
+	var max_scroll = v_scroll.max_value - v_scroll.page
+	var new_value = min(max_scroll, v_scroll.value + page_size)
+	v_scroll.value = new_value
+	_update_scroll_button_visibility()
+
+
+func _on_scroll_changed(_value: float):
+	"""Called when scroll position changes"""
+	_update_scroll_button_visibility()
+
+
+func _update_scroll_button_visibility():
+	"""Update visibility of scroll buttons based on scroll position"""
+	if not songs_list_ui:
+		return
+	
+	var v_scroll = songs_list_ui.get_v_scroll_bar()
+	if not v_scroll:
+		# No scrollbar means content fits, hide both buttons
+		if scroll_up_btn:
+			scroll_up_btn.visible = false
+		if scroll_down_btn:
+			scroll_down_btn.visible = false
+		return
+	
+	# Check if scrollbar is actually needed (content exceeds visible area)
+	var content_exceeds_view = v_scroll.max_value > v_scroll.page
+	
+	if not content_exceeds_view:
+		# Content fits in view, hide both buttons
+		if scroll_up_btn:
+			scroll_up_btn.visible = false
+		if scroll_down_btn:
+			scroll_down_btn.visible = false
+		return
+	
+	# Show up button if we can scroll up (not at top)
+	if scroll_up_btn:
+		scroll_up_btn.visible = v_scroll.value > 0
+	
+	# Show down button if we can scroll down (not at bottom)
+	if scroll_down_btn:
+		var max_scroll = v_scroll.max_value - v_scroll.page
+		scroll_down_btn.visible = v_scroll.value < max_scroll
