@@ -140,6 +140,9 @@ func loadfile(filepath, loop = false, type_override=null):
 	#if file is ogg
 	elif filepath.ends_with(".ogg") or type_override==AUDIO_EXT.OGG:
 		var newstream = AudioStreamOggVorbis.load_from_buffer(bytes)
+		if newstream == null:
+			push_warning("AudioLoader.loadfile: Ogg Vorbis decoding failed for: " + filepath)
+			return null
 		newstream.loop = loop #set to false or delete this line if you don't want to loop
 		return newstream
 

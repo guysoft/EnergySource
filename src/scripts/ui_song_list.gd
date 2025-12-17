@@ -336,9 +336,13 @@ func _on_SongList_item_selected(index):
 		beatplayer.stop_music()
 		var song_path = map.get_song()
 		if song_path != "":
-			beatplayer.stream = audio_loader.loadfile(song_path, false, audio_loader.AUDIO_EXT.OGG)
-			beatplayer.bpm = map.get_bpm()
-			beatplayer.play_music()
+			var stream = audio_loader.loadfile(song_path, false)
+			if stream:
+				beatplayer.stream = stream
+				beatplayer.bpm = map.get_bpm()
+				beatplayer.play_music()
+			else:
+				push_warning("Failed to load audio file: " + song_path)
 		else:
 			push_warning("No audio file found for: " + selected_path)
 
@@ -393,9 +397,13 @@ func _select_powerbeatsvr_song(index: int):
 	if beatplayer:
 		beatplayer.stop_music()
 		# Use the actual music file path we browsed to
-		beatplayer.stream = audio_loader.loadfile(music_path, false, audio_loader.AUDIO_EXT.OGG)
-		beatplayer.bpm = map.get_bpm()
-		beatplayer.play_music()
+		var stream = audio_loader.loadfile(music_path, false)
+		if stream:
+			beatplayer.stream = stream
+			beatplayer.bpm = map.get_bpm()
+			beatplayer.play_music()
+		else:
+			push_warning("Failed to load audio file: " + music_path)
 
 
 func _on_visibility_changed():
