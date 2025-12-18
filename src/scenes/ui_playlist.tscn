@@ -1,0 +1,53 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Theme" uid="uid://d1fbglwrn3v44" path="res://effects/menu_theme.tres" id="1"]
+[ext_resource type="Script" path="res://scripts/ui_playlist.gd" id="2"]
+
+[node name="UI_Playlist" type="VBoxContainer"]
+custom_minimum_size = Vector2(1468, 768)
+theme = ExtResource("1")
+script = ExtResource("2")
+
+[node name="PlaylistLabel" type="Label" parent="."]
+layout_mode = 2
+theme_override_font_sizes/font_size = 64
+text = "PLAYLIST"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ListContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ScrollUpBtn" type="Button" parent="ListContainer"]
+layout_mode = 2
+mouse_filter = 0
+theme_override_font_sizes/font_size = 64
+text = "^"
+
+[node name="PlaylistItems" type="ItemList" parent="ListContainer"]
+custom_minimum_size = Vector2(1436, 636)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 1
+theme_override_font_sizes/font_size = 64
+allow_reselect = true
+item_count = 3
+item_0/text = "Demo Song 1"
+item_1/text = "Demo Song 2"
+item_2/text = "Demo Song 3"
+
+[node name="ScrollDownBtn" type="Button" parent="ListContainer"]
+layout_mode = 2
+mouse_filter = 0
+theme_override_font_sizes/font_size = 64
+text = "v"
+
+[node name="PlayButton" type="Button" parent="."]
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+mouse_filter = 0
+theme_override_font_sizes/font_size = 64
+text = "Play"
+

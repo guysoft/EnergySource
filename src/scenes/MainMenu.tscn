@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://bdvveg1vwed6m"]
+[gd_scene load_steps=16 format=3 uid="uid://bdvveg1vwed6m"]
 
 [ext_resource type="Script" uid="uid://pssqyxlbl4px" path="res://scripts/MainMenu.gd" id="1"]
 [ext_resource type="ArrayMesh" uid="uid://cec6d3bfdrslc" path="res://models/logo.obj" id="2"]
@@ -14,6 +14,7 @@
 [ext_resource type="PackedScene" uid="uid://dijimv3ogdn25" path="res://scenes/ui_song_list.tscn" id="11"]
 [ext_resource type="PackedScene" uid="uid://joq00fxkwv8o" path="res://scenes/MainMenuLeft.tscn" id="12"]
 [ext_resource type="PackedScene" uid="uid://ctltchlf2j2r4" path="res://addons/xr-simulator/XRSimulator.tscn" id="13"]
+[ext_resource type="PackedScene" path="res://scenes/ui_playlist.tscn" id="16_8vx4p"]
 
 [node name="MainMenu" type="Node3D"]
 process_mode = 3
@@ -108,3 +109,10 @@ params = {
 set_value = 0.564
 
 [node name="XRSimulator" parent="." instance=ExtResource("13")]
+
+[node name="UICanvasInteract4" parent="." instance=ExtResource("4")]
+transform = Transform3D(0.5204881, 0, -0.8538689, 0, 1, 0, 0.8538689, 0, 0.5204881, 2.703955, 1.0641348, -0.3850305)
+transparent = true
+editor_live_update = true
+
+[node name="UI_Playlist" parent="UICanvasInteract4" instance=ExtResource("16_8vx4p")]

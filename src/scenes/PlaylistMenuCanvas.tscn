@@ -1,0 +1,29 @@
+[gd_scene load_steps=5 format=3 uid="uid://bwkxorix1ugah"]
+
+[ext_resource type="PackedScene" uid="uid://becsllrl52q2f" path="res://scenes/UICanvasInteract.tscn" id="1"]
+[ext_resource type="PackedScene" uid="uid://crvfsl81xaqn6" path="res://scenes/PlaylistMenu.tscn" id="2"]
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_27pna"]
+viewport_path = NodePath("SubViewport")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ualxm"]
+resource_local_to_scene = true
+transparency = 1
+shading_mode = 0
+albedo_texture = SubResource("ViewportTexture_27pna")
+
+[node name="PlaylistMenuCanvas" instance=ExtResource("1")]
+transparent = true
+
+[node name="SubViewport" parent="." index="0"]
+size = Vector2i(1664, 1248)
+
+[node name="UIArea" parent="." index="1"]
+transform = Transform3D(1.625, 0, 0, 0, 1.21875, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="UIMeshInstance" parent="UIArea" index="1"]
+surface_material_override/0 = SubResource("StandardMaterial3D_ualxm")
+
+[node name="PlaylistMenu" parent="." index="2" instance=ExtResource("2")]
+offset_right = 512.0
+offset_bottom = 600.0

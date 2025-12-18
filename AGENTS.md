@@ -291,3 +291,54 @@ When using ItemList with scroll buttons:
 - **Remove `size_flags_vertical = 3`** (EXPAND_FILL) from ItemList - otherwise it expands to fit all content and pushes buttons off-screen
 - Set a fixed height via `custom_minimum_size`
 - Disable parent ScrollContainer scrolling (`horizontal_scroll_mode = 0`, `vertical_scroll_mode = 0`) if ItemList handles its own scrolling
+
+## 11. UICanvasInteract Panel Sizing
+
+### How UICanvasInteract Works
+The `UICanvasInteract.tscn` scene renders 2D UI on a 3D mesh for VR interaction. It automatically resizes based on the Control child's size:
+
+1. At runtime, `UICanvasInteract.gd` finds the first Control child node
+2. Gets the Control's `get_combined_minimum_size()` 
+3. Scales the `UIArea` mesh and `SubViewport` to match
+4. Uses `UI_PIXELS_TO_METER = 1.0 / 1024` for conversion
+
+### Resizing a UICanvasInteract Panel
+
+To set the size of a UI panel (like `ui_playlist.tscn` or `ui_song_list.tscn`):
+
+1. **Set `custom_minimum_size` on the root Control node:**
+   ```
+   [node name="UI_Playlist" type="VBoxContainer"]
+   custom_minimum_size = Vector2(1468, 768)
+   ```
+
+2. **Set `custom_minimum_size` on key child elements** (like ItemList):
+   ```
+   [node name="PlaylistItems" type="ItemList" parent="ListContainer"]
+   custom_minimum_size = Vector2(1436, 636)
+   ```
+
+3. **Add `size_flags_vertical = 3`** to containers that should expand to fill space:
+   ```
+   [node name="ListContainer" type="VBoxContainer" parent="."]
+   layout_mode = 2
+   size_flags_vertical = 3
+   ```
+
+### Reference Sizes (Song Select Menu)
+- **Overall panel**: `custom_minimum_size = Vector2(1468, 768)`
+- **ItemList**: `custom_minimum_size = Vector2(1436, 636)`
+
+### After Changing Sizes
+If the editor doesn't reflect size changes immediately:
+1. Open the UI scene directly (e.g., `ui_playlist.tscn`)
+2. Reopen the parent scene (e.g., `MainMenu.tscn`)
+3. The UICanvasInteract will recalculate sizes at runtime
+
+### Creating a New UICanvasInteract Panel
+1. Create a new UI scene with a Control root (VBoxContainer, MarginContainer, etc.)
+2. Set `custom_minimum_size` on the root to desired dimensions
+3. In MainMenu.tscn, instance `UICanvasInteract.tscn`
+4. Add your UI scene as a child of the UICanvasInteract instance
+5. Set `transparent = true` on UICanvasInteract if needed
+6. Position/rotate the UICanvasInteract in 3D space
