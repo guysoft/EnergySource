@@ -15,6 +15,10 @@ var obstaclescene = preload("res://scenes/Obstacle.tscn")
 @onready var _hit_marker = $HitMarker
 @onready var travel_distance = $HitMarker.global_transform.origin.distance_to($SpawnLocation.global_transform.origin)
 
+# Playlist mode UI references
+@onready var _playlist_time_label = $ScoreCanvas/SubViewport/ReferenceRect/CenterContainer/VBoxContainer/PlaylistTimeLabel
+@onready var _next_button = $BigScore/SubViewport/ReferenceRect/VBoxContainer/HBoxContainer/NextButton
+
 # how many beats does it take the spawned notes to travel to arvr origin
 # This is set from the map's get_ball_flight_duration() method
 var notes_delay = 4
@@ -38,11 +42,23 @@ var _bounce_amp = 0.025
 var _time_begin = null
 var _time_delay
 
+# Playlist mode state
+var _is_playlist_mode: bool = false
+
+func _exit_tree():
+	# Disconnect beat signal when scene is freed to prevent stale connections
+	if _beat_player and _beat_player.is_connected("beat", Callable(self, "_on_beat_detected")):
+		_beat_player.disconnect("beat", Callable(self, "_on_beat_detected"))
+
 func _ready():
 	
 	_player.reset_player()
 	_player.in_game = true
 	_player.game_node = self
+	
+	# Check if we're in playlist mode
+	_is_playlist_mode = PlaylistManager.is_playlist_mode()
+	_setup_playlist_mode_ui()
 	
 	# Connect pause menu button signals to player
 	_connect_pause_menu_signals()
@@ -52,17 +68,52 @@ func _ready():
 	
 	_map = setup_map(path, difficulty)
 	
+	# Handle null map (missing layout or failed to load)
+	if not _map:
+		push_error("Game: Failed to load map at: " + path)
+		if _is_playlist_mode:
+			# Try to skip to next valid song in playlist
+			print("Game: Skipping to next song in playlist...")
+			call_deferred("skip_to_next_song")
+			return
+		else:
+			# Return to menu for single song mode
+			call_deferred("_on_MenuButton_pressed")
+			return
+	
 	# Set notes_delay from map's ball flight duration
 	# PowerBeatsVR uses 2-3 beats depending on BPM, Beat Saber uses 4
-	if _map and _map.has_method("get_ball_flight_duration"):
+	if _map.has_method("get_ball_flight_duration"):
 		notes_delay = _map.get_ball_flight_duration()
 		print("Game: Using ball flight duration from map: ", notes_delay, " beats")
 	
 	setup_song(_map)
 	setup_environment(_map)
+	
+	# Emit playlist signal if in playlist mode
+	if _is_playlist_mode:
+		var song_index = PlaylistManager.get_current_song_index()
+		var total_songs = PlaylistManager.get_total_songs_in_playlist()
+		Events.emit_signal("playlist_song_started", song_index, total_songs)
+		print("Game: Playing playlist song ", song_index + 1, "/", total_songs)
 
 	#begin timer to offset start of song
 	$StartTimer.start()
+
+func _setup_playlist_mode_ui():
+	# Show/hide playlist-specific UI elements
+	if _playlist_time_label:
+		_playlist_time_label.visible = _is_playlist_mode
+	
+	# Next button visibility will be handled in _on_EndTimer_timeout
+
+func _process(_delta):
+	# Update playlist time label if in playlist mode
+	if _is_playlist_mode and _playlist_time_label and _playlist_time_label.visible:
+		var song_index = PlaylistManager.get_current_song_index() + 1
+		var total_songs = PlaylistManager.get_total_songs_in_playlist()
+		var time_str = PlaylistManager.format_playlist_time()
+		_playlist_time_label.text = "Playlist: " + time_str + " (" + str(song_index) + "/" + str(total_songs) + ")"
 
 func _connect_pause_menu_signals():
 	var pause_menu = $PauseMenu
@@ -76,30 +127,55 @@ func _connect_pause_menu_signals():
 	var resume_btn = pause_btns.get_node_or_null("ResumeBtn")
 	var restart_btn = pause_btns.get_node_or_null("RestartBtn")
 	var menu_btn = pause_btns.get_node_or_null("MenuBtn")
+	# SkipBtn is in PauseContainer, not PauseBtns
+	var skip_btn = pause_menu.get_node_or_null("SubViewport/PauseContainer/SkipBtn")
 	
-	if resume_btn:
-		resume_btn.pressed.connect(_player._on_ResumeBtn_pressed)
-	if restart_btn:
-		restart_btn.pressed.connect(_player._on_RestartBtn_pressed)
-	if menu_btn:
-		menu_btn.pressed.connect(_player._on_MenuBtn_pressed)
+	# Use button_down for VR raycast compatibility (pressed fires on release which doesn't work well)
+	if resume_btn and not resume_btn.button_down.is_connected(_player._on_ResumeBtn_pressed):
+		resume_btn.button_down.connect(_player._on_ResumeBtn_pressed)
+	if restart_btn and not restart_btn.button_down.is_connected(_player._on_RestartBtn_pressed):
+		restart_btn.button_down.connect(_player._on_RestartBtn_pressed)
+	if menu_btn and not menu_btn.button_down.is_connected(_player._on_MenuBtn_pressed):
+		menu_btn.button_down.connect(_player._on_MenuBtn_pressed)
+	
+	# Skip button is only visible and connected in playlist mode
+	if skip_btn:
+		if _is_playlist_mode:
+			skip_btn.visible = true
+			if not skip_btn.button_down.is_connected(_on_SkipBtn_pressed):
+				skip_btn.button_down.connect(_on_SkipBtn_pressed)
+		else:
+			skip_btn.visible = false
+
+func _on_SkipBtn_pressed():
+	skip_to_next_song()
 	
 
 func setup_song(map):
 	# map can be Map (Beat Saber) or PowerBeatsVRMap
 	if not map:
 		return
-	_beat_player.stop()
+	_beat_player.stop_music()  # Use stop_music() to properly reset internal state
 
-	_beat_player.connect("beat", Callable(self, "_on_beat_detected"))
+	# Connect beat signal (check first to avoid duplicate connections from previous Game instances)
+	if not _beat_player.is_connected("beat", Callable(self, "_on_beat_detected")):
+		_beat_player.connect("beat", Callable(self, "_on_beat_detected"))
 	
 	if OS.get_name() == "HTML5":
 		_beat_player.stream = load(map.path + "/song.ogg")
 	else:
 		var audio_loader = AudioLoader.new()
-		var stream = audio_loader.loadfile(map.get_song(), false)
+		
+		# In playlist mode, use the resolved music path from PlaylistManager
+		var song_path = map.get_song()
+		if _is_playlist_mode:
+			var current_song = PlaylistManager.get_current_song()
+			if current_song and current_song.music_path != "":
+				song_path = current_song.music_path
+		
+		var stream = audio_loader.loadfile(song_path, false)
 		if stream == null:
-			push_error("Failed to load audio file: " + map.get_song())
+			push_error("Failed to load audio file: " + song_path)
 			return
 		_beat_player.stream = stream
 	
@@ -358,13 +434,66 @@ func _on_EndTimer_timeout():
 	$BigScore/SubViewport/ReferenceRect/VBoxContainer/HBoxContainer/MenuButton.disabled=false
 	$BigScore/SubViewport/ReferenceRect/VBoxContainer/HBoxContainer/RestartButton.disabled=false
 	
+	# Show Next button if in playlist mode and there are more songs
+	if _is_playlist_mode and PlaylistManager.has_next_song():
+		if _next_button:
+			_next_button.visible = true
+			_next_button.disabled = false
+	
 	#log_score("gravebud", _player.score)
 	#$Leaderboard.visible = true
+
+func _on_NextButton_pressed():
+	if not _is_playlist_mode:
+		return
+	
+	$BigScore/AcceptSound.play()
+	
+	# Move to next song in playlist
+	if PlaylistManager.next_song():
+		# Next song loaded - reload game scene
+		_player.in_game = false
+		_player.game_node = null
+		Global.manager().load_scene(Global.manager().game_path, "game")
+	else:
+		# Playlist finished
+		Events.emit_signal("playlist_completed")
+		_on_MenuButton_pressed()
+
+func skip_to_next_song():
+	# Called from PauseMenu skip button
+	if not _is_playlist_mode:
+		return
+	
+	# Unpause if paused
+	if get_tree().paused:
+		_player.pause_game()
+	
+	# Stop current song and reset beatplayer state
+	_beat_player.stop_music()
+	Events.emit_signal("song_end")
+	
+	# Move to next song
+	if PlaylistManager.next_song():
+		_player.in_game = false
+		_player.game_node = null
+		Global.manager().load_scene(Global.manager().game_path, "game")
+	else:
+		# Playlist finished
+		Events.emit_signal("playlist_completed")
+		_player.in_game = false
+		_player.game_node = null
+		Global.manager().load_scene(Global.manager().menu_path, "menu")
 
 func _on_MenuButton_pressed():
 	$BigScore/AcceptSound.play()
 	_player.in_game = false
 	_player.game_node = null
+	
+	# End playlist mode when going to menu
+	if _is_playlist_mode:
+		PlaylistManager.end_playlist()
+	
 	Global.manager().load_scene(Global.manager().menu_path,"menu")
 
 

@@ -205,10 +205,16 @@ func spawn_feedback(offset, hit_level):
 	if feedback_effect == null:
 		push_warning("Note: feedback_effect is not assigned")
 		return
+	
+	# Check if game is still valid (may be null during scene transitions like skip)
+	var manager = Global.manager()
+	if manager == null or manager._player == null or manager._player.game_node == null:
+		return
+	
 	var feedback_instance = feedback_effect.instantiate()
 	get_tree().current_scene.add_child(feedback_instance)
 	
-	var marker_position = Global.manager()._player.game_node._hit_marker.global_transform.origin.z
+	var marker_position = manager._player.game_node._hit_marker.global_transform.origin.z
 	var note_transform = global_transform.origin
 	var spawn_position = Vector3(note_transform.x,note_transform.y,marker_position)
 	#var spawn_position = global_transform.origin + Vector3(0,0,offset)
@@ -231,8 +237,10 @@ func despawn(type):
 		#print ("miss")
 		spawn_feedback(-speed*0.25, HIT_LEVEL_TOOLOW) # TOOLOW = miss
 		#bad reference, replace with signal
-		Global.manager()._player.combo = 0
-		Global.manager()._player.energy -= 1
+		var manager = Global.manager()
+		if manager and manager._player:
+			manager._player.combo = 0
+			manager._player.energy -= 1
 		
 	await _animation_player.animation_finished
 	deactivate()

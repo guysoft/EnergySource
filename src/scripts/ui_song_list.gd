@@ -525,3 +525,38 @@ func _update_scroll_button_visibility():
 	if scroll_down_btn:
 		var max_scroll = v_scroll.max_value - v_scroll.page
 		scroll_down_btn.visible = v_scroll.value < max_scroll
+
+
+# Select a song by its layout path (called from playlist UI)
+func select_song_by_path(layout_path: String):
+	"""Find and select a song by its layout path"""
+	if layout_path == "":
+		return false
+	
+	# For PowerBeatsVR songs, extract the song name from the layout path
+	# Layout paths are like: PowerBeatsVRLevels/Layouts/SongName.json
+	var song_name = layout_path.get_file().get_basename()
+	
+	# If we're in Custom/PowerBeatsVR tab, search for the matching music file
+	if tab in ["Custom", "PowerBeatsVR"]:
+		# The songs_paths array contains full paths to music files
+		# We need to find one whose basename matches the layout name
+		for i in range(songs_paths.size()):
+			if i < item_types.size() and item_types[i] == ItemType.MUSIC_FILE:
+				var music_filename = songs_list[i]
+				var music_base = music_filename.get_basename()
+				if music_base == song_name:
+					songs_list_ui.select(i)
+					_on_SongList_item_selected(i)
+					return true
+	else:
+		# Original tab - search songs_paths for matching path
+		for i in range(songs_paths.size()):
+			if songs_paths[i] == layout_path:
+				songs_list_ui.select(i)
+				_on_SongList_item_selected(i)
+				return true
+	
+	# Song not found in current view - it might be in a different folder
+	print("Song not found in current song list: ", song_name)
+	return false

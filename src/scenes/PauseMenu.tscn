@@ -30,7 +30,7 @@ transparent = true
 disable_3d = true
 transparent_bg = true
 handle_input_locally = false
-size = Vector2i(1300, 500)
+size = Vector2i(1308, 500)
 render_target_update_mode = 4
 
 [node name="PauseContainer" type="VBoxContainer" parent="SubViewport"]
@@ -81,6 +81,16 @@ theme_override_font_sizes/font_size = 64
 disabled = true
 shortcut_in_tooltip = false
 text = "menu"
+
+[node name="SkipBtn" type="Button" parent="SubViewport/PauseContainer"]
+process_mode = 3
+custom_minimum_size = Vector2(350, 128)
+layout_mode = 2
+focus_mode = 0
+theme_override_font_sizes/font_size = 64
+disabled = true
+shortcut_in_tooltip = false
+text = "skip"
 
 [node name="UIArea" type="Area3D" parent="."]
 collision_layer = 16

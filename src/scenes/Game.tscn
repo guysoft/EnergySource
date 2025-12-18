@@ -166,6 +166,15 @@ theme_override_font_sizes/font_size = 64
 action_mode = 0
 text = "menu"
 
+[node name="NextButton" type="Button" parent="BigScore/ReferenceRect/VBoxContainer/HBoxContainer"]
+visible = false
+layout_mode = 2
+theme = ExtResource("4")
+theme_override_fonts/font = ExtResource("12")
+theme_override_font_sizes/font_size = 64
+action_mode = 0
+text = "next"
+
 [node name="SongFinished" type="AudioStreamPlayer" parent="BigScore"]
 stream = ExtResource("3")
 
@@ -230,6 +239,16 @@ text = "X4"
 custom_minimum_size = Vector2(800, 100)
 layout_mode = 2
 
+[node name="PlaylistTimeLabel" type="Label" parent="ScoreCanvas/ReferenceRect/CenterContainer/VBoxContainer"]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.8, 1, 1)
+theme_override_fonts/font = ExtResource("12")
+theme_override_font_sizes/font_size = 48
+text = "Playlist: 00:00"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="Lasers" parent="." instance=ExtResource("23")]
 
 [node name="StartTimer" type="Timer" parent="."]
@@ -251,5 +270,6 @@ disable_collision = true
 
 [connection signal="pressed" from="BigScore/ReferenceRect/VBoxContainer/HBoxContainer/RestartButton" to="." method="_on_RestartButton_pressed"]
 [connection signal="pressed" from="BigScore/ReferenceRect/VBoxContainer/HBoxContainer/MenuButton" to="." method="_on_MenuButton_pressed"]
+[connection signal="pressed" from="BigScore/ReferenceRect/VBoxContainer/HBoxContainer/NextButton" to="." method="_on_NextButton_pressed"]
 [connection signal="timeout" from="StartTimer" to="." method="_on_StartTimer_timeout"]
 [connection signal="timeout" from="EndTimer" to="." method="_on_EndTimer_timeout"]

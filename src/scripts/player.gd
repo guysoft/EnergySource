@@ -401,6 +401,8 @@ func pause_game():
 	get_tree().paused = !pause_state
 
 	var pause_btns = pause_menu.get_node("SubViewport/PauseContainer/PauseBtns").get_children()
+	var skip_btn = pause_menu.get_node_or_null("SubViewport/PauseContainer/SkipBtn")
+	var is_playlist_mode = PlaylistManager.is_playlist_mode()
 	
 	if get_tree().paused:
 		set_process(false)
@@ -420,6 +422,10 @@ func pause_game():
 		pause_menu.disable_collision = false
 		for btn in pause_btns:
 			btn.disabled = false
+		# Skip button is separate from PauseBtns - only visible in playlist mode
+		if skip_btn:
+			skip_btn.visible = is_playlist_mode
+			skip_btn.disabled = not is_playlist_mode
 	else:
 		set_process(true)
 		if _beat_player:
@@ -429,6 +435,8 @@ func pause_game():
 		pause_menu.disable_collision = true
 		for btn in pause_btns:
 			btn.disabled = true
+		if skip_btn:
+			skip_btn.disabled = true
 	
 
 func process_controller_input(hand, delta):

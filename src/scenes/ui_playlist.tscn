@@ -8,10 +8,22 @@ custom_minimum_size = Vector2(1468, 768)
 theme = ExtResource("1")
 script = ExtResource("2")
 
-[node name="PlaylistLabel" type="Label" parent="."]
+[node name="HeaderContainer" type="HBoxContainer" parent="."]
 layout_mode = 2
+
+[node name="BackButton" type="Button" parent="HeaderContainer"]
+visible = false
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+mouse_filter = 0
 theme_override_font_sizes/font_size = 64
-text = "PLAYLIST"
+text = "<"
+
+[node name="PlaylistLabel" type="Label" parent="HeaderContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 64
+text = "PLAYLISTS"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -33,10 +45,6 @@ size_flags_vertical = 3
 mouse_filter = 1
 theme_override_font_sizes/font_size = 64
 allow_reselect = true
-item_count = 3
-item_0/text = "Demo Song 1"
-item_1/text = "Demo Song 2"
-item_2/text = "Demo Song 3"
 
 [node name="ScrollDownBtn" type="Button" parent="ListContainer"]
 layout_mode = 2
@@ -49,5 +57,5 @@ custom_minimum_size = Vector2(0, 80)
 layout_mode = 2
 mouse_filter = 0
 theme_override_font_sizes/font_size = 64
-text = "Play"
+text = "Select Playlist"
 
