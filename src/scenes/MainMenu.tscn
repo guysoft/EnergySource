@@ -23,7 +23,7 @@ environment = ExtResource("10")
 music = ExtResource("9")
 
 [node name="UICanvas" parent="." instance=ExtResource("6")]
-transform = Transform3D(0.707107, 0.183013, -0.683013, 0, 0.965926, 0.258819, 0.707107, -0.183013, 0.683013, 1.4, 1.1014, -1.13389)
+transform = Transform3D(0.3420203, -0.063913465, -0.9375169, 0, 0.9976843, -0.068015315, 0.9396931, 0.023262601, 0.34122825, 2.586301, 1.0976563, 0.02618599)
 editor_live_update = false
 
 [node name="ReferenceRect" type="ReferenceRect" parent="UICanvas"]
@@ -111,8 +111,7 @@ set_value = 0.564
 [node name="XRSimulator" parent="." instance=ExtResource("13")]
 
 [node name="UICanvasInteract4" parent="." instance=ExtResource("4")]
-transform = Transform3D(0.5204881, 0, -0.8538689, 0, 1, 0, 0.8538689, 0, 0.5204881, 2.703955, 1.0641348, -0.3850305)
+transform = Transform3D(0.7936082, 0, -0.60842913, 0, 1, 0, 0.60842913, 0, 0.7936082, 1.6205256, 1.0641348, -1.1447158)
 transparent = true
-editor_live_update = true
 
 [node name="UI_Playlist" parent="UICanvasInteract4" instance=ExtResource("16_8vx4p")]
