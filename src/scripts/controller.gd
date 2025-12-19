@@ -34,14 +34,12 @@ func _ready():
 	if velocity_track_point:
 		pass
 		# velocity_track_point = get_node(velocity_track_point) as Marker3D
-	call_deferred("_apply_controller_model_glow")
+	call_deferred("_apply_controller_model")
 
-func _apply_controller_model_glow() -> void:
-	# Make the controller model easier to read in dark environments by
-	# enabling emission on its existing material (uses the material's own
-	# albedo texture as the emission texture).
-	#
-	# Both left and right controllers use hammer models (see Player.tscn).
+func _apply_controller_model() -> void:
+	# Apply platform-specific material settings to hammer controller models.
+	# Quest: Simplify materials (disable metallic, normal maps) for performance
+	# PC: Add subtle emission glow for visibility in dark environments
 	var model_root := find_child("hammer_smaller_hand_left", true, false)
 	if model_root == null:
 		model_root = find_child("hammer_smaller_hand_right", true, false)
@@ -53,8 +51,31 @@ func _apply_controller_model_glow() -> void:
 		var mi := n as MeshInstance3D
 		if mi == null or mi.mesh == null:
 			continue
-		# Subtle glow: enough to read details, not enough to blow out textures.
-		_make_mesh_emissive(mi, 0.15)
+		
+		if QualitySettings.is_quest():
+			_simplify_mesh_for_quest(mi)
+		else:
+			# Subtle glow: enough to read details, not enough to blow out textures.
+			_make_mesh_emissive(mi, 0.15)
+
+func _simplify_mesh_for_quest(mi: MeshInstance3D) -> void:
+	# Disable expensive PBR features for Quest performance
+	var surface_count := mi.mesh.get_surface_count()
+	for surface_i in range(surface_count):
+		var mat: Material = mi.get_active_material(surface_i)
+		if mat == null:
+			continue
+		var dup: Material = mat.duplicate()
+		if dup is StandardMaterial3D:
+			var sm := dup as StandardMaterial3D
+			# Disable expensive PBR features
+			sm.metallic = 0.0
+			sm.metallic_texture = null
+			sm.roughness = 1.0
+			sm.roughness_texture = null
+			sm.normal_enabled = false
+			sm.normal_texture = null
+			mi.set_surface_override_material(surface_i, sm)
 
 func _make_mesh_emissive(mi: MeshInstance3D, energy_multiplier: float) -> void:
 	var surface_count := mi.mesh.get_surface_count()

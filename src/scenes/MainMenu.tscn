@@ -76,7 +76,7 @@ theme = ExtResource("6_5faoh")
 text = "00:00:00"
 
 [node name="UICanvasInteract3" parent="." instance=ExtResource("4")]
-transform = Transform3D(1.41421, -0.366025, 2.73205, 0, 1.93185, 1.03528, -1.41421, -0.366025, 2.73205, -1.728, 1.21667, -0.851)
+transform = Transform3D(1.41421, -0.366025, 2.73205, 0, 1.93185, 1.03528, -1.41421, -0.366025, 2.73205, -1.704458, 1.21667, -0.851)
 transparent = true
 
 [node name="MainMenuLeft" parent="UICanvasInteract3" instance=ExtResource("12")]

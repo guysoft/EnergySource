@@ -129,7 +129,34 @@ func _get_playlists_json_path() -> String:
 	var project_dir = ""
 	var parent_dir = ""
 	
-	if OS.has_feature("editor"):
+	if OS.get_name() == "Android":
+		# On Android/Quest, check multiple locations
+		var external_storage = "/storage/emulated/0"
+		var external_data_dir = external_storage + "/Android/data/com.tempovr.game/files"
+		var internal_data_dir = OS.get_user_data_dir()
+		
+		# Check external app data dir first (where adb push puts files)
+		var external_path = external_data_dir + "/PowerBeatsVRLevels/playlists.json"
+		if FileAccess.file_exists(external_path):
+			print("PlaylistManager: Found playlists.json at external path: ", external_path)
+			return external_path
+		
+		# Then check internal data dir
+		var internal_path = internal_data_dir + "/PowerBeatsVRLevels/playlists.json"
+		if FileAccess.file_exists(internal_path):
+			print("PlaylistManager: Found playlists.json at internal path: ", internal_path)
+			return internal_path
+		
+		# Finally check external storage root
+		var root_path = external_storage + "/PowerBeatsVRLevels/playlists.json"
+		if FileAccess.file_exists(root_path):
+			print("PlaylistManager: Found playlists.json at root path: ", root_path)
+			return root_path
+		
+		# Default to external data dir path
+		print("PlaylistManager: playlists.json not found, defaulting to: ", external_path)
+		return external_path
+	elif OS.has_feature("editor"):
 		project_dir = ProjectSettings.globalize_path("res://")
 		if project_dir.ends_with("/"):
 			project_dir = project_dir.substr(0, project_dir.length() - 1)

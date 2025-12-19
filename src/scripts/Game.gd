@@ -197,6 +197,12 @@ func setup_environment(map):
 	#enable the saturation adjustment
 	_environment_manager.environment.adjustment_enabled=true
 	
+	# Apply Quest optimizations for performance
+	if QualitySettings.is_quest():
+		environment.glow_enabled = false
+		environment.fog_enabled = false
+		$EnvironmentParticles.amount = 25
+	
 	#set color and speed which to move ground and particles
 	$Ground.setup_ground(map.get_bpm(), notes_delay, Color.CHOCOLATE)
 	$EnvironmentParticles.setup_particles(map.get_bpm(), notes_delay)

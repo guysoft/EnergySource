@@ -290,6 +290,12 @@ func initialise_OpenXR() -> bool:
 		else:
 			vp = get_viewport()
 		
+		# Set render resolution based on platform
+		# Quest: 1.0 (native) for performance
+		# PC: 1.5 (supersampling) for better quality
+		interface.render_target_size_multiplier = 1.0 if QualitySettings.is_quest() else 1.5
+		print("Render target size multiplier set to: " + str(interface.render_target_size_multiplier))
+		
 		# Change our viewport so it is tied to our ARVR interface and renders to our HMD
 		vp.use_xr = true
 
