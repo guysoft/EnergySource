@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://t8ewkb3xgutv"
 path.s3tc="res://.godot/imported/ChristmasTreeOrnament003_2K_Displacement.jpg-97646a7c725e7cacdaadcefe0d41fa4f.s3tc.ctex"
+path.etc2="res://.godot/imported/ChristmasTreeOrnament003_2K_Displacement.jpg-97646a7c725e7cacdaadcefe0d41fa4f.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://models/ball/ChristmasTreeOrnament003_2K_Displacement.jpg"
-dest_files=["res://.godot/imported/ChristmasTreeOrnament003_2K_Displacement.jpg-97646a7c725e7cacdaadcefe0d41fa4f.s3tc.ctex"]
+dest_files=["res://.godot/imported/ChristmasTreeOrnament003_2K_Displacement.jpg-97646a7c725e7cacdaadcefe0d41fa4f.s3tc.ctex", "res://.godot/imported/ChristmasTreeOrnament003_2K_Displacement.jpg-97646a7c725e7cacdaadcefe0d41fa4f.etc2.ctex"]
 
 [params]
 

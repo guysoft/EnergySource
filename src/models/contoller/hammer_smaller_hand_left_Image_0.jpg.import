@@ -4,8 +4,9 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://dg84di7e0yg4i"
 path.s3tc="res://.godot/imported/hammer_smaller_hand_left_Image_0.jpg-7e7ace4ff01cadecabcd1ea2f83c076d.s3tc.ctex"
+path.etc2="res://.godot/imported/hammer_smaller_hand_left_Image_0.jpg-7e7ace4ff01cadecabcd1ea2f83c076d.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 generator_parameters={
@@ -15,7 +16,7 @@ generator_parameters={
 [deps]
 
 source_file="res://models/contoller/hammer_smaller_hand_left_Image_0.jpg"
-dest_files=["res://.godot/imported/hammer_smaller_hand_left_Image_0.jpg-7e7ace4ff01cadecabcd1ea2f83c076d.s3tc.ctex"]
+dest_files=["res://.godot/imported/hammer_smaller_hand_left_Image_0.jpg-7e7ace4ff01cadecabcd1ea2f83c076d.s3tc.ctex", "res://.godot/imported/hammer_smaller_hand_left_Image_0.jpg-7e7ace4ff01cadecabcd1ea2f83c076d.etc2.ctex"]
 
 [params]
 

@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://b18pyvwmdshow"
 path.s3tc="res://.godot/imported/Tiles074_2K_Color.png-a2a26ff685d911115d7cd24e29d3ed0c.s3tc.ctex"
+path.etc2="res://.godot/imported/Tiles074_2K_Color.png-a2a26ff685d911115d7cd24e29d3ed0c.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://models/ground/Tiles074_2K_Color.png"
-dest_files=["res://.godot/imported/Tiles074_2K_Color.png-a2a26ff685d911115d7cd24e29d3ed0c.s3tc.ctex"]
+dest_files=["res://.godot/imported/Tiles074_2K_Color.png-a2a26ff685d911115d7cd24e29d3ed0c.s3tc.ctex", "res://.godot/imported/Tiles074_2K_Color.png-a2a26ff685d911115d7cd24e29d3ed0c.etc2.ctex"]
 
 [params]
 

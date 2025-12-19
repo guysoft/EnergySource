@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://c47puisq3guvc"
 path.s3tc="res://.godot/imported/ui_miss.png-7ee7e394617e0b58ab6db9bf52272c8c.s3tc.ctex"
+path.etc2="res://.godot/imported/ui_miss.png-7ee7e394617e0b58ab6db9bf52272c8c.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://effects/ui_miss.png"
-dest_files=["res://.godot/imported/ui_miss.png-7ee7e394617e0b58ab6db9bf52272c8c.s3tc.ctex"]
+dest_files=["res://.godot/imported/ui_miss.png-7ee7e394617e0b58ab6db9bf52272c8c.s3tc.ctex", "res://.godot/imported/ui_miss.png-7ee7e394617e0b58ab6db9bf52272c8c.etc2.ctex"]
 
 [params]
 

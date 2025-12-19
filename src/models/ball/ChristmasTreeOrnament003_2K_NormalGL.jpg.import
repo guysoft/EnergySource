@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://qfdqupekuu23"
 path.s3tc="res://.godot/imported/ChristmasTreeOrnament003_2K_NormalGL.jpg-f640b4323acd58b01b78f8a475a16a93.s3tc.ctex"
+path.etc2="res://.godot/imported/ChristmasTreeOrnament003_2K_NormalGL.jpg-f640b4323acd58b01b78f8a475a16a93.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://models/ball/ChristmasTreeOrnament003_2K_NormalGL.jpg"
-dest_files=["res://.godot/imported/ChristmasTreeOrnament003_2K_NormalGL.jpg-f640b4323acd58b01b78f8a475a16a93.s3tc.ctex"]
+dest_files=["res://.godot/imported/ChristmasTreeOrnament003_2K_NormalGL.jpg-f640b4323acd58b01b78f8a475a16a93.s3tc.ctex", "res://.godot/imported/ChristmasTreeOrnament003_2K_NormalGL.jpg-f640b4323acd58b01b78f8a475a16a93.etc2.ctex"]
 
 [params]
 
