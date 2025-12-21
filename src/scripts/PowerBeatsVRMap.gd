@@ -4,32 +4,37 @@ class_name PowerBeatsVRMap
 # Loads and parses PowerBeatsVR JSON level format
 # Implements the same interface as Map (MapLoader.gd) for Beat Saber levels
 
-# True PowerBeatsVR coordinate limits (from developers)
-# These are documented but not enforced - levels may exceed these
-# posx = -1.3 to 1.3
-# posy = 0.5 to 1.3
-const PBVR_X_MIN = -1.3
-const PBVR_X_MAX = 1.3
-const PBVR_Y_MIN = 0.5
-const PBVR_Y_MAX = 1.3
+# PowerBeatsVR coordinate bounds
+# Note: PBVR has playspace scaling for smaller rooms (playspaceScaling = roomWidth / 3.0)
+# We assume MAX playspace (3.0m) so no additional X scaling is applied.
+# PBVR X range at max playspace: [-1.5, 1.5] = 3.0m total width
+const PBVR_X_MAX = 1.5           # Ball X bounds: [-1.5, 1.5] at max playspace
+const PBVR_Y_MIN = 0.6           # Ball Y min (at reference height)
+const PBVR_Y_MAX = 2.0           # Ball Y max (at reference height)
+const PBVR_REFERENCE_HEIGHT = 1.9  # Levels designed for this player height
+
+# EnergySource coordinate bounds (from MapLoader.gd Map class)
+const ES_LEVEL_WIDTH = 0.8       # Map.LEVEL_WIDTH
+const ES_LEVEL_LOW = 0.6         # Map.LEVEL_LOW
+const ES_LEVEL_HIGH = 1.05       # Map.LEVEL_HIGH (actual max Y = 2.1)
+
+# Player height for scaling (future: make this configurable)
+const PLAYER_HEIGHT = 1.73
+
+# Ball sizes (matched to PBVR)
+# PBVR uses 0.225m radius = 0.45m diameter
+# ES Note.tscn collision sphere updated to match
+const BALL_RADIUS = 0.225
 
 # BPM Range thresholds (from PowerBeatsVR GameManager.cs)
 # Used to determine ball flight duration
 const BPM_MID_THRESHOLD = 100
 const BPM_HIGH_THRESHOLD = 145
 
-# Position adjustment constants (tune these if needed)
+# Position adjustment constants
 # VERTICAL_OFFSET: From PowerBeatsVR Util.cs - stored Y is offset by -1.3
 # JSON stores Y values like -0.5, 0.25 which need +1.3 to get actual position
 const PBVR_VERTICAL_OFFSET = 1.3
-
-# Optional scaling if coordinate ranges don't match
-const PBVR_X_SCALE = 1.0  # Multiply X by this
-const PBVR_Y_SCALE = 1.0  # Multiply Y by this (after offset)
-
-# Optional additional offset for fine-tuning
-const PBVR_X_OFFSET = 0.0  # Add to X after scaling
-const PBVR_Y_OFFSET = 0.0  # Add to Y after offset+scaling
 
 # Action type constants
 const ACTION_NORMAL_BALL = "NormalBall"
@@ -348,21 +353,45 @@ func _add_wall(diff: String, beat_no: int, offset: float, position: Array, actio
 
 
 func _pbvr_to_es_position(position: Array) -> Vector2:
-	# Convert PowerBeatsVR stored coordinates to actual game coordinates
-	# PowerBeatsVR stores Y with a -1.3 offset (from Util.cs VERTICAL_OFFSET)
+	# Convert PowerBeatsVR stored coordinates to EnergySource game coordinates
+	#
+	# PBVR coordinate system (at 1.9m reference height, max playspace):
+	#   X: [-1.5, 1.5] = 3.0m wide
+	#   Y: [0.6, 2.0] = 1.4m tall
+	#
+	# PBVR applies height scaling to ENTIRE coordinate system:
+	#   For 1.73m player: scale = 1.73/1.9 = 0.91
+	#   Scaled Y range: [0.55, 1.82]
+	#
+	# EnergySource coordinate system:
+	#   X: [-0.8, 0.8] = 1.6m wide
+	#   Y: [0.6, 2.1] = 1.5m tall
+	
 	var x = float(position[0]) if position.size() > 0 else 0.0
 	var y = float(position[1]) if position.size() > 1 else 0.0
 	
-	# Apply PowerBeatsVR vertical offset (stored Y is offset by -1.3)
+	# Step 1: Apply PBVR vertical offset (JSON stores Y with -1.3 offset)
 	y += PBVR_VERTICAL_OFFSET
 	
-	# Apply optional scaling
-	x *= PBVR_X_SCALE
-	y *= PBVR_Y_SCALE
+	# Step 2: Clamp to PBVR valid range (at reference height)
+	x = clamp(x, -PBVR_X_MAX, PBVR_X_MAX)
+	y = clamp(y, PBVR_Y_MIN, PBVR_Y_MAX)
 	
-	# Apply optional fine-tuning offset
-	x += PBVR_X_OFFSET
-	y += PBVR_Y_OFFSET
+	# Step 3: Apply PBVR height scaling (what the player sees in PBVR at 1.73m height)
+	var height_scale = PLAYER_HEIGHT / PBVR_REFERENCE_HEIGHT  # 0.91
+	var pbvr_scaled_y_min = PBVR_Y_MIN * height_scale  # 0.55
+	var pbvr_scaled_y_max = PBVR_Y_MAX * height_scale  # 1.82
+	y *= height_scale  # Scale Y to what player actually sees
+	
+	# Step 4: Map X from PBVR range to ES range
+	# PBVR [-1.5, 1.5] -> ES [-0.8, 0.8]
+	x *= (ES_LEVEL_WIDTH / PBVR_X_MAX)  # 0.533
+	
+	# Step 5: Map Y from scaled PBVR range to ES range
+	# Scaled PBVR [0.55, 1.82] -> ES [0.6, 2.1]
+	var es_y_max = ES_LEVEL_HIGH * 2  # 2.1
+	var y_normalized = (y - pbvr_scaled_y_min) / (pbvr_scaled_y_max - pbvr_scaled_y_min)
+	y = ES_LEVEL_LOW + y_normalized * (es_y_max - ES_LEVEL_LOW)
 	
 	return Vector2(x, y)
 
