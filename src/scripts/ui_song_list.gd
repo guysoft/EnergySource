@@ -407,18 +407,16 @@ func _navigate_into(folder_name: String):
 
 func _select_powerbeatsvr_song(index: int):
 	"""Select a PowerBeatsVR song from the music browser"""
-	var music_filename = songs_list[index]
 	var music_path = songs_paths[index]
-	var layout_path = _get_layout_path(music_filename)
 	
-	# Set game variables to use the layout path
+	# Set game variables to use the music path (MapFactory derives layout from it)
 	GameVariables.song_selected = index
-	GameVariables.path = layout_path
+	GameVariables.path = music_path
 	
-	# Use MapFactory to load the layout
-	var map = MapFactory.create_map(layout_path)
+	# Use MapFactory to load the map (it will derive layout path from music path)
+	var map = MapFactory.create_map(music_path)
 	if not map:
-		push_error("Failed to load map: " + layout_path)
+		push_error("Failed to load map for music: " + music_path)
 		return
 	
 	# Set the first available difficulty for this map
@@ -431,14 +429,14 @@ func _select_powerbeatsvr_song(index: int):
 	var beatplayer = _get_beatplayer()
 	if beatplayer:
 		beatplayer.stop_music()
-		# Use the actual music file path we browsed to
-		var stream = audio_loader.loadfile(music_path, false)
+		# map.get_song() returns the music path (which we set on the map)
+		var stream = audio_loader.loadfile(map.get_song(), false)
 		if stream:
 			beatplayer.stream = stream
 			beatplayer.bpm = map.get_bpm()
 			beatplayer.play_music()
 		else:
-			push_warning("Failed to load audio file: " + music_path)
+			push_warning("Failed to load audio file: " + map.get_song())
 
 
 func _on_visibility_changed():

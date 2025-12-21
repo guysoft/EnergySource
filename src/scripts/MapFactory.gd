@@ -19,7 +19,12 @@ static func detect_format(path: String) -> MapFormat:
 		if FileAccess.file_exists(path + "/info.dat") or FileAccess.file_exists(path + "/Info.dat"):
 			return MapFormat.BEAT_SABER
 	
-	# Check for PowerBeatsVR format (JSON file)
+	# Check for PowerBeatsVR format: music file (.ogg, .mp3, .wav)
+	var ext = path.get_extension().to_lower()
+	if ext in ["ogg", "mp3", "wav"] and FileAccess.file_exists(path):
+		return MapFormat.POWER_BEATS_VR
+	
+	# Check for PowerBeatsVR format: JSON layout file (backwards compat)
 	if path.ends_with(".json") and FileAccess.file_exists(path):
 		return MapFormat.POWER_BEATS_VR
 	
@@ -35,8 +40,24 @@ static func create_map(path: String):
 			print("MapFactory: Creating Beat Saber map for: " + path)
 			return Map.new(path)
 		MapFormat.POWER_BEATS_VR:
-			print("MapFactory: Creating PowerBeatsVR map for: " + path)
-			return PowerBeatsVRMapScript.new(path)
+			var layout_path = path
+			var music_path = ""
+			
+			# If path is a music file, derive the layout path from it
+			var ext = path.get_extension().to_lower()
+			if ext in ["ogg", "mp3", "wav"]:
+				music_path = path
+				var song_name = path.get_file().get_basename()
+				layout_path = GameVariables.pbvr_layouts_path + "/" + song_name + ".json"
+				print("MapFactory: Creating PowerBeatsVR map from music file: " + path)
+				print("MapFactory: Derived layout path: " + layout_path)
+			else:
+				print("MapFactory: Creating PowerBeatsVR map for: " + path)
+			
+			var map = PowerBeatsVRMapScript.new(layout_path)
+			if music_path != "":
+				map.music_path = music_path
+			return map
 		_:
 			push_error("MapFactory: Unknown map format for path: " + path)
 			return null

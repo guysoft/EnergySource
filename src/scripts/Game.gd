@@ -166,12 +166,10 @@ func setup_song(map):
 	else:
 		var audio_loader = AudioLoader.new()
 		
-		# In playlist mode, use the resolved music path from PlaylistManager
+		# map.get_song() returns the correct audio path:
+		# - For PowerBeatsVR: the music_path set by MapFactory (from GameVariables.path)
+		# - For Beat Saber: the song file path from info.dat
 		var song_path = map.get_song()
-		if _is_playlist_mode:
-			var current_song = PlaylistManager.get_current_song()
-			if current_song and current_song.music_path != "":
-				song_path = current_song.music_path
 		
 		var stream = audio_loader.loadfile(song_path, false)
 		if stream == null:

@@ -80,6 +80,10 @@ var events: Dictionary = {}  # Empty for PowerBeatsVR - kept for interface compa
 # Music search paths - will be set based on the layout file location
 var music_search_paths: Array = []
 
+# Explicit music path - set by MapFactory when loading from a music file
+# If set, get_song() returns this directly instead of searching
+var music_path: String = ""
+
 
 func _init(json_path: String):
 	self.path = json_path
@@ -152,7 +156,11 @@ func get_ball_flight_duration() -> int:
 
 
 func get_song() -> String:
-	# Find the audio file matching the level name
+	# If explicit music path was set (by MapFactory when loading from music file), use it
+	if music_path != "":
+		return music_path
+	
+	# Otherwise, find the audio file matching the level name
 	var song_name = path.get_file().get_basename()  # e.g., "Wellerman" from "Wellerman.json"
 	
 	# Try different extensions

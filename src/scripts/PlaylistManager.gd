@@ -430,14 +430,14 @@ func _load_current_song() -> bool:
 		push_error("PlaylistManager: No current song to load")
 		return false
 	
-	# Always set game variables (even if empty - so we don't use stale data)
-	GameVariables.path = song.layout_path
-	GameVariables.difficulty = song.difficulty
-	
-	# Check if song has a valid layout
+	# Check if song has a valid layout (required for map loading)
 	if song.layout_path == "":
 		push_warning("PlaylistManager: Song has no layout, skipping: " + song.name)
 		return false
+	
+	# Set game variables - music_path is primary (MapFactory derives layout from it)
+	GameVariables.path = song.music_path
+	GameVariables.difficulty = song.difficulty
 	
 	print("PlaylistManager: Loading song ", _current_song_index + 1, "/", get_total_songs_in_playlist(), ": ", song.name)
 	emit_signal("playlist_song_changed", _current_song_index, song)
