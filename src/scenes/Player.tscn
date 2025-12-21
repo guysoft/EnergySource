@@ -34,15 +34,15 @@ shading_mode = 0
 albedo_color = Color(0.964706, 0.427451, 0.956863, 1)
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_6eyey"]
-radius = 0.027832031
+radius = 0.111816406
 height = 0.48427865
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_d3wef"]
 size = Vector3(0.11077118, 0.23046875, 0.11312866)
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_d3wef"]
-radius = 0.0969162
-height = 0.1938324
+radius = 0.12402344
+height = 0.24804688
 
 [sub_resource type="StandardMaterial3D" id="18"]
 shading_mode = 0
@@ -112,7 +112,7 @@ collision_layer = 2
 collision_mask = 28
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="XROrigin3D/LeftHand/Position3D2/Marker3D/Area3D"]
-transform = Transform3D(0.9996111, -0.015502767, -0.023180475, -0.022843475, 0.021573007, -0.9995061, 0.01599519, 0.9996465, 0.02121067, -0.0144622065, -0.017327636, 0.3287332)
+transform = Transform3D(0.9996111, -0.015502961, -0.023179665, -0.022843488, 0.021573037, -0.999506, 0.015995182, 0.9996464, 0.02121067, -0.0144622065, -0.017327636, 0.3287332)
 shape = SubResource("CapsuleShape3D_6eyey")
 
 [node name="CollisionShape3D2" type="CollisionShape3D" parent="XROrigin3D/LeftHand/Position3D2/Marker3D/Area3D"]
@@ -120,7 +120,7 @@ transform = Transform3D(0.9996111, 0.02360816, -0.014843287, -0.02284348, 0.9984
 shape = SubResource("BoxShape3D_d3wef")
 
 [node name="CollisionShape3D-hand" type="CollisionShape3D" parent="XROrigin3D/LeftHand/Position3D2/Marker3D/Area3D"]
-transform = Transform3D(0.9999906, -4.0978193e-08, -1.6391277e-07, 2.8312206e-07, 0.99999976, 0, -1.6018748e-07, 0, 0.99999976, -0.01036367, 0.0055874586, 0.26334327)
+transform = Transform3D(0.9999906, -8.121133e-07, -1.6391277e-07, 2.8312206e-07, 0.99999976, 0, -1.6018748e-07, 0, 0.99999976, -0.010363672, 0.0055874884, 0.26334321)
 shape = SubResource("CapsuleShape3D_d3wef")
 
 [node name="Feature_UIRayCast" parent="XROrigin3D/LeftHand/Position3D2/Marker3D" instance=ExtResource("5")]
@@ -167,7 +167,7 @@ collision_layer = 2
 collision_mask = 28
 
 [node name="CollisionShape3D3-handle" type="CollisionShape3D" parent="XROrigin3D/RightHand/Marker3D/Marker3D/Area3D"]
-transform = Transform3D(0.9985084, -0.05432088, 0.0054309852, 0.0067422446, 0.023985088, -0.99968946, 0.054173768, 0.99823433, 0.024315596, -0.016522713, 0.060434937, 0.32962227)
+transform = Transform3D(0.9985084, -0.054320876, 0.0054309852, 0.0067422558, 0.023985088, -0.99968946, 0.05417376, 0.99823403, 0.024315596, -0.016522711, 0.060434937, 0.32962227)
 shape = SubResource("CapsuleShape3D_6eyey")
 
 [node name="CollisionShape3D4-hammer" type="CollisionShape3D" parent="XROrigin3D/RightHand/Marker3D/Marker3D/Area3D"]
