@@ -52,10 +52,8 @@ func _setup_pbvr_wall(obstacle: Dictionary, obstacle_speed: float, bpm: float, d
 	self.speed = obstacle_speed
 	
 	var wall_type = int(obstacle.get("_pbvr_wall_type", 0))
-	var depth = float(obstacle.get("duration", 1.0))
+	var depth_beats = float(obstacle.get("duration", 1.0))
 	var wall_name = obstacle.get("_pbvr_wall_name", "Unknown")
-	
-	print("PBVR Wall setup: type=%d (%s), depth=%f, speed=%f" % [wall_type, wall_name, depth, speed])
 	
 	# Get position from obstacle data
 	var x = float(obstacle.get("x", 0.0))
@@ -73,7 +71,6 @@ func _setup_pbvr_wall(obstacle: Dictionary, obstacle_speed: float, bpm: float, d
 			x = 0.0  # Always centered
 	
 	# PBVR walls sit on the floor (y=0 in mesh space)
-	# The x coordinate positions the center of the wall
 	y = 0.0
 	
 	# Generate the mesh for this wall type
@@ -82,36 +79,39 @@ func _setup_pbvr_wall(obstacle: Dictionary, obstacle_speed: float, bpm: float, d
 		push_error("PBVR Wall: Failed to generate mesh for wall type %d" % wall_type)
 		return
 	_mesh.mesh = wall_mesh
-	print("PBVR Wall: mesh generated with %d surfaces" % wall_mesh.get_surface_count())
 	
-	# The scene already has obstacle_material.tres set with resource_local_to_scene = true
-	# This means each instance gets its own copy, and the animation can properly animate it.
-	# We only need to set the mesh - the material from the scene will automatically apply.
+	# Calculate Z depth: depth_beats * (distance / notes_delay_beats)
+	# In PBVR: wall depth = depthInBeats * (APPEARANCE_POINT.z / ballFlightDurationInBeats)
+	# Here: notes_delay determines how many beats ahead we spawn, similar to ballFlightDuration
+	# The speed already encodes distance/time, so: z_depth = depth_beats * speed * seconds_per_beat
+	# Simplified: z_depth = depth_beats * distance / notes_delay_beats
+	# Since we don't have direct access to notes_delay, calculate from speed:
+	# speed = (bpm/60) * distance / notes_delay => notes_delay = (bpm/60) * distance / speed
+	var seconds_per_beat = 60.0 / bpm
+	var z_depth = depth_beats * speed * seconds_per_beat
 	
-	# Calculate Z depth based on duration
-	var z_scale = depth * bpm / 60.0 * (1.0 / size_z) / 2.0
-	if z_scale < 0.1:
-		z_scale = 0.5  # Minimum depth for visibility
+	# Ensure minimum depth for visibility
+	if z_depth < 0.5:
+		z_depth = 0.5
 	
-	# Scale only the Z axis - wall dimensions are baked into the mesh
-	_mesh.scale = Vector3(1.0, 1.0, z_scale)
+	# Scale only the Z axis - wall X/Y dimensions are baked into the mesh
+	_mesh.scale = Vector3(1.0, 1.0, z_depth)
 	
 	# Generate collision shapes for this wall type
-	_setup_collision_for_pbvr_wall(wall_type, z_scale)
+	_setup_collision_for_pbvr_wall(wall_type, z_depth)
 	
-	# Position the obstacle
-	# Z is negative (walls approach from -Z toward player at +Z)
-	var z = -z_scale
-	transform.origin = Vector3(x, y, z)
+	# Position the obstacle so front face is at Z=0 (spawn location)
+	# Wall mesh goes from local Z=0 to Z=z_depth, so position at -z_depth puts front at 0
+	transform.origin = Vector3(x, y, -z_depth)
 	
-	print("PBVR Wall: position=(%f, %f, %f), z_scale=%f" % [x, y, z, z_scale])
+	despawn_z = distance + z_depth
 	
-	despawn_z = distance + z_scale
+	print("PBVR Wall: type=%d (%s), depth_beats=%.2f, z_depth=%.2f, pos=(%.2f, %.2f, %.2f)" % [
+		wall_type, wall_name, depth_beats, z_depth, x, y, -z_depth])
 	
 	# Handle spawn offset timer
 	if obstacle.get("offset", 0.0) > 0.0:
 		_spawn_timer.wait_time = obstacle["offset"] * 60.0 / bpm
-		print("PBVR Wall offset: ", obstacle["offset"], ", wait time: ", _spawn_timer.wait_time)
 
 
 func _setup_collision_for_pbvr_wall(wall_type: int, z_scale: float):
