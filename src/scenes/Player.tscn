@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://b3mrx5kj7l8vc"]
+[gd_scene load_steps=21 format=3 uid="uid://b3mrx5kj7l8vc"]
 
 [ext_resource type="PackedScene" uid="uid://l2n30mpbkdyw" path="res://addons/godot-xr-tools/hands/scenes/lowpoly/right_hand_low.tscn" id="1"]
 [ext_resource type="PackedScene" uid="uid://b4kad2kuba1yn" path="res://addons/godot-xr-tools/hands/scenes/lowpoly/left_hand_low.tscn" id="2"]
@@ -40,6 +40,10 @@ height = 0.48427865
 [sub_resource type="BoxShape3D" id="BoxShape3D_d3wef"]
 size = Vector3(0.11077118, 0.23046875, 0.11312866)
 
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_d3wef"]
+radius = 0.0969162
+height = 0.1938324
+
 [sub_resource type="StandardMaterial3D" id="18"]
 shading_mode = 0
 albedo_color = Color(0.403922, 0.972549, 0.992157, 1)
@@ -72,7 +76,6 @@ visible = false
 ui_raycast_length = 6.0
 
 [node name="LeftHand" type="XRController3D" parent="XROrigin3D"]
-visible = false
 tracker = &"left_hand"
 script = ExtResource("3")
 velocity_track_point = NodePath("Position3D2/Marker3D/EndTracker")
@@ -89,7 +92,6 @@ transform = Transform3D(1, 0, 0, 0, 1, -2.98023e-08, 0, 2.98023e-08, 1, 0, 0, -0
 
 [node name="Handle" type="MeshInstance3D" parent="XROrigin3D/LeftHand/Position3D2/Marker3D"]
 transform = Transform3D(1, 0, 0, 0, -8.9407e-08, -1, 0, 1, -8.9407e-08, 0, 1.11759e-08, 0.45)
-visible = false
 mesh = SubResource("20")
 surface_material_override/0 = SubResource("21")
 
@@ -116,6 +118,10 @@ shape = SubResource("CapsuleShape3D_6eyey")
 [node name="CollisionShape3D2" type="CollisionShape3D" parent="XROrigin3D/LeftHand/Position3D2/Marker3D/Area3D"]
 transform = Transform3D(0.9996111, 0.02360816, -0.014843287, -0.02284348, 0.9984998, 0.04973373, 0.015995193, -0.049375504, 0.99865043, -0.0052563716, -0.03350851, 0.05804631)
 shape = SubResource("BoxShape3D_d3wef")
+
+[node name="CollisionShape3D-hand" type="CollisionShape3D" parent="XROrigin3D/LeftHand/Position3D2/Marker3D/Area3D"]
+transform = Transform3D(0.9999906, -4.0978193e-08, -1.6391277e-07, 2.8312206e-07, 0.99999976, 0, -1.6018748e-07, 0, 0.99999976, -0.01036367, 0.0055874586, 0.26334327)
+shape = SubResource("CapsuleShape3D_d3wef")
 
 [node name="Feature_UIRayCast" parent="XROrigin3D/LeftHand/Position3D2/Marker3D" instance=ExtResource("5")]
 controller_path = NodePath("../../..")
@@ -150,7 +156,7 @@ skeleton = NodePath("../..")
 surface_material_override/0 = SubResource("18")
 
 [node name="hammer_low_poly_right" parent="XROrigin3D/RightHand/Marker3D/Marker3D" instance=ExtResource("7_right")]
-transform = Transform3D(-1.0741881e-08, -7.521546e-09, 0.29999998, -0.0037905872, -0.29997593, -7.656669e-09, 0.29997593, -0.0037905872, 1.0645973e-08, 0.0012979591, 0.5424671, -0.0019629896)
+transform = Transform3D(0.010589619, -0.007616128, -0.2997162, 0.008362263, -0.2997787, 0.007913182, -0.2996961, -0.0086336285, -0.010369526, 0.0012979591, 0.5285347, -0.021860212)
 
 [node name="EndTracker" type="Marker3D" parent="XROrigin3D/RightHand/Marker3D/Marker3D"]
 transform = Transform3D(1, 0, 0, 0, 1, -2.98023e-08, 0, 2.98023e-08, 1, 0, 5.96046e-08, -0.37)
@@ -160,13 +166,17 @@ transform = Transform3D(0.9974616, -0.056526102, 0.043301523, -0.04061225, 0.047
 collision_layer = 2
 collision_mask = 28
 
-[node name="CollisionShape3D3" type="CollisionShape3D" parent="XROrigin3D/RightHand/Marker3D/Marker3D/Area3D"]
+[node name="CollisionShape3D3-handle" type="CollisionShape3D" parent="XROrigin3D/RightHand/Marker3D/Marker3D/Area3D"]
 transform = Transform3D(0.9985084, -0.05432088, 0.0054309852, 0.0067422446, 0.023985088, -0.99968946, 0.054173768, 0.99823433, 0.024315596, -0.016522713, 0.060434937, 0.32962227)
 shape = SubResource("CapsuleShape3D_6eyey")
 
-[node name="CollisionShape3D4" type="CollisionShape3D" parent="XROrigin3D/RightHand/Marker3D/Marker3D/Area3D"]
+[node name="CollisionShape3D4-hammer" type="CollisionShape3D" parent="XROrigin3D/RightHand/Marker3D/Marker3D/Area3D"]
 transform = Transform3D(0.99850833, -0.003897667, -0.05445239, 0.006742036, 0.99861515, 0.05214992, 0.054173864, -0.05243939, 0.9971516, 0.002706279, 0.0430052, 0.059564307)
 shape = SubResource("BoxShape3D_d3wef")
+
+[node name="CollisionShape3D-hand" type="CollisionShape3D" parent="XROrigin3D/RightHand/Marker3D/Marker3D/Area3D"]
+transform = Transform3D(0.9999906, 3.7252903e-08, -1.6391277e-07, 2.8312206e-07, 0.9999999, 0, -1.6018748e-07, 0, 0.99999976, 0.009700409, 0.065326184, 0.25827754)
+shape = SubResource("CapsuleShape3D_d3wef")
 
 [node name="Feature_UIRayCast" parent="XROrigin3D/RightHand/Marker3D/Marker3D" instance=ExtResource("5")]
 controller_path = NodePath("../../..")
