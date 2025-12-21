@@ -7,6 +7,10 @@ var _settings = {
 	"game": {
 		"disable_time_warp": false,
 		"only_power_balls": false
+		},
+	"vr": {
+		"recenter_offset_position": Vector3.ZERO,
+		"recenter_offset_rotation": 0.0  # Y-axis rotation in radians
 		}
 	}
 
@@ -24,10 +28,16 @@ func save_settings():
 	_config_file.save(SAVE_PATH)
 	
 func set_setting(section, key, value):
+	if not _settings.has(section):
+		_settings[section] = {}
 	_settings[section][key] = value
 	save_settings()
 	
-func get_setting(section, key):
+func get_setting(section, key, default = null):
+	if not _settings.has(section):
+		return default
+	if not _settings[section].has(key):
+		return default
 	return _settings[section][key]
 	
 func load_settings():

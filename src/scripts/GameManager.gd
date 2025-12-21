@@ -263,6 +263,11 @@ func _webxr_session_started() -> void:
 		# types that you requested above. This is useful if you want the game to
 		# work a little differently in 'bounded-floor' versus 'local-floor'.
 		print ("RefCounted space type: " + webxr_interface.reference_space_type)
+		
+		# Initialize VR recenter with XR nodes and apply saved offset
+		var xr_origin = $Player/XROrigin3D
+		var xr_camera = $Player/XROrigin3D/XRCamera3D
+		VRRecenter.set_xr_nodes(xr_origin, xr_camera)
  
 func _webxr_session_ended() -> void:
 	if GameVariables.ENABLE_VR:
@@ -320,6 +325,11 @@ func initialise_OpenXR() -> bool:
 
 			# Match our physics to our HMD
 			Engine.physics_ticks_per_second = refresh_rate
+
+		# Initialize VR recenter with XR nodes and apply saved offset
+		var xr_origin = $Player/XROrigin3D
+		var xr_camera = $Player/XROrigin3D/XRCamera3D
+		VRRecenter.set_xr_nodes(xr_origin, xr_camera)
 
 		return true
 	else:
