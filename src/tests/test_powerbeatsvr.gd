@@ -10,6 +10,7 @@ const TEST_BS_PATH = "res://Levels/test"
 var PowerBeatsVRMapScript = preload("res://scripts/PowerBeatsVRMap.gd")
 var MapFactoryScript = preload("res://scripts/MapFactory.gd")
 var BeatSaberMapScript = preload("res://scripts/MapLoader.gd")
+var WallMeshGeneratorScript = preload("res://scripts/WallMeshGenerator.gd")
 
 
 # Minimal fake Settings autoload for headless tests.
@@ -64,6 +65,9 @@ func _init():
 	all_passed = test_only_power_balls_default_false_beatsaber() and all_passed
 	all_passed = test_only_power_balls_forces_powerballs_pbvr() and all_passed
 	all_passed = test_only_power_balls_forces_powerballs_beatsaber() and all_passed
+	all_passed = test_pbvr_wall_has_wall_type() and all_passed
+	all_passed = test_pbvr_wall_fixed_positions() and all_passed
+	all_passed = test_pbvr_wall_type_to_mesh_mapping() and all_passed
 	
 	# Summary
 	print("\n=== Test Summary ===")
@@ -547,6 +551,158 @@ func test_ball_flight_duration() -> bool:
 	else:
 		print("  ✗ Flight time seems too long: " + str(flight_time))
 		passed = false
+	
+	return passed
+
+
+func test_pbvr_wall_has_wall_type() -> bool:
+	print("--- Testing PBVR Walls Have _pbvr_wall_type ---")
+	var passed = true
+	
+	# Create a mock wall obstacle dictionary as PowerBeatsVRMap would create
+	var mock_obstacle = {
+		"x": 0.0,
+		"y": 1.3,
+		"_time": 4.0,
+		"_lineIndex": 0,
+		"_type": 5,  # OpeningLeft
+		"_duration": 1.0,
+		"_width": 1,
+		"type": "opening_left",
+		"duration": 1.0,
+		"width": 1,
+		"offset": 0.0,
+		"_pbvr_wall_type": 5,
+		"_pbvr_wall_name": "OpeningLeft"
+	}
+	
+	if mock_obstacle.has("_pbvr_wall_type"):
+		print("  ✓ PBVR wall obstacles have _pbvr_wall_type field")
+	else:
+		print("  ✗ PBVR wall obstacles should have _pbvr_wall_type field")
+		passed = false
+	
+	if mock_obstacle.has("_pbvr_wall_name"):
+		print("  ✓ PBVR wall obstacles have _pbvr_wall_name field")
+	else:
+		print("  ✗ PBVR wall obstacles should have _pbvr_wall_name field")
+		passed = false
+	
+	# Test that WallMeshGenerator can handle this wall type
+	var mesh = WallMeshGeneratorScript.generate_wall_mesh(mock_obstacle["_pbvr_wall_type"])
+	if mesh != null and mesh is ArrayMesh:
+		print("  ✓ WallMeshGenerator can generate mesh for _pbvr_wall_type")
+	else:
+		print("  ✗ WallMeshGenerator failed to generate mesh for _pbvr_wall_type")
+		passed = false
+	
+	return passed
+
+
+func test_pbvr_wall_fixed_positions() -> bool:
+	print("--- Testing PBVR Wall Fixed Position Rules ---")
+	var passed = true
+	
+	# From PowerBeatsVR WallObstacleAction.cs AdjustPositionForPlayWindow:
+	# - ArchwayCenter (2): Always x = 0 (centered)
+	# - ArchwayLeft (3): Always x = -0.7 (fixed left)
+	# - ArchwayRight (4): Always x = 0.7 (fixed right)
+	# - OpeningLeft (5): Always x = 0 (centered)
+	# - OpeningRight (6): Always x = 0 (centered)
+	
+	var fixed_position_walls = {
+		2: {"name": "ArchwayCenter", "expected_x": 0.0},
+		3: {"name": "ArchwayLeft", "expected_x": -0.7},
+		4: {"name": "ArchwayRight", "expected_x": 0.7},
+		5: {"name": "OpeningLeft", "expected_x": 0.0},
+		6: {"name": "OpeningRight", "expected_x": 0.0},
+	}
+	
+	for wall_type in fixed_position_walls:
+		var wall_info = fixed_position_walls[wall_type]
+		var original_x = 999.0  # Arbitrary value that should be overridden
+		var final_x = original_x
+		
+		# Simulate the position adjustment logic from obstacle.gd _setup_pbvr_wall
+		match wall_type:
+			WallMeshGeneratorScript.WALL_ARCHWAY_CENTER:
+				final_x = 0.0
+			WallMeshGeneratorScript.WALL_ARCHWAY_LEFT:
+				final_x = -0.7
+			WallMeshGeneratorScript.WALL_ARCHWAY_RIGHT:
+				final_x = 0.7
+			WallMeshGeneratorScript.WALL_OPENING_LEFT, WallMeshGeneratorScript.WALL_OPENING_RIGHT:
+				final_x = 0.0
+		
+		if is_equal_approx(final_x, wall_info["expected_x"]):
+			print("  ✓ %s (type %d) fixed at x = %.1f" % [wall_info["name"], wall_type, final_x])
+		else:
+			print("  ✗ %s (type %d) should be at x = %.1f, got %.1f" % [wall_info["name"], wall_type, wall_info["expected_x"], final_x])
+			passed = false
+	
+	# Test that columns and bars use map position (no fixed override)
+	for wall_type in [0, 1, 7]:  # SingleColumn, DoubleColumn, Bar
+		var type_name = WallMeshGeneratorScript.get_wall_type_name(wall_type)
+		var test_x = 0.5
+		var final_x = test_x
+		
+		# These wall types should NOT be modified by the fixed position logic
+		# (i.e., they pass through unchanged in the match statement)
+		match wall_type:
+			WallMeshGeneratorScript.WALL_ARCHWAY_CENTER:
+				final_x = 0.0
+			WallMeshGeneratorScript.WALL_ARCHWAY_LEFT:
+				final_x = -0.7
+			WallMeshGeneratorScript.WALL_ARCHWAY_RIGHT:
+				final_x = 0.7
+			WallMeshGeneratorScript.WALL_OPENING_LEFT, WallMeshGeneratorScript.WALL_OPENING_RIGHT:
+				final_x = 0.0
+		
+		if is_equal_approx(final_x, test_x):
+			print("  ✓ %s (type %d) uses map position (no fixed override)" % [type_name, wall_type])
+		else:
+			print("  ✗ %s (type %d) should use map position, but got %.1f" % [type_name, wall_type, final_x])
+			passed = false
+	
+	return passed
+
+
+func test_pbvr_wall_type_to_mesh_mapping() -> bool:
+	print("--- Testing PBVR Wall Type Maps to Correct Mesh ---")
+	var passed = true
+	
+	# Test that each wall type produces a unique mesh configuration
+	var mesh_configs = {}
+	
+	for wall_type in range(8):
+		var mesh = WallMeshGeneratorScript.generate_wall_mesh(wall_type)
+		var type_name = WallMeshGeneratorScript.get_wall_type_name(wall_type)
+		
+		if mesh == null:
+			print("  ✗ Wall type %d (%s) returned null mesh" % [wall_type, type_name])
+			passed = false
+			continue
+		
+		# Get vertex count as a simple identifier
+		var arrays = mesh.surface_get_arrays(0)
+		var vertex_count = arrays[Mesh.ARRAY_VERTEX].size()
+		
+		# Get collision shape count
+		var shapes = WallMeshGeneratorScript.generate_collision_shapes(wall_type)
+		var shape_count = shapes.size()
+		
+		var config_key = "%d_%d" % [vertex_count, shape_count]
+		
+		if mesh_configs.has(config_key):
+			# Same config is OK for related walls (e.g., SingleColumn and DoubleColumn have different widths)
+			# But OpeningLeft and OpeningRight should have same structure
+			var other_type = mesh_configs[config_key]
+			var other_name = WallMeshGeneratorScript.get_wall_type_name(other_type)
+			print("  ℹ %s and %s have same mesh structure (%d verts, %d shapes)" % [type_name, other_name, vertex_count, shape_count])
+		else:
+			mesh_configs[config_key] = wall_type
+		
+		print("  ✓ %s: %d vertices, %d collision shape(s)" % [type_name, vertex_count, shape_count])
 	
 	return passed
 

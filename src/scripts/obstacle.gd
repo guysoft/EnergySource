@@ -24,6 +24,9 @@ var size_x = 1.0
 var size_y = 1.0
 var size_z = 1.0
 
+# Track extra collision shapes for compound walls
+var _extra_collision_shapes: Array = []
+
 #Refs
 @onready var _audio_stream_player = $HitSound
 @onready var _animation_player = $AnimationPlayer
@@ -34,7 +37,117 @@ var size_z = 1.0
 func _ready():
 	deactivate(false)
 
-func setup_obstacle(obstacle, speed, bpm, distance):
+func setup_obstacle(obstacle, obstacle_speed, bpm, distance):
+	# Check for PBVR wall type first
+	if obstacle.has("_pbvr_wall_type"):
+		_setup_pbvr_wall(obstacle, obstacle_speed, bpm, distance)
+		return
+	
+	# Fall through to Beat Saber style obstacle handling
+	_setup_beatsaber_obstacle(obstacle, obstacle_speed, bpm, distance)
+
+
+func _setup_pbvr_wall(obstacle: Dictionary, obstacle_speed: float, bpm: float, distance: float):
+	"""Setup a PowerBeatsVR wall with correct mesh, position, and collision."""
+	self.speed = obstacle_speed
+	
+	var wall_type = int(obstacle.get("_pbvr_wall_type", 0))
+	var depth = float(obstacle.get("duration", 1.0))
+	var wall_name = obstacle.get("_pbvr_wall_name", "Unknown")
+	
+	print("PBVR Wall setup: type=%d (%s), depth=%f, speed=%f" % [wall_type, wall_name, depth, speed])
+	
+	# Get position from obstacle data
+	var x = float(obstacle.get("x", 0.0))
+	var y = float(obstacle.get("y", 0.0))
+	
+	# Apply fixed positioning rules from PowerBeatsVR
+	match wall_type:
+		WallMeshGenerator.WALL_ARCHWAY_CENTER:
+			x = 0.0  # Always centered
+		WallMeshGenerator.WALL_ARCHWAY_LEFT:
+			x = -0.7  # Fixed left position
+		WallMeshGenerator.WALL_ARCHWAY_RIGHT:
+			x = 0.7  # Fixed right position
+		WallMeshGenerator.WALL_OPENING_LEFT, WallMeshGenerator.WALL_OPENING_RIGHT:
+			x = 0.0  # Always centered
+	
+	# PBVR walls sit on the floor (y=0 in mesh space)
+	# The x coordinate positions the center of the wall
+	y = 0.0
+	
+	# Generate the mesh for this wall type
+	var wall_mesh = WallMeshGenerator.generate_wall_mesh(wall_type)
+	if wall_mesh == null:
+		push_error("PBVR Wall: Failed to generate mesh for wall type %d" % wall_type)
+		return
+	_mesh.mesh = wall_mesh
+	print("PBVR Wall: mesh generated with %d surfaces" % wall_mesh.get_surface_count())
+	
+	# The scene already has obstacle_material.tres set with resource_local_to_scene = true
+	# This means each instance gets its own copy, and the animation can properly animate it.
+	# We only need to set the mesh - the material from the scene will automatically apply.
+	
+	# Calculate Z depth based on duration
+	var z_scale = depth * bpm / 60.0 * (1.0 / size_z) / 2.0
+	if z_scale < 0.1:
+		z_scale = 0.5  # Minimum depth for visibility
+	
+	# Scale only the Z axis - wall dimensions are baked into the mesh
+	_mesh.scale = Vector3(1.0, 1.0, z_scale)
+	
+	# Generate collision shapes for this wall type
+	_setup_collision_for_pbvr_wall(wall_type, z_scale)
+	
+	# Position the obstacle
+	# Z is negative (walls approach from -Z toward player at +Z)
+	var z = -z_scale
+	transform.origin = Vector3(x, y, z)
+	
+	print("PBVR Wall: position=(%f, %f, %f), z_scale=%f" % [x, y, z, z_scale])
+	
+	despawn_z = distance + z_scale
+	
+	# Handle spawn offset timer
+	if obstacle.get("offset", 0.0) > 0.0:
+		_spawn_timer.wait_time = obstacle["offset"] * 60.0 / bpm
+		print("PBVR Wall offset: ", obstacle["offset"], ", wait time: ", _spawn_timer.wait_time)
+
+
+func _setup_collision_for_pbvr_wall(wall_type: int, z_scale: float):
+	"""Setup collision shapes for PBVR wall, supporting compound shapes."""
+	# Clear any existing extra collision shapes
+	for shape_node in _extra_collision_shapes:
+		shape_node.queue_free()
+	_extra_collision_shapes.clear()
+	
+	# Get collision shape data from WallMeshGenerator
+	var collision_data = WallMeshGenerator.generate_collision_shapes(wall_type)
+	
+	if collision_data.size() == 0:
+		return
+	
+	# First shape goes into the existing CollisionShape3D
+	var first = collision_data[0]
+	_collision.shape = first["shape"]
+	var offset = first["offset"]
+	_collision.position = Vector3(offset.x, offset.y, offset.z * z_scale)
+	_collision.scale = Vector3(1.0, 1.0, z_scale)
+	
+	# Additional shapes get new CollisionShape3D nodes
+	for i in range(1, collision_data.size()):
+		var shape_data = collision_data[i]
+		var collision_node = CollisionShape3D.new()
+		collision_node.shape = shape_data["shape"]
+		var col_offset = shape_data["offset"]
+		collision_node.position = Vector3(col_offset.x, col_offset.y, col_offset.z * z_scale)
+		collision_node.scale = Vector3(1.0, 1.0, z_scale)
+		add_child(collision_node)
+		_extra_collision_shapes.append(collision_node)
+
+
+func _setup_beatsaber_obstacle(obstacle: Dictionary, _spd: float, bpm: float, distance: float):
+	"""Setup a Beat Saber style obstacle (grid-based positioning)."""
 	self.speed = speed
 	if not obstacle:
 		return
@@ -84,9 +197,6 @@ func setup_obstacle(obstacle, speed, bpm, distance):
 	$MeshInstance3D.scale = (Vector3(scale_x, scale_y, z))
 	$CollisionShape3D.scale = (Vector3(scale_x, scale_y, z))
 	transform.origin = Vector3(x, y, -z)
-	
-	
-	
 	
 	despawn_z = distance+z
 	
