@@ -6,7 +6,8 @@
 [ext_resource type="Script" uid="uid://doeg578huqb6l" path="res://scripts/player.gd" id="4"]
 [ext_resource type="PackedScene" uid="uid://c6nhx3y7j1vqk" path="res://scenes/Feature_UIRayCast.tscn" id="5"]
 [ext_resource type="AudioStream" uid="uid://c0xrgcajnsyfk" path="res://sfx/RhySD-BackButton.wav" id="6"]
-[ext_resource type="PackedScene" uid="uid://mexnesvbf66d" path="res://models/contoller/hammer_smaller_hand_left.glb" id="6_bruh7"]
+[ext_resource type="PackedScene" uid="uid://c3uop5gnt6x6k" path="res://models/contoller/hammer_low_poly_left.glb" id="6_bruh7"]
+[ext_resource type="PackedScene" uid="uid://dc3r58yab5s55" path="res://models/contoller/hammer_low_poly_right.glb" id="7_right"]
 [ext_resource type="PackedScene" uid="uid://cxmhj7l4qkn5p" path="res://scenes/player_center.tscn" id="11"]
 [ext_resource type="PackedScene" uid="uid://diyc4ru8c1n75" path="res://scenes/UITransition.tscn" id="12"]
 
@@ -97,7 +98,7 @@ visible = false
 mesh = SubResource("17")
 surface_material_override/0 = SubResource("19")
 
-[node name="hammer_smaller_hand_left" parent="XROrigin3D/LeftHand/Position3D2/Marker3D" instance=ExtResource("6_bruh7")]
+[node name="hammer_low_poly_left" parent="XROrigin3D/LeftHand/Position3D2/Marker3D" instance=ExtResource("6_bruh7")]
 transform = Transform3D(1.0741881e-08, 7.521546e-09, -0.29999998, -0.0037905872, -0.29997593, -7.656669e-09, -0.29997593, 0.0037905872, -1.0645973e-08, -0.0012979591, 0.5424671, 0.0019629896)
 
 [node name="EndTracker" type="Marker3D" parent="XROrigin3D/LeftHand/Position3D2/Marker3D"]
@@ -148,7 +149,7 @@ mesh = SubResource("17")
 skeleton = NodePath("../..")
 surface_material_override/0 = SubResource("18")
 
-[node name="hammer_smaller_hand_right" parent="XROrigin3D/RightHand/Marker3D/Marker3D" instance=ExtResource("6_bruh7")]
+[node name="hammer_low_poly_right" parent="XROrigin3D/RightHand/Marker3D/Marker3D" instance=ExtResource("7_right")]
 transform = Transform3D(-1.0741881e-08, -7.521546e-09, 0.29999998, -0.0037905872, -0.29997593, -7.656669e-09, 0.29997593, -0.0037905872, 1.0645973e-08, 0.0012979591, 0.5424671, -0.0019629896)
 
 [node name="EndTracker" type="Marker3D" parent="XROrigin3D/RightHand/Marker3D/Marker3D"]
