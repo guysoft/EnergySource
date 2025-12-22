@@ -95,6 +95,25 @@ func _ready():
 	get_tree().paused=false
 	
 	set_process(false)
+	
+	# Apply initial quality settings
+	_apply_quality_settings()
+
+func _apply_quality_settings():
+	# Control the main scene lighting based on quality settings
+	if has_node("Sun"):
+		$Sun.visible = QualitySettings.lighting_enabled()
+	
+	# Control PlayerCenter particles
+	if has_node("Player/PlayerCenter"):
+		var player_center = $Player/PlayerCenter
+		if not QualitySettings.particles_enabled():
+			player_center.visible = false
+			if player_center.has_method("set_emitting"):
+				player_center.emitting = false
+	
+	# Log quality settings for debugging
+	print("QualitySettings: ", QualitySettings.get_debug_info())
 
 # Adds a scene to the tree via load_scene and unloads all other scenes
 func change_scene_to_file(scene, unique_id: String) -> bool:

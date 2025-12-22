@@ -342,3 +342,9 @@ If the editor doesn't reflect size changes immediately:
 4. Add your UI scene as a child of the UICanvasInteract instance
 5. Set `transparent = true` on UICanvasInteract if needed
 6. Position/rotate the UICanvasInteract in 3D space
+
+## 12. Quest Device Tools
+
+Documentation for Quest VR headset management tools is located in the `tools/` directory:
+
+- **[QUEST_WAKEUP.md](tools/QUEST_WAKEUP.md)** - How to wake up the Quest display remotely via ADB (useful for screenshots and remote debugging)

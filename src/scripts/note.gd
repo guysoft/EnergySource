@@ -192,6 +192,9 @@ func _set_ball_purple():
 		_mesh.material_override = purple_mat
 
 func spawn_hit_effect():
+	# Skip explosions if disabled for performance testing
+	if not QualitySettings.note_explosions_enabled():
+		return
 	if hit_effect == null:
 		push_warning("Note: hit_effect is not assigned")
 		return

@@ -15,10 +15,14 @@ var ui_collisionshape = null;
 @export var transparent = false
 @export var disable_collision = false
 @export var editor_live_update = false
+## Quest optimization: reduce viewport update when not being looked at
+@export var quest_optimize_updates = true
 
 var mesh_material = null
 
 var ui_size = Vector2()
+var _is_being_looked_at = false
+var _update_frame_counter = 0
 
 #func _input(event: InputEvent) -> void:
 #	if event:
@@ -68,8 +72,10 @@ func _ready():
 	if mesh_instance:
 		mesh_material = mesh_instance.get_surface_override_material(0);
 		# only enable transparency when necessary as it is significantly slower than non-transparent rendering
+		# On Quest, always disable transparency for better performance
+		var use_transparency = transparent and not QualitySettings.is_quest()
 		if mesh_material is StandardMaterial3D:
-			mesh_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA if transparent else BaseMaterial3D.TRANSPARENCY_DISABLED
+			mesh_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA if use_transparency else BaseMaterial3D.TRANSPARENCY_DISABLED
 	
 	if Engine.is_editor_hint():
 		return;
@@ -121,6 +127,19 @@ func _process(delta: float) -> void:
 			else:
 				#if visible, disabled is false, if not visible, disabled is true
 				ui_collisionshape.disabled = not is_visible_in_tree()
+		
+		# Quest optimization: reduce viewport update frequency when not being interacted with
+		if quest_optimize_updates and QualitySettings.is_quest() and viewport:
+			_update_frame_counter += 1
+			if _is_being_looked_at:
+				# Full update rate when being looked at
+				viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+			else:
+				# Reduce update rate when not being looked at (every 3rd frame)
+				if _update_frame_counter % 3 == 0:
+					viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
+				else:
+					viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
 		return
 	
 	#if we are in the editor
@@ -132,5 +151,9 @@ func _process(delta: float) -> void:
 			_editor_update_preview()
 		elif (editor_live_update):
 			_editor_update_preview()
+
+## Called by UIArea when raycast enters/exits this panel
+func set_being_looked_at(value: bool) -> void:
+	_is_being_looked_at = value
 	
 	

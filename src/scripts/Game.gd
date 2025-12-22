@@ -196,14 +196,26 @@ func setup_environment(map):
 	_environment_manager.environment.adjustment_enabled=true
 	
 	# Apply Quest optimizations for performance
-	if QualitySettings.is_quest():
+	if QualitySettings.is_quest() or not QualitySettings.postprocess_enabled():
 		environment.glow_enabled = false
 		environment.fog_enabled = false
-		$EnvironmentParticles.amount = 25
+	
+	# Environment particles
+	if QualitySettings.environment_particles_enabled():
+		if QualitySettings.is_quest():
+			$EnvironmentParticles.amount = 25
+		$EnvironmentParticles.visible = true
+	else:
+		$EnvironmentParticles.visible = false
+		$EnvironmentParticles.emitting = false
 	
 	#set color and speed which to move ground and particles
 	$Ground.setup_ground(map.get_bpm(), notes_delay, Color.CHOCOLATE)
 	$EnvironmentParticles.setup_particles(map.get_bpm(), notes_delay)
+	
+	# Lighting controls
+	if has_node("Sun"):
+		$Sun.visible = QualitySettings.lighting_enabled()
 	
 	#position center lights
 	$Lasers/CenterLights.transform.origin.y = Map.LEVEL_LOW
