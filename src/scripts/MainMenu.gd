@@ -16,6 +16,18 @@ func _ready():
 	#$AudioStreamPlayer.play()
 	_environment_manager.change_environment(environment)
 	
+	# Quest optimization: disable expensive environment effects
+	# This achieves 72 FPS without modifying SubViewport update modes
+	if QualitySettings.is_quest() and environment:
+		environment.glow_enabled = false
+		environment.fog_enabled = false
+		environment.volumetric_fog_enabled = false
+		environment.background_mode = Environment.BG_COLOR
+		environment.background_color = Color(0.02, 0.02, 0.04, 1.0)
+		environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+		environment.ambient_light_color = Color(0.15, 0.15, 0.2, 1.0)
+		environment.ambient_light_energy = 0.3
+	
 	#start_delay = $AudioStreamPlayer.stream.get_length()
 	#yield(get_tree().create_timer(start_delay), "timeout")
 	if _beat_player and music:
