@@ -196,9 +196,11 @@ func setup_environment(map):
 	_environment_manager.environment.adjustment_enabled=true
 	
 	# Apply Quest optimizations for performance
+	# Disabling glow/fog achieves 72 FPS on Quest (see QUEST_OPTIMIZATION.md)
 	if QualitySettings.is_quest() or not QualitySettings.postprocess_enabled():
 		environment.glow_enabled = false
 		environment.fog_enabled = false
+		environment.volumetric_fog_enabled = false
 	
 	# Environment particles
 	if QualitySettings.environment_particles_enabled():
