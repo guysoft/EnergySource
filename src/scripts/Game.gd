@@ -45,6 +45,11 @@ var _time_delay
 # Playlist mode state
 var _is_playlist_mode: bool = false
 
+# FPS logging for shader warmup validation
+var _fps_log_timer: float = 0.0
+var _fps_log_enabled: bool = true
+var _fps_log_interval: float = 0.5  # Log every 0.5 seconds
+
 func _exit_tree():
 	# Disconnect beat signal when scene is freed to prevent stale connections
 	if _beat_player and _beat_player.is_connected("beat", Callable(self, "_on_beat_detected")):
@@ -98,6 +103,10 @@ func _ready():
 		print("Game: Playing playlist song ", song_index + 1, "/", total_songs)
 
 	#begin timer to offset start of song
+	# On Quest, add extra settling time for GPU to stabilize framerate
+	if QualitySettings.is_quest():
+		$StartTimer.wait_time = 4.0  # Extra time for shader warmup/settling
+		print("Game: Extended start timer to 4s for Quest")
 	$StartTimer.start()
 
 func _setup_playlist_mode_ui():
@@ -107,7 +116,18 @@ func _setup_playlist_mode_ui():
 	
 	# Next button visibility will be handled in _on_EndTimer_timeout
 
-func _process(_delta):
+func _process(delta):
+	# FPS logging for shader warmup validation (first 10 seconds)
+	if _fps_log_enabled:
+		_fps_log_timer += delta
+		if _fps_log_timer <= 10.0:
+			# Log at intervals to reduce spam
+			if fmod(_fps_log_timer, _fps_log_interval) < delta:
+				print("Game FPS @ %.1fs: %.1f" % [_fps_log_timer, Engine.get_frames_per_second()])
+		else:
+			_fps_log_enabled = false
+			print("Game FPS logging complete")
+	
 	# Update playlist time label if in playlist mode
 	if _is_playlist_mode and _playlist_time_label and _playlist_time_label.visible:
 		var song_index = PlaylistManager.get_current_song_index() + 1

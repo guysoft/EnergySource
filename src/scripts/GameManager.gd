@@ -81,6 +81,10 @@ func _ready():
 		_left_hand.queue_free()
 		_right_hand.queue_free()
 		
+	# Pre-warm shaders on Quest before loading any scene
+	if QualitySettings.is_quest():
+		await _warmup_game_shaders()
+	
 	match (debug_start_scene):
 		"GGJ2Splash":
 			load_scene(splash_path, "splash")
@@ -104,6 +108,81 @@ func _ready():
 	
 	# Apply initial quality settings
 	_apply_quality_settings()
+
+func _warmup_game_shaders():
+	"""Pre-compile game shaders and preload Game scene resources before any scene loads."""
+	print("GameManager: Starting comprehensive warmup...")
+	
+	# 1. Preload the entire Game scene to cache all its resources
+	var game_scene = preload("res://scenes/Game.tscn")
+	print("GameManager: Game scene preloaded")
+	
+	# 2. Preload game object scenes and materials
+	var notescene = preload("res://scenes/Note.tscn")
+	var obstaclescene = preload("res://scenes/Obstacle.tscn")
+	var _mat0 = preload("res://effects/note_0_material.tres")
+	var _mat1 = preload("res://effects/note_1_material.tres")
+	var _mat3 = preload("res://effects/note_3_material.tres")
+	var _wall_mat = preload("res://effects/wall_material.tres")
+	
+	# 3. Preload other commonly used resources
+	var _ground_mat = preload("res://effects/Ground.tres")
+	var _dark_env = preload("res://effects/Dark_environment.tres")
+	var _note_explosion = preload("res://scenes/NoteExplosion.tscn")
+	var _note_feedback = preload("res://scenes/NoteFeedback.tscn")
+	
+	print("GameManager: All resources preloaded")
+	
+	# 4. Instantiate and render notes/obstacles to trigger shader compilation
+	var warmup_objects = []
+	
+	for i in range(3):
+		var note = notescene.instantiate()
+		note.position = Vector3(i * 2, -50, -20)
+		note.visible = true
+		add_child(note)
+		var mesh = note.get_node_or_null("MeshInstance3D")
+		if mesh:
+			mesh.visible = true
+			mesh.scale = Vector3(1, 1, 1)
+			if i == 0:
+				mesh.material_override = _mat0
+			elif i == 1:
+				mesh.material_override = _mat1
+			else:
+				mesh.material_override = _mat3
+		warmup_objects.append(note)
+	
+	var obstacle = obstaclescene.instantiate()
+	obstacle.position = Vector3(6, -50, -20)
+	obstacle.visible = true
+	add_child(obstacle)
+	var obs_mesh = obstacle.get_node_or_null("MeshInstance3D")
+	if obs_mesh:
+		obs_mesh.visible = true
+		obs_mesh.scale = Vector3(1, 1, 1)
+		obs_mesh.material_override = _wall_mat
+	warmup_objects.append(obstacle)
+	
+	# 5. Also instantiate the explosion/feedback effects to compile their shaders
+	var explosion = _note_explosion.instantiate()
+	explosion.position = Vector3(0, -50, -20)
+	add_child(explosion)
+	warmup_objects.append(explosion)
+	
+	print("GameManager: Warmup objects created: ", warmup_objects.size())
+	
+	# Wait for GPU to compile shaders (15 frames to be safe)
+	for _frame in range(15):
+		await get_tree().process_frame
+	
+	# Cleanup
+	for obj in warmup_objects:
+		obj.queue_free()
+	
+	# Keep reference to game_scene so it stays in cache
+	# (Godot's ResourceLoader caches preloaded resources)
+	print("GameManager: Comprehensive warmup complete")
 
 func _apply_quality_settings():
 	# Enable VRS (Variable Rate Shading) for mobile renderer on Quest

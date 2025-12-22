@@ -8,6 +8,9 @@ extends Node3D
 @onready var _player = Global.manager()._player
 @onready var _environment_manager = Global.manager()._environment_manager
 
+# Shader warmup - preload game assets to compile shaders before entering game
+var _shaders_warmed_up: bool = false
+
 # VR Recenter: Y+B button hold detection
 var _recenter_hold_time := 0.0
 var _recenter_triggered := false
@@ -39,6 +42,9 @@ func _ready():
 	_player.game_node=null
 	
 	_update_playtime_display()
+	
+	# Pre-warm shaders for game scene on Quest
+	_warmup_game_shaders()
 
 func _update_playtime_display():
 	# UICanvas moves the Control into SubViewport at runtime
@@ -92,3 +98,88 @@ func _trigger_recenter():
 	
 	# Perform the recenter
 	VRRecenter.recenter()
+
+func _warmup_game_shaders():
+	"""Pre-compile game shaders in the menu to avoid stuttering when game starts.
+	
+	This instantiates Note and Obstacle scenes off-screen, makes them visible,
+	applies all material variants, and renders them for several frames to force 
+	the GPU to compile all required shaders before the player enters the game.
+	"""
+	print("MainMenu: _warmup_game_shaders called, _shaders_warmed_up=", _shaders_warmed_up)
+	
+	if _shaders_warmed_up:
+		print("MainMenu: Skipping warmup (already done)")
+		return
+	
+	print("MainMenu: is_quest=", QualitySettings.is_quest())
+	
+	# Only needed on Quest where shader compilation is noticeable
+	if not QualitySettings.is_quest():
+		_shaders_warmed_up = true
+		print("MainMenu: Skipping warmup (not Quest)")
+		return
+	
+	print("MainMenu: Warming up game shaders...")
+	
+	# Preload game object scenes
+	var notescene = preload("res://scenes/Note.tscn")
+	var obstaclescene = preload("res://scenes/Obstacle.tscn")
+	
+	# Also preload the materials directly to ensure they're in GPU memory
+	var _mat0 = preload("res://effects/note_0_material.tres")
+	var _mat1 = preload("res://effects/note_1_material.tres")
+	var _mat3 = preload("res://effects/note_3_material.tres")
+	var _wall_mat = preload("res://effects/wall_material.tres")
+	
+	var warmup_objects = []
+	
+	# Instantiate notes with different materials applied
+	# Position off-screen but still within render distance
+	for i in range(3):  # For materials 0, 1, 3 (there's no material 2)
+		var note = notescene.instantiate()
+		note.position = Vector3(i * 2, -50, -20)  # Off-screen but rendered
+		note.visible = true  # Force visible (overrides default invisible state)
+		add_child(note)
+		
+		# Apply the specific material to the mesh
+		var mesh = note.get_node_or_null("MeshInstance3D")
+		if mesh:
+			mesh.visible = true
+			mesh.scale = Vector3(1, 1, 1)  # Override RESET animation scale of 0
+			if i == 0:
+				mesh.material_override = _mat0
+			elif i == 1:
+				mesh.material_override = _mat1
+			else:
+				mesh.material_override = _mat3
+		
+		warmup_objects.append(note)
+	
+	# Instantiate obstacle with wall material
+	var obstacle = obstaclescene.instantiate()
+	obstacle.position = Vector3(6, -50, -20)
+	obstacle.visible = true
+	add_child(obstacle)
+	var obs_mesh = obstacle.get_node_or_null("MeshInstance3D")
+	if obs_mesh:
+		obs_mesh.visible = true
+		obs_mesh.scale = Vector3(1, 1, 1)
+		obs_mesh.material_override = _wall_mat
+	warmup_objects.append(obstacle)
+	
+	print("MainMenu: Warmup objects created: ", warmup_objects.size())
+	
+	# Wait for GPU to process and compile shaders
+	# Need more frames to ensure all shader variants are compiled
+	for frame_idx in range(10):
+		await get_tree().process_frame
+	
+	print("MainMenu: Warmup frames complete, cleaning up")
+	
+	# Cleanup warmup objects
+	for obj in warmup_objects:
+		obj.queue_free()
+	
+	_shaders_warmed_up = true
+	print("MainMenu: Shader warmup complete")
