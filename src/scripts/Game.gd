@@ -196,11 +196,22 @@ func setup_environment(map):
 	_environment_manager.environment.adjustment_enabled=true
 	
 	# Apply Quest optimizations for performance
-	# Disabling glow/fog achieves 72 FPS on Quest (see QUEST_OPTIMIZATION.md)
-	if QualitySettings.is_quest() or not QualitySettings.postprocess_enabled():
-		environment.glow_enabled = false
-		environment.fog_enabled = false
-		environment.volumetric_fog_enabled = false
+	# Disabling glow/fog/procedural sky achieves 72 FPS on Quest (see QUEST_OPTIMIZATION.md)
+	# Must modify _environment_manager.environment (the active one), not the local export var
+	if QualitySettings.is_quest():
+		var env = _environment_manager.environment
+		env.glow_enabled = false
+		env.fog_enabled = false
+		env.volumetric_fog_enabled = false
+		# Use solid color background instead of procedural sky (major FPS impact!)
+		env.background_mode = Environment.BG_COLOR
+		env.background_color = Color(0.05, 0.04, 0.08, 1.0)  # Dark purple-ish
+		env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+		env.ambient_light_color = Color(0.2, 0.18, 0.25, 1.0)
+		env.ambient_light_energy = 0.4
+	elif not QualitySettings.postprocess_enabled():
+		_environment_manager.environment.glow_enabled = false
+		_environment_manager.environment.fog_enabled = false
 	
 	# Environment particles
 	if QualitySettings.environment_particles_enabled():

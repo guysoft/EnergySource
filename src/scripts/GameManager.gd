@@ -88,6 +88,12 @@ func _ready():
 			load_scene(menu_path, "menu")
 		"Game":
 			load_scene(game_path, "maze")
+		"GameTest":
+			# Auto-load a test song for FPS testing
+			print("GameTest: Auto-loading test level for FPS test...")
+			GameVariables.path = "res://Levels/test"
+			GameVariables.difficulty = "Expert"
+			load_scene(game_path, "game")
 	
 	process_mode = Node.PROCESS_MODE_ALWAYS;
 	scenes_holder.process_mode = Node.PROCESS_MODE_PAUSABLE;

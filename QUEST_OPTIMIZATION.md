@@ -123,8 +123,25 @@ python tools/deploy_quest.py
 ## Files Modified for Optimization
 
 - `src/scripts/MainMenu.gd` - Menu environment optimization
-- `src/scripts/Game.gd` - In-game environment optimization
+- `src/scripts/Game.gd` - In-game environment optimization (uses `_environment_manager.environment`)
+- `src/scripts/GameManager.gd` - Added "GameTest" debug mode for FPS testing
 - `src/project.godot` - XR settings (foveation, MSAA)
+
+## Important: Game.gd vs MainMenu.gd
+
+The Game scene uses `_environment_manager.change_environment(environment)` which means you must modify `_environment_manager.environment`, NOT the local `environment` export variable:
+
+```gdscript
+# CORRECT - Game.gd
+if QualitySettings.is_quest():
+    var env = _environment_manager.environment  # Use the active environment!
+    env.glow_enabled = false
+    # ...
+
+# WRONG - would not work
+if QualitySettings.is_quest():
+    environment.glow_enabled = false  # This modifies the wrong object!
+```
 
 ## Key Learnings
 
