@@ -73,12 +73,15 @@ common/enable_pause_aware_picking=true
 
 renderer/rendering_method="mobile"
 textures/vram_compression/import_etc2_astc=true
+anti_aliasing/quality/msaa_3d=1
 quality/filters/use_debanding=true
 
 [xr]
 
 openxr/enabled=true
 openxr/environment_blend_mode=0
+openxr/foveation_level=2
+openxr/foveation_dynamic=true
 openxr/submit_depth_buffer=true
 openxr/startup_alert=false
 shaders/enabled=true

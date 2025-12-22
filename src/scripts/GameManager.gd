@@ -100,6 +100,12 @@ func _ready():
 	_apply_quality_settings()
 
 func _apply_quality_settings():
+	# Enable VRS (Variable Rate Shading) for mobile renderer on Quest
+	# This provides significant performance gains with minimal visual impact
+	if QualitySettings.is_quest():
+		get_viewport().vrs_mode = Viewport.VRS_XR
+		print("GameManager: Enabled VRS_XR for Quest")
+	
 	# Control the main scene lighting based on quality settings
 	if has_node("Sun"):
 		$Sun.visible = QualitySettings.lighting_enabled()

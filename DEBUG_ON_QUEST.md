@@ -58,6 +58,7 @@ Press the **Menu Button** on either controller to cycle through test configurati
 | Original (transparent UI) | 24 FPS | 41 ms | All effects enabled |
 | No transparency on UI panels | 36 FPS | 27 ms | **+50% improvement** |
 | MINIMAL + no transparency | 36 FPS | 27 ms | No additional improvement |
+| + Foveation/MSAA/VRS | 34-36 FPS | 27 ms | Limited impact on UI scenes |
 
 ### Key Findings
 
@@ -67,15 +68,22 @@ Press the **Menu Button** on either controller to cycle through test configurati
    - Transparency adds significant overhead
    - **Fix:** Disabled transparency on Quest (automatic in UICanvasInteract.gd)
 
-2. **Secondary Factors (minimal impact):**
+2. **XR Optimizations Applied (from Mobile VR best practices):**
+   - Foveated rendering (level 2, dynamic)
+   - MSAA x2 (practically free on mobile)
+   - VRS_XR mode enabled
+   - These help more in 3D gameplay than in UI-heavy menu scenes
+
+3. **Secondary Factors (minimal impact in menu):**
    - Particles (GPUParticles3D) - negligible impact
    - DirectionalLight - negligible impact
-   - Post-processing (glow, fog) - negligible impact
+   - Post-processing (glow, fog) - already disabled on Quest
    - Note explosions - negligible impact
 
-3. **Remaining Issues:**
+4. **Remaining Issues:**
    - 36 FPS is still below 72 Hz target
-   - Passthrough visible through UI (environment background not rendering in XR)
+   - Passthrough visible (OpenXR reports "Opaque frame needs background layer")
+   - Need to reduce SubViewport count or resolution
 
 ## Code Changes for Quest Optimization
 
@@ -104,8 +112,33 @@ QualitySettings.debug_environment_particles_enabled = true/false
 ### Recommended Next Steps
 1. **Reduce SubViewport count** - Combine UI panels or lazy-load only visible panels
 2. **Lower SubViewport resolution** - Reduce UI render resolution on Quest
-3. **Investigate XR rendering** - Ensure proper opaque background rendering
+3. **Fix background layer** - Environment needs proper background for XR opaque mode
 4. **Profile GPU usage** - Use Meta Quest GPU profiler for detailed breakdown
+
+## Mobile VR Best Practices (from Godot community)
+
+These optimizations are enabled in project.godot and GameManager.gd:
+
+### Enabled
+- [x] Foveated rendering (level=high, dynamic=true) in project.godot
+- [x] MSAA x2 (practically free on mobile GPUs)
+- [x] VRS_XR mode for mobile renderer
+- [x] Glow/fog disabled on Quest
+- [x] Mobile rendering method
+- [x] ETC2/ASTC texture compression
+
+### Avoid (performance killers)
+- Screen texture reads (SCREEN_TEXTURE)
+- Depth texture reads (DEPTH_TEXTURE)
+- Refraction effects on materials
+- Multiple lights with shadows
+- Multiple texture lookups per material
+
+### Material Optimization Tips
+- Combine roughness, metallic, AO into one texture (use R/G/B channels)
+- Calculate UVs in vertex shader, not fragment shader
+- Convert StandardMaterial3D to ShaderMaterial for fine-tuning
+- Bake lighting when possible
 
 ## Debugging Workflow
 
