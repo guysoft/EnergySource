@@ -11,7 +11,7 @@
 
 [node name="GameManager" type="Node"]
 script = ExtResource("1")
-debug_start_scene = "GameTest"
+debug_start_scene = "Menu"
 
 [node name="Player" parent="." instance=ExtResource("2")]
 
