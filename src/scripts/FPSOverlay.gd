@@ -2,8 +2,9 @@ extends Node3D
 ## FPS Overlay for VR debugging
 ## Displays framerate and frame time as a Label3D that follows the camera
 ## Press menu button to cycle through performance test modes
+## Hold both thumbstick clicks for 3 seconds to toggle visibility
 
-@export var enabled: bool = true
+@export var enabled: bool = false  # Off by default
 @export var offset: Vector3 = Vector3(0.3, -0.2, -0.5)  # Bottom-right of view
 @export var update_interval: float = 0.5  # Update every 500ms for readability
 @export var show_quality_info: bool = true  # Show quality settings info
@@ -14,6 +15,11 @@ var _time_since_update: float = 0.0
 var _frame_times: Array[float] = []
 var _max_samples: int = 20
 var _test_mode_index: int = 0
+
+# A button toggle detection (only works in main menu)
+const TOGGLE_HOLD_TIME: float = 3.0
+var _button_hold_time: float = 0.0
+var _toggle_triggered: bool = false
 
 # Test mode configurations
 var _test_modes: Array[Dictionary] = [
@@ -58,6 +64,9 @@ func _sync_test_mode_from_quality_settings() -> void:
 		print("FPSOverlay: Detected MINIMAL settings")
 
 func _process(delta: float) -> void:
+	# Always check for toggle input (even when disabled)
+	_check_toggle_input(delta)
+	
 	if not enabled:
 		return
 	
@@ -73,6 +82,54 @@ func _process(delta: float) -> void:
 	
 	# Follow the camera
 	_follow_camera()
+
+func _check_toggle_input(delta: float) -> void:
+	"""Check for A button held for 3 seconds to toggle overlay (only in main menu)."""
+	# Safety check - don't run if Global isn't ready
+	if not Global:
+		return
+	
+	var manager = Global.manager()
+	if not manager:
+		return
+	
+	# Only allow toggle in main menu (not during gameplay)
+	var player = manager._player if manager else null
+	if player and player.in_game:
+		_button_hold_time = 0.0
+		_toggle_triggered = false
+		return
+	
+	# Check for A button press on right hand controller
+	var a_pressed = _is_a_button_pressed(manager)
+	
+	if a_pressed:
+		_button_hold_time += delta
+		
+		# Toggle after holding for 3 seconds
+		if _button_hold_time >= TOGGLE_HOLD_TIME and not _toggle_triggered:
+			_toggle_triggered = true
+			toggle()
+			print("FPSOverlay: Toggled via A button hold, now ", "ON" if enabled else "OFF")
+	else:
+		# Reset when button released
+		_button_hold_time = 0.0
+		_toggle_triggered = false
+
+func _is_a_button_pressed(manager) -> bool:
+	"""Check if A button is pressed on any controller."""
+	# Try XR controller first (right hand)
+	if manager and manager._right_hand:
+		if manager._right_hand.is_button_pressed("ax_button"):
+			return true
+	
+	# Fallback to joypad A button
+	if Input.is_joy_button_pressed(0, JOY_BUTTON_A):
+		return true
+	if Input.is_joy_button_pressed(1, JOY_BUTTON_A):
+		return true
+	
+	return false
 
 func _input(event: InputEvent) -> void:
 	# Cycle test modes when menu button is pressed (on either controller)
@@ -162,4 +219,3 @@ func set_test_mode(index: int) -> void:
 		_test_mode_index = index
 		cycle_test_mode()  # This will apply the settings
 		_test_mode_index -= 1  # Adjust since cycle_test_mode increments
-
