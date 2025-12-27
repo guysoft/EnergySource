@@ -420,12 +420,29 @@ func initialise_OpenXR() -> bool:
 		# If true our preview will be darker.
 		# vp.keep_3d_linear = $Configuration.keep_3d_linear()
 
-		# increase our physics engine update speed
+		# Set display refresh rate for Quest (90Hz for Space Warp at 45fps target)
+		# Quest 2/3 supports: 72, 80, 90, 120 Hz
+		if QualitySettings.is_quest():
+			var available_rates = interface.get_available_display_refresh_rates()
+			print("Available display refresh rates: " + str(available_rates))
+			
+			# Request 90Hz for Space Warp (renders at 45fps, reprojects to 90Hz)
+			var target_refresh_rate = 90.0
+			if available_rates.size() > 0 and target_refresh_rate in available_rates:
+				interface.set_display_refresh_rate(target_refresh_rate)
+				print("Requested display refresh rate: " + str(target_refresh_rate) + "Hz")
+			elif available_rates.size() > 0:
+				# Fall back to highest available rate
+				var highest = available_rates.max()
+				interface.set_display_refresh_rate(highest)
+				print("Requested highest available refresh rate: " + str(highest) + "Hz")
+
+		# Get the actual refresh rate being used
 		var refresh_rate = 144.0
 		if interface.has_method("get_display_refresh_rate"):
 			refresh_rate = interface.get_display_refresh_rate()
 		if refresh_rate == 0:
-			# Only Facebook Reality Labs supports this at this time
+			# Only Meta supports this at this time
 			print("No refresh rate given by XR runtime")
 
 			# Use something sufficiently high
@@ -434,7 +451,7 @@ func initialise_OpenXR() -> bool:
 			print("HMD refresh rate is set to " + str(refresh_rate))
 
 			# Match our physics to our HMD
-			Engine.physics_ticks_per_second = refresh_rate
+			Engine.physics_ticks_per_second = int(refresh_rate)
 
 		# Initialize VR recenter with XR nodes and apply saved offset
 		var xr_origin = $Player/XROrigin3D
