@@ -23,6 +23,7 @@ extends StaticBody3D
 
 @export var ground_size: float = 8.0
 @export var subdivisions: int = 128  # Match the mesh subdivisions
+@export var grid_scale: float = 2.0  # Grid texture repetitions (lower = bigger squares)
 
 # Calculated at runtime
 var subdivision_period_world: float  # How far mesh moves before reset
@@ -30,7 +31,6 @@ var subdivision_period_uv: float     # How much UV offsets on reset
 var mesh_offset_z: float = 0.0       # Current mesh Z position
 var uv_accumulated_offset: float = 0.0  # Accumulated UV offset
 var speed: float = 0.0               # Current scroll speed
-var uv_scale: float = 4.0            # Must match shader's uv1_scale
 
 var material: ShaderMaterial
 var ground_shape: MeshInstance3D
@@ -43,7 +43,7 @@ func _ready():
 	# World: physical distance mesh moves before reset
 	subdivision_period_world = ground_size / float(subdivisions)
 	# UV: how much to offset UV when mesh resets (in scaled UV space)
-	subdivision_period_uv = (1.0 / float(subdivisions)) * uv_scale
+	subdivision_period_uv = (1.0 / float(subdivisions)) * grid_scale
 	
 	# Get material for shader parameter updates
 	material = ground_shape.get_surface_override_material(0)
@@ -80,10 +80,6 @@ func setup_ground(bpm: float, delay: float, color):
 	# Update mesh size
 	ground_shape.mesh.size = Vector2(ground_size, ground_size)
 	
-	# Recalculate periods based on current ground_size
-	subdivision_period_world = ground_size / float(subdivisions)
-	subdivision_period_uv = (1.0 / float(subdivisions)) * uv_scale
-	
 	# Get material
 	material = ground_shape.get_surface_override_material(0)
 	if material == null:
@@ -92,12 +88,13 @@ func setup_ground(bpm: float, delay: float, color):
 		push_warning("Ground: No material found on GroundShape")
 		return
 	
-	# Set UV scale to match ground size
-	uv_scale = ground_size
-	material.set_shader_parameter("uv1_scale", Vector3(ground_size, ground_size, ground_size))
+	# Set grid texture scale (controls how many times grid repeats)
+	# Lower value = bigger grid squares
+	material.set_shader_parameter("uv1_scale", Vector3(grid_scale, grid_scale, grid_scale))
 	
-	# Recalculate UV period with new scale
-	subdivision_period_uv = (1.0 / float(subdivisions)) * uv_scale
+	# Recalculate periods based on current settings
+	subdivision_period_world = ground_size / float(subdivisions)
+	subdivision_period_uv = (1.0 / float(subdivisions)) * grid_scale
 	
 	# Calculate scroll speed from BPM
 	# Speed = distance per beat * beats per second
