@@ -39,9 +39,15 @@ var ground_shape: MeshInstance3D
 func _ready():
 	ground_shape = $GroundShape
 	
-	# Calculate subdivision periods
-	# World: physical distance mesh moves before reset
-	subdivision_period_world = ground_size / float(subdivisions)
+	# Get the actual mesh scale from the transform (GroundShape has scale applied)
+	var mesh_scale_z = ground_shape.transform.basis.get_scale().z
+	
+	# Calculate subdivision periods accounting for mesh scale
+	# World: physical distance mesh moves before reset (in parent/world space)
+	# The mesh is scaled, so world_size = mesh_size * scale
+	var world_size_z = ground_size * mesh_scale_z
+	subdivision_period_world = world_size_z / float(subdivisions)
+	
 	# UV: how much to offset UV when mesh resets (in scaled UV space)
 	subdivision_period_uv = (1.0 / float(subdivisions)) * grid_scale
 	
@@ -92,8 +98,16 @@ func setup_ground(bpm: float, delay: float, color):
 	# Lower value = bigger grid squares
 	material.set_shader_parameter("uv1_scale", Vector3(grid_scale, grid_scale, grid_scale))
 	
-	# Recalculate periods based on current settings
-	subdivision_period_world = ground_size / float(subdivisions)
+	# Set mesh size for triplanar offset calculation
+	# (needed to convert UV-space offset to VERTEX-space offset)
+	material.set_shader_parameter("mesh_size_z", ground_size)
+	
+	# Get the actual mesh scale from the transform
+	var mesh_scale_z = ground_shape.transform.basis.get_scale().z
+	var world_size_z = ground_size * mesh_scale_z
+	
+	# Recalculate periods based on current settings (accounting for scale)
+	subdivision_period_world = world_size_z / float(subdivisions)
 	subdivision_period_uv = (1.0 / float(subdivisions)) * grid_scale
 	
 	# Calculate scroll speed from BPM

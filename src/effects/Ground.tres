@@ -63,6 +63,9 @@ uniform float emission_mult = 1.0;
 // uv_offset_z is accumulated by script each time mesh resets position
 // This replaces the old TIME-based scrolling which caused vertex pumping
 uniform float uv_offset_z = 0.0;
+// mesh_size_z is needed to convert UV offset to VERTEX offset for triplanar
+// (UV goes 0-1, VERTEX goes -size/2 to +size/2)
+uniform float mesh_size_z = 8.0;
 
 // === DEBUG MODE ===
 // Enable to visualize height with colors (red=peak, blue=valley)
@@ -125,8 +128,11 @@ void vertex() {
 	// This ensures texture and height stay perfectly in sync
 	v_scrolled_uv = UV * uv1_scale.xz + vec2(0.0, -uv_offset_z);
 	
-	// Setup triplanar positions with the same offset
-	uv1_triplanar_pos = VERTEX * uv1_scale + uv1_offset + vec3(0.0, 0.0, -uv_offset_z);
+	// Setup triplanar positions with scaled offset
+	// UV offset needs to be multiplied by mesh_size to convert to VERTEX space
+	// because UV goes 0-1 but VERTEX goes -mesh_size/2 to +mesh_size/2
+	float triplanar_offset_z = uv_offset_z * mesh_size_z;
+	uv1_triplanar_pos = VERTEX * uv1_scale + uv1_offset + vec3(0.0, 0.0, -triplanar_offset_z);
 	noise_triplanar_pos = uv1_triplanar_pos;
 	uv1_triplanar_pos *= vec3(1.0, -1.0, 1.0);
 	
@@ -227,6 +233,7 @@ shader_parameter/displace_amount = 10.0
 shader_parameter/noise = SubResource("24")
 shader_parameter/emission_mult = 3.0
 shader_parameter/uv_offset_z = 0.0
+shader_parameter/mesh_size_z = 8.0
 shader_parameter/debug_height_colors = false
 shader_parameter/curve_strength = 0.002
 shader_parameter/enable_curve = false

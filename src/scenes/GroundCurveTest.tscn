@@ -1,0 +1,25 @@
+[gd_scene load_steps=4 format=3 uid="uid://bb0mf0mn8t4u6"]
+
+[ext_resource type="Material" path="res://effects/GroundCurved.tres" id="1"]
+[ext_resource type="Script" path="res://scripts/GroundMicroConveyor.gd" id="2"]
+
+[sub_resource type="PlaneMesh" id="plane"]
+size = Vector2(100, 100)
+subdivide_width = 128
+subdivide_depth = 128
+
+[node name="GroundCurveTest" type="Node3D"]
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.9659258, 0.25881904, 0, -0.25881904, 0.9659258, 0, 2, 5)
+current = true
+
+[node name="Ground" type="MeshInstance3D" parent="."]
+extra_cull_margin = 50.0
+mesh = SubResource("plane")
+surface_material_override/0 = ExtResource("1")
+script = ExtResource("2")
+speed = 2.0
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.8660254, 0.35355338, -0.35355338, 0, 0.70710677, 0.70710677, 0.5, -0.6123724, 0.6123724, 0, 0, 0)
