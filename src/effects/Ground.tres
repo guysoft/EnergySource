@@ -5,10 +5,37 @@
 [ext_resource type="Texture2D" uid="uid://rmp2frw84n6l" path="res://models/ground/Tiles074_2K_Roughness.png" id="3"]
 
 [sub_resource type="Shader" id="17"]
-code = "// NOTE: Shader automatically converted from Godot Engine 3.4.stable's StandardMaterial3D.
+code = "// =============================================================================
+// MICRO CONVEYOR BELT GROUND SHADER
+// =============================================================================
+// 
+// This shader works with GroundMicroConveyor.gd to create smooth infinite
+// scrolling terrain without vertex 'pumping' artifacts.
+//
+// HOW IT WORKS:
+// - Instead of scrolling UVs through fixed vertices (which causes pumping),
+//   the mesh physically moves. When it moves one subdivision period, it snaps
+//   back and the UV offset increments. This creates seamless scrolling.
+//
+// KEY UNIFORMS (set by script):
+// - uv_offset_z: Accumulated UV offset, incremented each time mesh resets
+//
+// DEBUG MODE:
+// - Set debug_height_colors = true to visualize terrain height
+// - Red = peaks, Green = middle, Blue = valleys
+// - White grid lines show UV cell boundaries
+// - Useful for debugging seams and verifying colors stay on terrain features
+//
+// FUTURE IDEAS:
+// - Add ice/snow texture on peaks (when v_height > threshold)
+// - Add different biome colors based on height bands
+// - Add wetness in valleys
+// =============================================================================
 
 shader_type spatial;
 render_mode blend_mix,depth_draw_opaque,cull_back,diffuse_burley,specular_schlick_ggx;
+
+// Material properties
 uniform vec4 albedo : source_color;
 uniform sampler2D texture_albedo : source_color;
 uniform float specular;
@@ -19,100 +46,154 @@ uniform sampler2D texture_roughness : hint_default_white;
 uniform vec4 roughness_texture_channel;
 uniform sampler2D texture_normal : hint_normal;
 uniform float normal_scale : hint_range(-16,16);
-varying vec3 uv1_triplanar_pos;
+
+// UV/Triplanar settings
 uniform float uv1_blend_sharpness;
-varying vec3 uv1_power_normal;
 uniform vec3 uv1_scale;
 uniform vec3 uv1_offset;
 uniform vec3 uv2_scale;
 uniform vec3 uv2_offset;
 
+// Terrain displacement
 uniform float displace_amount = 10.0;
 uniform sampler2D noise;
-varying vec3 noise_triplanar_pos;
-uniform float speed_mult = 1.0;
 uniform float emission_mult = 1.0;
 
-vec4 triplanar_texture(sampler2D p_sampler,vec3 p_weights,vec3 p_triplanar_pos) {
-	vec4 samp=vec4(0.0);
-	samp+= texture(p_sampler,p_triplanar_pos.xy) * p_weights.z;
-	samp+= texture(p_sampler,p_triplanar_pos.xz) * p_weights.y;
-	samp+= texture(p_sampler,p_triplanar_pos.zy * vec2(-1.0,1.0)) * p_weights.x;
+// === MICRO CONVEYOR BELT SYSTEM ===
+// uv_offset_z is accumulated by script each time mesh resets position
+// This replaces the old TIME-based scrolling which caused vertex pumping
+uniform float uv_offset_z = 0.0;
+
+// === DEBUG MODE ===
+// Enable to visualize height with colors (red=peak, blue=valley)
+// Also shows grid lines at UV boundaries to debug seams
+uniform bool debug_height_colors = false;
+
+// Curved world effect - bends terrain down at distance to hide horizon
+uniform float curve_strength = 0.0;
+uniform bool enable_curve = false;
+
+// Varyings passed to fragment shader
+varying vec3 uv1_triplanar_pos;
+varying vec3 uv1_power_normal;
+varying vec3 noise_triplanar_pos;
+varying vec2 v_scrolled_uv;
+varying float v_height;  // Height value for debug coloring
+
+// Triplanar texture sampling
+vec4 triplanar_texture(sampler2D p_sampler, vec3 p_weights, vec3 p_triplanar_pos) {
+	vec4 samp = vec4(0.0);
+	samp += texture(p_sampler, p_triplanar_pos.xy) * p_weights.z;
+	samp += texture(p_sampler, p_triplanar_pos.xz) * p_weights.y;
+	samp += texture(p_sampler, p_triplanar_pos.zy * vec2(-1.0, 1.0)) * p_weights.x;
 	return samp;
 }
 
-vec3 filterNormal(vec2 uv, int texelSize, float terrainSize, float _Displacement)
-        {
-            vec4 h;
-            h[0] = textureLod(noise, uv + float(texelSize)*vec2(0,-1),0).r * _Displacement;
-            h[1] = textureLod(noise, uv + float(texelSize)*vec2(-1,0),0).r * _Displacement;
-            h[2] = textureLod(noise, uv + float(texelSize)*vec2(1,0),0).r * _Displacement;
-            h[3] = textureLod(noise, uv + float(texelSize)*vec2(0,1),0).r * _Displacement;
- 
-            vec3 n;
-            n.z = -(h[0] - h[3]);
-            n.x = (h[1] - h[2]);
-            n.y = 2.0 * float(texelSize) * terrainSize; // pixel space -> uv space -> world space
- 
-            return normalize(n);
-        }
+// Calculate normal from heightmap using neighboring samples
+vec3 filterNormal(vec2 uv, int texelSize, float terrainSize, float _Displacement) {
+	vec4 h;
+	h[0] = textureLod(noise, uv + float(texelSize) * vec2(0, -1), 0).r * _Displacement;
+	h[1] = textureLod(noise, uv + float(texelSize) * vec2(-1, 0), 0).r * _Displacement;
+	h[2] = textureLod(noise, uv + float(texelSize) * vec2(1, 0), 0).r * _Displacement;
+	h[3] = textureLod(noise, uv + float(texelSize) * vec2(0, 1), 0).r * _Displacement;
 
-void vertex() {
-	TANGENT = vec3(0.0,0.0,-1.0) * abs(NORMAL.x);
-	TANGENT+= vec3(1.0,0.0,0.0) * abs(NORMAL.y);
-	TANGENT+= vec3(1.0,0.0,0.0) * abs(NORMAL.z);
-	TANGENT = normalize(TANGENT);
-	BINORMAL = vec3(0.0,1.0,0.0) * abs(NORMAL.x);
-	BINORMAL+= vec3(0.0,0.0,-1.0) * abs(NORMAL.y);
-	BINORMAL+= vec3(0.0,1.0,0.0) * abs(NORMAL.z);
-	BINORMAL = normalize(BINORMAL);
-	uv1_power_normal=pow(abs(NORMAL),vec3(uv1_blend_sharpness));
-	uv1_power_normal/=dot(uv1_power_normal,vec3(1.0));
-	float offset = TIME*speed_mult;
-	uv1_triplanar_pos = VERTEX * uv1_scale + uv1_offset + vec3(0.0,0.0,-offset);
-	noise_triplanar_pos = uv1_triplanar_pos;
-	uv1_triplanar_pos *= vec3(1.0,-1.0, 1.0);
+	vec3 n;
+	n.z = -(h[0] - h[3]);
+	n.x = (h[1] - h[2]);
+	n.y = 2.0 * float(texelSize) * terrainSize;
 
-	
-	vec2 uv_adjust = UV * uv1_scale.xy + uv1_offset.xy;
-	//float heightmap = smoothstep(0.6, 0.9, texture(noise,uv_adjust+vec2(0,offset.z)).r);
-	float grad = abs((UV.x*2.0)-1.0);
-	grad = smoothstep(0.0,0.3,grad);
-	float heightmap = texture(noise, UV+vec2(0.0,-offset)/(uv1_scale.x*uv1_scale.z)).r;
-	heightmap = smoothstep(0.35,1.0, heightmap+(grad*0.2));
-	
-	vec3 modified_pos = VERTEX + (vec3(0,heightmap*grad,0)*displace_amount);
-	
-	VERTEX = modified_pos;
-	
-	vec3 posPlusTangent = VERTEX + TANGENT * 0.01;
-	vec3 bitangent = cross(NORMAL, TANGENT);
-	vec3 posPlusBitangent = VERTEX + bitangent * 0.01;
-
-    vec3 modifiedTangent = posPlusTangent - modified_pos;
-    vec3 modifiedBitangent = posPlusBitangent - modified_pos;
-
-    vec3 modifiedNormal = cross(modifiedTangent, modifiedBitangent);
-    
-	//NORMAL = normalize(modifiedNormal);
-	NORMAL = filterNormal(UV+vec2(0.0,-offset)/(uv1_scale.x*uv1_scale.z), textureSize(noise,0).x, 8.0, heightmap);
+	return normalize(n);
 }
 
-
-
+void vertex() {
+	// Setup tangent/binormal for triplanar mapping
+	TANGENT = vec3(0.0, 0.0, -1.0) * abs(NORMAL.x);
+	TANGENT += vec3(1.0, 0.0, 0.0) * abs(NORMAL.y);
+	TANGENT += vec3(1.0, 0.0, 0.0) * abs(NORMAL.z);
+	TANGENT = normalize(TANGENT);
+	BINORMAL = vec3(0.0, 1.0, 0.0) * abs(NORMAL.x);
+	BINORMAL += vec3(0.0, 0.0, -1.0) * abs(NORMAL.y);
+	BINORMAL += vec3(0.0, 1.0, 0.0) * abs(NORMAL.z);
+	BINORMAL = normalize(BINORMAL);
+	
+	// Triplanar blending weights
+	uv1_power_normal = pow(abs(NORMAL), vec3(uv1_blend_sharpness));
+	uv1_power_normal /= dot(uv1_power_normal, vec3(1.0));
+	
+	// === MICRO CONVEYOR UV CALCULATION ===
+	// Use accumulated UV offset instead of TIME * speed
+	// This ensures texture and height stay perfectly in sync
+	v_scrolled_uv = UV * uv1_scale.xz + vec2(0.0, -uv_offset_z);
+	
+	// Setup triplanar positions with the same offset
+	uv1_triplanar_pos = VERTEX * uv1_scale + uv1_offset + vec3(0.0, 0.0, -uv_offset_z);
+	noise_triplanar_pos = uv1_triplanar_pos;
+	uv1_triplanar_pos *= vec3(1.0, -1.0, 1.0);
+	
+	// Edge gradient - flat in center (gameplay area), raised at edges (mountains)
+	float grad = abs((UV.x * 2.0) - 1.0);
+	grad = smoothstep(0.0, 0.3, grad);
+	
+	// Sample noise for height displacement
+	float heightmap = texture(noise, v_scrolled_uv / uv1_scale.x).r;
+	heightmap = smoothstep(0.35, 1.0, heightmap + (grad * 0.2));
+	
+	// Store height for fragment shader (debug coloring, future effects)
+	v_height = heightmap;
+	
+	// Apply vertex displacement
+	vec3 modified_pos = VERTEX + vec3(0.0, heightmap * grad * displace_amount, 0.0);
+	VERTEX = modified_pos;
+	
+	// === CURVED WORLD EFFECT (optional) ===
+	// Bends terrain down at distance to hide the horizon/pop-in
+	if (enable_curve) {
+		float dist_z = abs(VERTEX.z);
+		VERTEX.y -= dist_z * dist_z * curve_strength;
+	}
+	
+	// Calculate normal from heightmap
+	NORMAL = filterNormal(v_scrolled_uv / uv1_scale.x, textureSize(noise, 0).x, 8.0, heightmap);
+}
 
 void fragment() {
-	vec4 albedo_tex = triplanar_texture(texture_albedo,uv1_power_normal,uv1_triplanar_pos);
-	float noise_tex = smoothstep(0.2,0.9,triplanar_texture(noise,uv1_power_normal,noise_triplanar_pos).r);
-	
-	ALBEDO = albedo.rgb * albedo_tex.rgb * noise_tex;
-	EMISSION = ALBEDO * 5.0;
-	METALLIC = metallic;
-	float roughness_tex = dot(triplanar_texture(texture_roughness,uv1_power_normal,uv1_triplanar_pos),roughness_texture_channel);
-	ROUGHNESS = roughness_tex * roughness;
-	SPECULAR = specular;
-	NORMAL_MAP = triplanar_texture(texture_normal,uv1_power_normal,uv1_triplanar_pos).rgb;
-	NORMAL_MAP_DEPTH = normal_scale;
+	if (debug_height_colors) {
+		// === DEBUG MODE: Visualize height with colors ===
+		// Red = peak (high), Green = middle, Blue = valley (low)
+		vec3 valley_color = vec3(0.0, 0.0, 1.0);  // Blue
+		vec3 mid_color = vec3(0.0, 1.0, 0.0);     // Green
+		vec3 peak_color = vec3(1.0, 0.0, 0.0);    // Red
+		
+		vec3 debug_color;
+		if (v_height < 0.5) {
+			debug_color = mix(valley_color, mid_color, v_height * 2.0);
+		} else {
+			debug_color = mix(mid_color, peak_color, (v_height - 0.5) * 2.0);
+		}
+		
+		// Add grid lines to visualize UV cell boundaries (helps debug seams)
+		vec2 grid = fract(v_scrolled_uv);
+		float line = step(0.98, grid.x) + step(0.98, grid.y);
+		debug_color = mix(debug_color, vec3(1.0), line * 0.5);
+		
+		ALBEDO = debug_color;
+		EMISSION = debug_color * 0.5;
+		ROUGHNESS = 0.8;
+		METALLIC = 0.0;
+	} else {
+		// === NORMAL RENDERING ===
+		vec4 albedo_tex = triplanar_texture(texture_albedo, uv1_power_normal, uv1_triplanar_pos);
+		float noise_tex = smoothstep(0.2, 0.9, triplanar_texture(noise, uv1_power_normal, noise_triplanar_pos).r);
+		
+		ALBEDO = albedo.rgb * albedo_tex.rgb * noise_tex;
+		EMISSION = ALBEDO * emission_mult;
+		METALLIC = metallic;
+		float roughness_tex = dot(triplanar_texture(texture_roughness, uv1_power_normal, uv1_triplanar_pos), roughness_texture_channel);
+		ROUGHNESS = roughness_tex * roughness;
+		SPECULAR = specular;
+		NORMAL_MAP = triplanar_texture(texture_normal, uv1_power_normal, uv1_triplanar_pos).rgb;
+		NORMAL_MAP_DEPTH = normal_scale;
+	}
 }
 "
 
@@ -144,5 +225,8 @@ shader_parameter/uv2_scale = Vector3(1, 1, 1)
 shader_parameter/uv2_offset = Vector3(0, 0, 0)
 shader_parameter/displace_amount = 10.0
 shader_parameter/noise = SubResource("24")
-shader_parameter/speed_mult = 0.1
 shader_parameter/emission_mult = 3.0
+shader_parameter/uv_offset_z = 0.0
+shader_parameter/debug_height_colors = false
+shader_parameter/curve_strength = 0.002
+shader_parameter/enable_curve = false

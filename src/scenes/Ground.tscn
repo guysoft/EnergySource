@@ -5,8 +5,8 @@
 
 [sub_resource type="PlaneMesh" id="27"]
 size = Vector2(8, 8)
-subdivide_width = 512
-subdivide_depth = 512
+subdivide_width = 128
+subdivide_depth = 128
 
 [sub_resource type="BoxShape3D" id="9"]
 size = Vector3(14, 2, 16)
@@ -54,12 +54,14 @@ subdivide_depth = 16
 collision_layer = 8
 script = ExtResource("2")
 ground_size = 8.0
+subdivisions = 128
 
 [node name="GroundShape" type="MeshInstance3D" parent="."]
 transform = Transform3D(8, 0, 0, 0, 0.5, 0, 0, 0, 8, 0.053482056, 0.036834717, -0.04353995)
 mesh = SubResource("27")
 skeleton = NodePath("../CollisionShape3D")
 surface_material_override/0 = ExtResource("1")
+extra_cull_margin = 50.0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.038, 3.688)
