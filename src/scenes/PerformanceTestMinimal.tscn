@@ -1,0 +1,80 @@
+[gd_scene load_steps=10 format=3 uid="uid://n2r2sdaunuth"]
+
+[ext_resource type="PackedScene" uid="uid://b3mrx5kj7l8vc" path="res://scenes/Player.tscn" id="4_b1r88"]
+[ext_resource type="PackedScene" uid="uid://clujaf3u776a3" path="res://addons/godot-xr-tools/objects/viewport_2d_in_3d.tscn" id="6_v2d"]
+[ext_resource type="PackedScene" path="res://scenes/ui_playlist.tscn" id="7_playlist"]
+[ext_resource type="PackedScene" uid="uid://dijimv3ogdn25" path="res://scenes/ui_song_list.tscn" id="8_songlist"]
+[ext_resource type="PackedScene" uid="uid://cbkm53asq2x43" path="res://scenes/MainMenuUI.tscn" id="9_mainui"]
+[ext_resource type="PackedScene" uid="uid://joq00fxkwv8o" path="res://scenes/MainMenuLeft.tscn" id="10_menuleft"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_6p1h8"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cube"]
+albedo_color = Color(0.4, 0.4, 0.5, 1)
+
+[sub_resource type="Environment" id="Environment_minimal"]
+background_mode = 1
+background_color = Color(0.1, 0.1, 0.15, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.3, 0.3, 0.35, 1)
+ambient_light_energy = 0.5
+
+[node name="PerformanceTestMinimal" type="Node3D"]
+
+[node name="Cube" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -2)
+mesh = SubResource("BoxMesh_6p1h8")
+surface_material_override/0 = SubResource("StandardMaterial3D_cube")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.866, 0.5, 0, -0.5, 0.866, 0, 3, 0)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_minimal")
+
+[node name="Player" parent="." instance=ExtResource("4_b1r88")]
+
+[node name="PlaylistPanel" parent="." instance=ExtResource("6_v2d")]
+transform = Transform3D(0.793633, 0, -0.608404, 0, 1, 0, 0.608404, 0, 0.793633, 1.62, 1.06, -1.14)
+screen_size = Vector2(1.43, 0.75)
+scene = ExtResource("7_playlist")
+viewport_size = Vector2(1468, 768)
+update_mode = 2
+throttle_fps = 15.0
+transparent = 0
+unshaded = true
+scene_properties_keys = PackedStringArray("ui_playlist.gd")
+
+[node name="SongListPanel" parent="." instance=ExtResource("6_v2d")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.34, -1.58)
+screen_size = Vector2(1.43, 0.75)
+scene = ExtResource("8_songlist")
+viewport_size = Vector2(1468, 768)
+update_mode = 2
+throttle_fps = 15.0
+transparent = 0
+unshaded = true
+scene_properties_keys = PackedStringArray()
+
+[node name="MainUIPanel" parent="." instance=ExtResource("6_v2d")]
+transform = Transform3D(1, 0, 0, 0, 0.819152, 0.573577, 0, -0.573577, 0.819152, 0, 0.62, -1.51)
+screen_size = Vector2(0.7, 0.4)
+scene = ExtResource("9_mainui")
+viewport_size = Vector2(700, 400)
+update_mode = 2
+throttle_fps = 15.0
+transparent = 0
+unshaded = true
+scene_properties_keys = PackedStringArray("MainMenuUI.gd", "start_scene")
+start_scene = "res://scenes/Game.tscn"
+
+[node name="MainMenuLeftPanel" parent="." instance=ExtResource("6_v2d")]
+transform = Transform3D(0.707107, -0.183013, 0.683013, 0, 0.965926, 0.258819, -0.707107, -0.183013, 0.683013, -1.7, 1.22, -0.85)
+screen_size = Vector2(1, 0.6)
+scene = ExtResource("10_menuleft")
+viewport_size = Vector2(996, 568)
+update_mode = 2
+throttle_fps = 15.0
+transparent = 0
+unshaded = true
+scene_properties_keys = PackedStringArray("MainMenuLeft.gd")
