@@ -171,9 +171,8 @@ func _warmup_game_shaders():
 	print("MainMenu: Warmup objects created: ", warmup_objects.size())
 	
 	# Wait for GPU to process and compile shaders
-	# Need more frames to ensure all shader variants are compiled
-	for frame_idx in range(10):
-		await get_tree().process_frame
+	# Use timer instead of process_frame to avoid hanging when Quest is asleep
+	await get_tree().create_timer(0.5).timeout
 	
 	print("MainMenu: Warmup frames complete, cleaning up")
 	
