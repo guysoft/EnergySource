@@ -120,6 +120,10 @@ func _ready():
 
 func _warmup_game_shaders():
 	"""Pre-compile game shaders and preload Game scene resources before any scene loads."""
+	# DISABLED: Warmup was causing GPU crashes on Quest
+	print("GameManager: Shader warmup DISABLED")
+	return
+	
 	print("GameManager: Starting comprehensive warmup...")
 	
 	# 1. Preload the entire Game scene to cache all its resources

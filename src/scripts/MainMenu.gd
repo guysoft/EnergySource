@@ -106,6 +106,11 @@ func _warmup_game_shaders():
 	applies all material variants, and renders them for several frames to force 
 	the GPU to compile all required shaders before the player enters the game.
 	"""
+	# DISABLED: Warmup was causing startup hangs on Quest
+	print("MainMenu: Shader warmup DISABLED")
+	_shaders_warmed_up = true
+	return
+	
 	print("MainMenu: _warmup_game_shaders called, _shaders_warmed_up=", _shaders_warmed_up)
 	
 	if _shaders_warmed_up:
