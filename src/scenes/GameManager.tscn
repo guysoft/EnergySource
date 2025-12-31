@@ -8,6 +8,7 @@
 [ext_resource type="Environment" path="res://effects/menu_environment.tres" id="7"]
 [ext_resource type="Script" uid="uid://dytur4u8uamy8" path="res://scripts/EnvironmentManager.gd" id="8"]
 [ext_resource type="PackedScene" uid="uid://ctltchlf2j2r4" path="res://addons/xr-simulator/XRSimulator.tscn" id="9"]
+[ext_resource type="Script" path="res://scripts/DebugController.gd" id="10"]
 
 [node name="GameManager" type="Node"]
 script = ExtResource("1")
@@ -75,5 +76,8 @@ text = "Enter VR"
 transform = Transform3D(0.8660254, 0.12940952, -0.4829629, 0, 0.9659258, 0.25881904, 0.5, -0.22414386, 0.83651626, 0, 0, 0)
 light_color = Color(0.945098, 0.835294, 0.647059, 1)
 light_energy = 1.5
+
+[node name="DebugController" type="Node" parent="."]
+script = ExtResource("10")
 
 [editable path="Player"]

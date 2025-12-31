@@ -32,9 +32,50 @@ Takes a screenshot of the VR display (stereoscopic left/right view).
 adb shell input keyevent KEYCODE_WAKEUP
 ```
 
-### Input (Limited)
+### Input via ADB Key Events
 
-Touch and keyboard inputs generally **don't work** with VR apps because:
+The game includes a `DebugController` that listens for keyboard input, allowing remote control via ADB:
+
+```bash
+# Send a key event
+adb shell input keyevent KEYCODE_F1
+```
+
+#### Available Debug Keys
+
+| Key | ADB Command | Action |
+|-----|-------------|--------|
+| F1 | `adb shell input keyevent KEYCODE_F1` | Auto-start test level |
+| F2 | `adb shell input keyevent KEYCODE_F2` | Return to main menu |
+| F3 | `adb shell input keyevent KEYCODE_F3` | Print game state to logs |
+| F4 | `adb shell input keyevent KEYCODE_F4` | Toggle debug overlay |
+| 1-5 | `adb shell input keyevent KEYCODE_1` | Set difficulty (1=Beginner, 5=Expert) |
+| ENTER | `adb shell input keyevent KEYCODE_ENTER` | Confirm/Start |
+| ESC | `adb shell input keyevent KEYCODE_ESCAPE` | Back/Menu |
+
+#### Example: Remote Level Test
+
+```bash
+# 1. Start app on menu
+adb shell am start -n com.tempovr.game/com.godot.game.GodotApp
+sleep 10
+
+# 2. Press F1 to auto-start test level
+adb shell input keyevent KEYCODE_F1
+sleep 5
+
+# 3. Check logs to verify level loaded
+adb logcat -d -s godot:* | grep "DebugController"
+
+# 4. Take screenshot to see game state
+adb exec-out screencap -p > /tmp/game_test.png
+```
+
+**Note**: Key events are processed by Godot's `_input()` system. If keys aren't received, check logs for "DebugController: Key pressed" messages.
+
+### Touch Input (Limited)
+
+Touch inputs generally **don't work** with VR apps because:
 - VR apps use controller raycasts, not touch input
 - Input goes to Android compositor, not VR rendering
 
@@ -224,4 +265,64 @@ adb logcat -d -s godot:* | grep -i -E "(error|map|level|load)" | head -50
 # 7. View screenshot (opens in default viewer)
 xdg-open /tmp/quest_debug.png
 ```
+
+## DebugController Reference
+
+The `DebugController` (`src/scripts/DebugController.gd`) is automatically loaded with the game and provides keyboard-based remote control.
+
+### Configuration
+
+Edit `DebugController.gd` to customize:
+
+```gdscript
+# Test song to load when F1 is pressed
+var test_song_name: String = "Matt Gray - Sanxion Loader 2014 Remake Preview.mp3"
+
+# Enable/disable the controller
+var enabled: bool = true
+```
+
+### Log Output
+
+When keys are pressed, the controller logs:
+```
+DebugController: Key pressed: 4194332 (F1)
+DebugController: Starting test level...
+DebugController: Test song path: /storage/.../music/Song.mp3
+```
+
+Use this to verify keys are being received:
+```bash
+adb logcat -d -s godot:* | grep "DebugController"
+```
+
+### Extending DebugController
+
+Add custom debug commands by editing `_handle_key()`:
+
+```gdscript
+func _handle_key(keycode: int):
+    match keycode:
+        KEY_F5:
+            _my_custom_debug_action()
+```
+
+## AI-Assisted Testing Workflow
+
+For fully automated testing with an AI assistant:
+
+1. **Wake Quest**: `adb shell input keyevent KEYCODE_WAKEUP`
+2. **Start App**: `adb shell am start -n com.tempovr.game/com.godot.game.GodotApp`
+3. **Wait for Load**: `sleep 12`
+4. **Send F1 to Start Test Level**: `adb shell input keyevent KEYCODE_F1`
+5. **Wait for Level Load**: `sleep 5`
+6. **Take Screenshot**: `adb exec-out screencap -p > screenshot.png`
+7. **Capture Logs**: `adb logcat -d -s godot:* | tail -100`
+8. **Analyze Results**: Check screenshot and logs for success/failure
+
+This allows AI to:
+- Verify level loading works
+- Check for runtime errors
+- Validate game state
+- All without human interaction!
 
