@@ -71,7 +71,9 @@ func _ready():
 	var difficulty = GameVariables.difficulty
 	var path = GameVariables.path
 	
+	print("Game: Loading path=", path, " difficulty=", difficulty)
 	_map = setup_map(path, difficulty)
+	print("Game: Map loaded: ", _map != null)
 	
 	# Handle null map (missing layout or failed to load)
 	if not _map:
@@ -373,9 +375,15 @@ func _on_beat_detected(beat):
 #simple helper to setup the map
 # Uses MapFactory to create the appropriate loader (Beat Saber or PowerBeatsVR)
 func setup_map(path:String, difficulty:String):
+	print("Game.setup_map: path=", path, " difficulty=", difficulty)
 	var map = MapFactory.create_map(path)
+	print("Game.setup_map: MapFactory returned: ", map)
 	if map:
-		map.get_level(difficulty)
+		print("Game.setup_map: calling map.get_level(", difficulty, ")")
+		var level = map.get_level(difficulty)
+		print("Game.setup_map: get_level returned: ", level)
+	else:
+		print("Game.setup_map: MapFactory.create_map returned null!")
 	return map
 
 

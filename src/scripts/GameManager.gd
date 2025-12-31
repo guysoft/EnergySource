@@ -98,6 +98,15 @@ func _ready():
 			GameVariables.path = "res://Levels/test"
 			GameVariables.difficulty = "Expert"
 			load_scene(game_path, "game")
+		"CustomSongTest":
+			# Auto-load a custom song for testing level loading
+			print("CustomSongTest: Auto-loading Matt Gray song for testing...")
+			var test_path = GameVariables.pbvr_music_path + "/Matt Gray - Sanxion Loader 2014 Remake Preview.mp3"
+			print("CustomSongTest: path=", test_path)
+			print("CustomSongTest: layouts_path=", GameVariables.pbvr_layouts_path)
+			GameVariables.path = test_path
+			GameVariables.difficulty = "Expert"
+			load_scene(game_path, "game")
 	
 	process_mode = Node.PROCESS_MODE_ALWAYS;
 	scenes_holder.process_mode = Node.PROCESS_MODE_PAUSABLE;

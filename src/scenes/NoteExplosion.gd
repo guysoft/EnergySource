@@ -1,6 +1,6 @@
 extends Node3D
 
-var vel
+var vel: Vector3 = Vector3.ZERO
 
 func setup_effect(position:Vector3, speed:float):
 	var mat = $Sparks.process_material as ParticleProcessMaterial
