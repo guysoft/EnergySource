@@ -367,7 +367,9 @@ The project includes a remote debugging system that allows AI assistants to test
 | Property | Values | Description |
 |----------|--------|-------------|
 | `debug_start_scene` | `Menu`, `Game`, `GameTest`, `CustomSongTest` | Scene to load on startup |
-| `debug_test_song` | e.g., `"My Song.mp3"` | Song filename for CustomSongTest mode (filename only, not full path) |
+| `debug_test_song` | e.g., `"Matt Gray - Sanxion Loader 2014 Remake Preview.mp3"` | Song filename for CustomSongTest mode (filename only, not full path) |
+
+**Recommended test song:** `Matt Gray - Sanxion Loader 2014 Remake Preview.mp3` - a known working song for debugging.
 
 ### Debug Start Scene Modes
 
@@ -390,7 +392,7 @@ adb shell input keyevent KEYCODE_5   # Set difficulty: Expert
 
 ### Typical AI Testing Workflow
 
-1. **Configure test song** - Set `debug_test_song` in GameManager.tscn inspector
+1. **Configure test song** - Set `debug_test_song = "Matt Gray - Sanxion Loader 2014 Remake Preview.mp3"` in GameManager.tscn inspector
 2. **Set debug mode** - Set `debug_start_scene = "CustomSongTest"` 
 3. **Build and deploy** - `/home/guy/vpy/bin/python tools/deploy_quest.py`
 4. **Wake device** - `adb shell input keyevent KEYCODE_WAKEUP`
