@@ -137,26 +137,31 @@ For automated level testing, use the `CustomSongTest` debug mode:
 
 ### Enable CustomSongTest Mode
 
-Edit `src/scenes/GameManager.tscn`:
+In the Godot editor, select GameManager node and set in the Inspector:
 ```
 debug_start_scene = "CustomSongTest"
+debug_test_song = "Your Song.mp3"
+```
+
+Or edit `src/scenes/GameManager.tscn` directly:
+```
+debug_start_scene = "CustomSongTest"
+debug_test_song = "Your Song.mp3"
 ```
 
 This will automatically:
-1. Load a predefined test song from PowerBeatsVRLevels
+1. Load the song specified in `debug_test_song` from PowerBeatsVRLevels
 2. Skip the menu and go directly to gameplay
 3. Print detailed logs about the loading process
 
-### Customize the Test Song
+### Configuration Properties
 
-Edit `src/scripts/GameManager.gd` in the `CustomSongTest` case:
-```gdscript
-"CustomSongTest":
-    var test_path = GameVariables.pbvr_music_path + "/Your Song Name.mp3"
-    GameVariables.path = test_path
-    GameVariables.difficulty = "Expert"
-    load_scene(game_path, "game")
-```
+| Property | Description |
+|----------|-------------|
+| `debug_start_scene` | Set to `"CustomSongTest"` for auto-load testing |
+| `debug_test_song` | Filename only (e.g., `"My Song.mp3"`), not full path |
+
+**Note:** `debug_test_song` is combined with `GameVariables.pbvr_music_path` to form the full path.
 
 ### Build and Test
 
@@ -179,13 +184,13 @@ sleep 10 && adb logcat -d -s godot:* | head -150
 ### Successful Level Load
 
 ```
-CustomSongTest: Auto-loading Matt Gray song for testing...
-CustomSongTest: path=/storage/emulated/0/.../music/Song Name.mp3
+CustomSongTest: Auto-loading custom song for testing...
+CustomSongTest: path=/storage/emulated/0/.../music/Your Song.mp3
 MapFactory.detect_format: ext=mp3 file_exists=true
 MapFactory.detect_format: POWER_BEATS_VR (music file)
-MapFactory: Derived layout path: .../Layouts/Song Name.json
+MapFactory: Derived layout path: .../Layouts/Your Song.json
 MapFactory: Layout file exists: true
-PowerBeatsVRMap: Loaded level 'Song Name' by Unknown
+PowerBeatsVRMap: Loaded level 'Your Song' by Unknown
 PowerBeatsVRMap: Loaded Expert - 760 notes
 Game: Map loaded: true
 ```
@@ -272,15 +277,13 @@ The `DebugController` (`src/scripts/DebugController.gd`) is automatically loaded
 
 ### Configuration
 
-Edit `DebugController.gd` to customize:
+The test song is configured in **GameManager.tscn** (not in DebugController.gd):
 
-```gdscript
-# Test song to load when F1 is pressed
-var test_song_name: String = "Matt Gray - Sanxion Loader 2014 Remake Preview.mp3"
-
-# Enable/disable the controller
-var enabled: bool = true
 ```
+debug_test_song = "Your Song.mp3"
+```
+
+DebugController reads this value from GameManager at runtime. This keeps configuration centralized and avoids hardcoded values.
 
 ### Log Output
 
@@ -288,7 +291,12 @@ When keys are pressed, the controller logs:
 ```
 DebugController: Key pressed: 4194332 (F1)
 DebugController: Starting test level...
-DebugController: Test song path: /storage/.../music/Song.mp3
+DebugController: Test song path: /storage/.../music/Your Song.mp3
+```
+
+If `debug_test_song` is not set:
+```
+DebugController: ERROR - debug_test_song not set! Configure in GameManager.tscn inspector.
 ```
 
 Use this to verify keys are being received:

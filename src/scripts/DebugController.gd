@@ -5,21 +5,21 @@ extends Node
 ## Keys can be sent via: adb shell input keyevent KEYCODE_X
 ##
 ## Debug Keys:
-##   F1  - Auto-start test level (Matt Gray song)
+##   F1  - Auto-start test level (uses debug_test_song from GameManager)
 ##   F2  - Return to main menu
 ##   F3  - Print current game state
 ##   F4  - Toggle debug overlay
 ##   1-5 - Quick select difficulty (1=Beginner, 5=Expert)
 ##   ENTER - Confirm/Start
 ##   ESCAPE - Back/Menu
+##
+## Configuration:
+##   Set `debug_test_song` in GameManager.tscn inspector to specify which song to load.
 
 class_name DebugController
 
 ## Enable/disable debug controller
 var enabled: bool = true
-
-## Reference to the test song path (customize as needed)
-var test_song_name: String = "Matt Gray - Sanxion Loader 2014 Remake Preview.mp3"
 
 func _ready():
 	print("DebugController: Initialized - keyboard debug controls enabled")
@@ -62,6 +62,17 @@ func _handle_key(keycode: int):
 func _start_test_level():
 	print("DebugController: Starting test level...")
 	
+	# Get test song from GameManager's debug_test_song export variable
+	var manager = Global.manager()
+	if not manager:
+		print("DebugController: ERROR - Could not get game manager")
+		return
+	
+	var test_song_name = manager.debug_test_song
+	if test_song_name.is_empty():
+		print("DebugController: ERROR - debug_test_song not set! Configure in GameManager.tscn inspector.")
+		return
+	
 	# Set up the test song path
 	var music_path = GameVariables.pbvr_music_path + "/" + test_song_name
 	print("DebugController: Test song path: ", music_path)
@@ -78,11 +89,7 @@ func _start_test_level():
 	print("DebugController: Loading game scene with path=", GameVariables.path)
 	
 	# Load the game scene
-	var manager = Global.manager()
-	if manager:
-		manager.load_scene(manager.game_path, "game")
-	else:
-		print("DebugController: ERROR - Could not get game manager")
+	manager.load_scene(manager.game_path, "game")
 
 func _return_to_menu():
 	print("DebugController: Returning to menu...")

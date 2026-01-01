@@ -1,7 +1,8 @@
 extends Node
 
 # DEVELOPMENT CONSTS
-@export var debug_start_scene: String # (String, "GGJ2Splash", "Menu","Game")
+@export var debug_start_scene: String # (String, "GGJ2Splash", "Menu","Game", "GameTest", "CustomSongTest")
+@export var debug_test_song: String = "" # Filename only (e.g., "My Song.mp3"), used with CustomSongTest mode
 var splash_path = "res://scenes/GameOffSplash.tscn"
 var menu_path = "res://scenes/MainMenu.tscn"
 var game_path = "res://scenes/Game.tscn"
@@ -82,8 +83,9 @@ func _ready():
 		_right_hand.queue_free()
 		
 	# Pre-warm shaders on Quest before loading any scene
-	if QualitySettings.is_quest():
-		await _warmup_game_shaders()
+	# DISABLED: Warmup was causing GPU crashes on Quest
+	# if QualitySettings.is_quest():
+	#	await _warmup_game_shaders()
 	
 	match (debug_start_scene):
 		"GGJ2Splash":
@@ -100,13 +102,18 @@ func _ready():
 			load_scene(game_path, "game")
 		"CustomSongTest":
 			# Auto-load a custom song for testing level loading
-			print("CustomSongTest: Auto-loading Matt Gray song for testing...")
-			var test_path = GameVariables.pbvr_music_path + "/Matt Gray - Sanxion Loader 2014 Remake Preview.mp3"
-			print("CustomSongTest: path=", test_path)
-			print("CustomSongTest: layouts_path=", GameVariables.pbvr_layouts_path)
-			GameVariables.path = test_path
-			GameVariables.difficulty = "Expert"
-			load_scene(game_path, "game")
+			# Set debug_test_song in GameManager.tscn inspector (e.g., "My Song.mp3")
+			if debug_test_song.is_empty():
+				print("CustomSongTest: ERROR - debug_test_song not set! Configure in GameManager.tscn inspector.")
+				load_scene(menu_path, "menu")
+			else:
+				print("CustomSongTest: Auto-loading custom song for testing...")
+				var test_path = GameVariables.pbvr_music_path + "/" + debug_test_song
+				print("CustomSongTest: path=", test_path)
+				print("CustomSongTest: layouts_path=", GameVariables.pbvr_layouts_path)
+				GameVariables.path = test_path
+				GameVariables.difficulty = "Expert"
+				load_scene(game_path, "game")
 	
 	process_mode = Node.PROCESS_MODE_ALWAYS;
 	scenes_holder.process_mode = Node.PROCESS_MODE_PAUSABLE;
@@ -120,9 +127,6 @@ func _ready():
 
 func _warmup_game_shaders():
 	"""Pre-compile game shaders and preload Game scene resources before any scene loads."""
-	# DISABLED: Warmup was causing GPU crashes on Quest
-	print("GameManager: Shader warmup DISABLED")
-	return
 	
 	print("GameManager: Starting comprehensive warmup...")
 	

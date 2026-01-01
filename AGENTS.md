@@ -348,3 +348,60 @@ If the editor doesn't reflect size changes immediately:
 Documentation for Quest VR headset management tools is located in the `tools/` directory:
 
 - **[QUEST_WAKEUP.md](tools/QUEST_WAKEUP.md)** - How to wake up the Quest display remotely via ADB (useful for screenshots and remote debugging)
+
+## 13. Remote Debugging System (Quest/AI-Assisted Testing)
+
+The project includes a remote debugging system that allows AI assistants to test the game on Quest without human interaction.
+
+### Key Files
+
+| File | Purpose |
+|------|---------|
+| `src/scripts/GameManager.gd` | Contains `debug_start_scene` and `debug_test_song` export variables |
+| `src/scripts/DebugController.gd` | Keyboard-based debug controller for remote input via ADB |
+| `docs/QUEST_MCP_DEBUGGING.md` | Full documentation for Quest MCP debugging workflow |
+| `DEBUG_ON_QUEST.md` | Performance testing and optimization guide |
+
+### Debug Configuration (GameManager.tscn Inspector)
+
+| Property | Values | Description |
+|----------|--------|-------------|
+| `debug_start_scene` | `Menu`, `Game`, `GameTest`, `CustomSongTest` | Scene to load on startup |
+| `debug_test_song` | e.g., `"My Song.mp3"` | Song filename for CustomSongTest mode (filename only, not full path) |
+
+### Debug Start Scene Modes
+
+- **Menu** - Normal startup, shows main menu
+- **Game** - Load Game.tscn directly (requires `GameVariables.path` set elsewhere)
+- **GameTest** - Auto-load `res://Levels/test` for built-in test level
+- **CustomSongTest** - Auto-load song specified in `debug_test_song` from PowerBeatsVRLevels
+
+### DebugController Keyboard Commands (via ADB)
+
+```bash
+# Send key events to the game
+adb shell input keyevent KEYCODE_F1  # Start test level
+adb shell input keyevent KEYCODE_F2  # Return to menu
+adb shell input keyevent KEYCODE_F3  # Print game state to logs
+adb shell input keyevent KEYCODE_F4  # Toggle debug overlay
+adb shell input keyevent KEYCODE_1   # Set difficulty: Beginner
+adb shell input keyevent KEYCODE_5   # Set difficulty: Expert
+```
+
+### Typical AI Testing Workflow
+
+1. **Configure test song** - Set `debug_test_song` in GameManager.tscn inspector
+2. **Set debug mode** - Set `debug_start_scene = "CustomSongTest"` 
+3. **Build and deploy** - `/home/guy/vpy/bin/python tools/deploy_quest.py`
+4. **Wake device** - `adb shell input keyevent KEYCODE_WAKEUP`
+5. **Start app** - `adb shell am start -n com.tempovr.game/com.godot.game.GodotApp`
+6. **Capture logs** - `adb logcat -d -s godot:* | tail -100`
+7. **Take screenshot** - Use MCP mobile tools or `adb exec-out screencap -p > screenshot.png`
+8. **Revert for commit** - Set `debug_start_scene = "Menu"` and clear `debug_test_song`
+
+### Important Notes
+
+- **Never commit with hardcoded test songs** - Always clear `debug_test_song` before committing
+- **debug_test_song is filename only** - Just `"Song.mp3"`, not the full path
+- **DebugController reads from GameManager** - No hardcoded values in DebugController.gd
+- See `docs/QUEST_MCP_DEBUGGING.md` for detailed debugging procedures
