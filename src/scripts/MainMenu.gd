@@ -42,9 +42,6 @@ func _ready():
 	_player.game_node=null
 	
 	_update_playtime_display()
-	
-	# Pre-warm shaders for game scene on Quest
-	_warmup_game_shaders()
 
 func _update_playtime_display():
 	# UICanvas moves the Control into SubViewport at runtime
