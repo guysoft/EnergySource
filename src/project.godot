@@ -86,3 +86,4 @@ openxr/submit_depth_buffer=true
 openxr/startup_alert=false
 shaders/enabled=true
 openxr/extensions/meta/color_space/starting_color_space=3
+openxr/extensions/meta/application_space_warp=true
