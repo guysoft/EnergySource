@@ -59,10 +59,11 @@ uniform float displace_amount = 10.0;
 uniform sampler2D noise;
 uniform float emission_mult = 1.0;
 
-// === MICRO CONVEYOR BELT SYSTEM ===
-// uv_offset_z is accumulated by script each time mesh resets position
-// This replaces the old TIME-based scrolling which caused vertex pumping
-uniform float uv_offset_z = 0.0;
+// === DUAL MESH CONVEYOR BELT SYSTEM ===
+// uv_offset_z is set per-instance, allowing two meshes with different offsets
+// Each mesh teleports off-screen and increments its UV offset
+// This creates smooth SpaceWarp-compatible scrolling
+instance uniform float uv_offset_z : hint_range(0, 1000) = 0.0;
 // mesh_size_z is needed to convert UV offset to VERTEX offset for triplanar
 // (UV goes 0-1, VERTEX goes -size/2 to +size/2)
 uniform float mesh_size_z = 8.0;

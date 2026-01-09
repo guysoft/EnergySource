@@ -1,26 +1,43 @@
-# Micro Conveyor Belt Ground System
+# Dual Mesh Conveyor Belt Ground System
 
 ## Overview
 
-The Micro Conveyor Belt system creates smooth infinite scrolling terrain without the "vertex pumping" artifacts that occur with traditional shader-based UV scrolling.
+The Dual Mesh Conveyor Belt system creates smooth infinite scrolling terrain that is:
+1. **Free of vertex pumping** - vertices move WITH the mesh instead of sampling moving noise
+2. **SpaceWarp compatible** - no visible motion discontinuities that confuse frame prediction
 
-### The Problem
+### The Problems
 
+**Problem 1: Vertex Pumping**
 When scrolling terrain using `TIME * speed` in a shader:
 - Noise values scroll through **fixed vertex positions**
 - Vertices "pump" up and down as new noise values pass through them
 - At low subdivision levels, this creates visible ripples/waves
-- Increasing subdivisions improves quality but tanks performance
+
+**Problem 2: SpaceWarp Artifacts**
+The original micro conveyor solution snapped the mesh back every 0.5 world units:
+- SpaceWarp predicts frame motion based on motion vectors
+- Sudden position resets create **motion discontinuities**
+- SpaceWarp sees the mesh jump backward, causing stutter/artifacts
 
 ### The Solution
 
-Instead of scrolling UVs through fixed vertices:
-1. **Physically move the mesh** a small amount each frame
-2. When it moves one subdivision period, **snap it back** to the start
-3. **Increment the UV offset** to compensate
-4. Result: Vertices move **with** the mesh, sampling consistent noise values
+Use **two meshes** that leapfrog each other:
+1. Both meshes move continuously in the same direction (+Z toward player)
+2. When a mesh goes **fully behind the player** (out of view), it teleports ahead
+3. Each mesh has its own UV offset (via instance uniform) that increments on teleport
+4. **Result**: All visible motion is smooth and predictable for SpaceWarp
 
-This eliminates pumping because the same vertices always sample the same relative noise position - they just physically move in world space.
+```
+View frustum (player looking -Z)
+       ┌────────────────┐
+       │                │
+  [A]══│═══════════════>│═══>  (A exits view, teleport to front)
+       │                │
+  [B]══│═══════════════>│═══>  (B visible, smooth motion)
+       │                │
+       └────────────────┘
+```
 
 ---
 
@@ -30,16 +47,16 @@ This eliminates pumping because the same vertices always sample the same relativ
 
 | File | Purpose |
 |------|---------|
-| `src/scripts/Ground.gd` | Script that controls mesh movement and UV offset |
-| `src/effects/Ground.tres` | Shader material with micro conveyor uniforms |
-| `src/scenes/Ground.tscn` | Main ground scene with scaled mesh |
-| `src/scenes/GroundCurveTest.tscn` | Test scene for debugging (no game dependencies) |
+| `src/scripts/Ground.gd` | Script that controls dual mesh movement and teleport |
+| `src/effects/Ground.tres` | Shader material with instance uniform for per-mesh UV offset |
+| `src/scenes/Ground.tscn` | Scene with two ground meshes (GroundShapeA, GroundShapeB) |
+| `src/scenes/GroundCurveTest.tscn` | Test scene for debugging (uses different system) |
 
 ### Shader Uniforms
 
 | Uniform | Type | Purpose |
 |---------|------|---------|
-| `uv_offset_z` | float | Accumulated UV offset (set by script each reset) |
+| `uv_offset_z` | instance float | Per-mesh UV offset (set via `set_instance_shader_parameter`) |
 | `mesh_size_z` | float | Mesh local size for triplanar offset conversion |
 | `debug_height_colors` | bool | Enable height visualization (red=peak, blue=valley) |
 | `enable_curve` | bool | Enable curved world effect |
@@ -52,16 +69,15 @@ This eliminates pumping because the same vertices always sample the same relativ
 | `ground_size` | float | Mesh local size (before transform scale) |
 | `subdivisions` | int | Number of mesh subdivisions (must match PlaneMesh) |
 | `grid_scale` | float | Texture tiling (lower = bigger grid squares) |
-| `subdivision_period_world` | float | World distance before reset |
-| `subdivision_period_uv` | float | UV offset increment per reset |
+| `teleport_threshold` | float | When mesh.position.z > this, teleport |
+| `teleport_distance` | float | How far to jump back (2 mesh lengths) |
+| `uv_per_teleport` | float | UV increment per teleport |
 
 ---
 
 ## The Math
 
 ### Coordinate Spaces
-
-Understanding the different coordinate spaces is crucial:
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -80,111 +96,134 @@ Understanding the different coordinate spaces is crucial:
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### Period Calculations
+### Key Parameters
 
-**World Period** (how far mesh moves before reset):
+| Parameter | Value | Calculation |
+|-----------|-------|-------------|
+| mesh_size | 8.0 | PlaneMesh size |
+| mesh_scale | 8x | Transform3D scale |
+| world_size | 64 | mesh_size × mesh_scale |
+| subdivisions | 128 | PlaneMesh subdivide_depth |
+| grid_scale | 2.0 | uv1_scale |
+| teleport_threshold | 64.0 | world_size (mesh fully behind player) |
+| teleport_distance | 128.0 | world_size × 2 (jump 2 mesh lengths) |
+| uv_per_teleport | 4.0 | (teleport_distance / subdivision_period_world) × subdivision_period_uv |
+
+### Subdivision Period Calculations
+
+These are still used for UV offset calculations:
+
+**World Period** (distance for one subdivision):
 ```
-world_period = (mesh_size × mesh_scale) / subdivisions
-             = (8 × 8) / 128
+world_period = world_size / subdivisions
+             = 64 / 128
              = 0.5 world units
 ```
 
-**UV Period** (how much UV offset increases per reset):
+**UV Period** (UV change for one subdivision):
 ```
-uv_period = (1 / subdivisions) × grid_scale
-          = (1 / 128) × 2
-          = 0.015625 (in scaled UV space)
-```
-
-### Why Two Different Periods?
-
-The shader uses two coordinate systems for texture sampling:
-
-1. **UV-based** (for height/noise):
-   ```glsl
-   v_scrolled_uv = UV * uv1_scale + vec2(0, -uv_offset_z);
-   float heightmap = texture(noise, v_scrolled_uv / uv1_scale.x).r;
-   ```
-
-2. **VERTEX-based** (for triplanar textures):
-   ```glsl
-   uv1_triplanar_pos = VERTEX * uv1_scale + vec3(0, 0, -triplanar_offset);
-   ```
-
-These need different offset values because:
-- UV goes `0 → 1` across the mesh
-- VERTEX goes `-4 → +4` across the mesh (for size 8)
-
-**The conversion:**
-```glsl
-float triplanar_offset_z = uv_offset_z * mesh_size_z;
+uv_period = grid_scale / subdivisions
+          = 2 / 128
+          = 0.015625
 ```
 
-### Full Calculation Chain
+### Initial UV Offset for Mesh B
 
+Mesh B starts one world_size ahead of Mesh A (-64 in Z). To maintain texture continuity:
 ```
-Given:
-  mesh_size = 8 (PlaneMesh size)
-  mesh_scale = 8 (Transform3D scale)
-  subdivisions = 128
-  grid_scale = 2 (uv1_scale)
-
-World size:
-  world_size = mesh_size × mesh_scale = 8 × 8 = 64
-
-World period (one subdivision in world space):
-  world_period = world_size / subdivisions = 64 / 128 = 0.5
-
-UV period (one subdivision in scaled UV space):
-  uv_period = grid_scale / subdivisions = 2 / 128 = 0.015625
-
-Triplanar offset conversion:
-  triplanar_offset = uv_offset_z × mesh_size = 0.015625 × 8 = 0.125
-
-Verification:
-  - UV scrolls by: uv_period / grid_scale = 0.015625 / 2 = 0.0078125 (base UV)
-  - VERTEX scrolls by: triplanar_offset / uv1_scale = 0.125 / 2 = 0.0625 (base VERTEX)
-  - Base UV to VERTEX: 0.0078125 × 8 = 0.0625 ✓ (they match!)
+uv_offset_b = (world_size / world_period) × uv_period
+            = (64 / 0.5) × 0.015625
+            = 128 × 0.015625
+            = 2.0
 ```
 
 ---
 
 ## Implementation Details
 
-### Script Flow (`Ground.gd`)
+### Dual Mesh Teleport Logic (`Ground.gd`)
 
 ```gdscript
-func _process(delta):
-    # 1. Move mesh forward
-    mesh_offset_z += speed * delta
+func _process(delta: float):
+    if speed == 0.0:
+        return
     
-    # 2. Check if we've moved one period
-    while mesh_offset_z >= subdivision_period_world:
-        mesh_offset_z -= subdivision_period_world  # Snap back
-        uv_accumulated_offset += subdivision_period_uv  # Increment UV
+    var movement = speed * delta
     
-    # 3. Apply to mesh and shader
-    ground_shape.position.z = mesh_offset_z
-    material.set_shader_parameter("uv_offset_z", uv_accumulated_offset)
+    # Both meshes always move forward (+Z direction)
+    mesh_a.position.z += movement
+    mesh_b.position.z += movement
+    
+    # Teleport when fully behind player (out of view)
+    if mesh_a.position.z > teleport_threshold:
+        mesh_a.position.z -= teleport_distance
+        uv_offset_a += uv_per_teleport
+        mesh_a.set_instance_shader_parameter("uv_offset_z", uv_offset_a)
+    
+    if mesh_b.position.z > teleport_threshold:
+        mesh_b.position.z -= teleport_distance
+        uv_offset_b += uv_per_teleport
+        mesh_b.set_instance_shader_parameter("uv_offset_z", uv_offset_b)
 ```
 
-### Shader Flow (`Ground.tres`)
+### Instance Uniforms in Shader (`Ground.tres`)
+
+The shader uses an **instance uniform** so each mesh can have its own UV offset:
 
 ```glsl
+// Instance uniform allows per-mesh values while sharing material
+instance uniform float uv_offset_z : hint_range(0, 1000) = 0.0;
+
 void vertex() {
-    // 1. Calculate scrolled UV (for height sampling)
+    // Calculate scrolled UV using per-instance offset
     v_scrolled_uv = UV * uv1_scale.xz + vec2(0.0, -uv_offset_z);
     
-    // 2. Calculate triplanar position (for texture sampling)
-    // Convert UV offset to VERTEX space by multiplying by mesh_size
+    // Calculate triplanar position with scaled offset
     float triplanar_offset_z = uv_offset_z * mesh_size_z;
     uv1_triplanar_pos = VERTEX * uv1_scale + vec3(0, 0, -triplanar_offset_z);
     
-    // 3. Sample noise and displace vertex
+    // Sample noise and displace vertex
     float heightmap = texture(noise, v_scrolled_uv / uv1_scale.x).r;
     VERTEX.y += heightmap * displace_amount;
 }
 ```
+
+### Reset Function
+
+```gdscript
+func reset_ground():
+    # Reset positions: A at origin, B one world_size ahead
+    mesh_a.position.z = 0.0
+    mesh_b.position.z = -world_size
+    
+    # Reset UV offsets (B is one mesh-length ahead)
+    var uv_per_mesh_length = (world_size / subdivision_period_world) * subdivision_period_uv
+    uv_offset_a = 0.0
+    uv_offset_b = uv_per_mesh_length  # 2.0 with default settings
+    
+    # Apply via instance parameters
+    mesh_a.set_instance_shader_parameter("uv_offset_z", uv_offset_a)
+    mesh_b.set_instance_shader_parameter("uv_offset_z", uv_offset_b)
+```
+
+---
+
+## Why This Works
+
+### Seamless Seams
+
+At the seam between meshes (e.g., z=-32 where Mesh A's front meets Mesh B's back):
+- Mesh A front samples UV that wraps to match Mesh B's back
+- The noise texture is seamless (`seamless = true`), so wrap-around is invisible
+
+### SpaceWarp Compatibility
+
+| Old System | New System |
+|------------|------------|
+| Mesh snaps back every 0.5 units | Mesh teleports every 64+ units |
+| Snap happens **in view** | Teleport happens **behind player** |
+| SpaceWarp sees discontinuous motion | SpaceWarp sees smooth +Z motion |
+| Motion vectors flip direction | Motion vectors always +Z |
 
 ---
 
@@ -204,82 +243,31 @@ Colors:
 - 🔵 **Blue** = Valleys (low terrain)
 - ⬜ **White grid lines** = UV cell boundaries
 
-### Test Scene
+### Verifying Seamlessness
 
-Use `src/scenes/GroundCurveTest.tscn` for isolated testing:
-- No game dependencies
-- Standalone camera and lighting
-- Slower speed for easier observation
-- Debug mode enabled by default
+1. Enable debug mode
+2. Watch the seam between meshes as they scroll
+3. Colors should remain stable on terrain features
+4. No visible "jump" when teleport occurs (it's behind you)
 
 ### Common Issues
 
 | Symptom | Cause | Fix |
 |---------|-------|-----|
 | Texture slides relative to mountains | Triplanar offset not scaled by `mesh_size_z` | Ensure `material.set_shader_parameter("mesh_size_z", ground_size)` |
-| Visible jump on reset | Period calculations don't account for mesh scale | Multiply `mesh_size` by `transform.basis.get_scale().z` |
+| Visible seam between meshes | Initial UV offset for mesh B incorrect | Verify `uv_offset_b = uv_per_mesh_length` at startup |
+| SpaceWarp still stuttering | Teleport threshold too aggressive | Increase `teleport_threshold` to ensure mesh is fully behind player |
 | Mountains too small/fast | `grid_scale` or noise frequency too high | Lower `grid_scale` or adjust noise |
-| Vertex pumping | Not using micro conveyor (using TIME-based scroll) | Use `uv_offset_z` instead of `TIME` |
-
----
-
-## Adapting for Different Terrain
-
-To create a new terrain type using this system:
-
-### 1. Create the Shader Material
-
-Copy `Ground.tres` and modify:
-- Noise texture (different patterns)
-- Displacement amount
-- Texture sampling
-
-**Required uniforms** (don't remove):
-```glsl
-uniform float uv_offset_z = 0.0;
-uniform float mesh_size_z = 8.0;
-```
-
-### 2. Create the Control Script
-
-Copy `Ground.gd` and modify:
-- Speed calculation (BPM sync, constant, etc.)
-- Any terrain-specific logic
-
-**Required calculations:**
-```gdscript
-var mesh_scale_z = mesh_node.transform.basis.get_scale().z
-var world_size_z = mesh_size * mesh_scale_z
-subdivision_period_world = world_size_z / float(subdivisions)
-subdivision_period_uv = (1.0 / float(subdivisions)) * texture_scale
-```
-
-### 3. Set Shader Parameters
-
-In `setup()` or `_ready()`:
-```gdscript
-material.set_shader_parameter("uv1_scale", Vector3(texture_scale, texture_scale, texture_scale))
-material.set_shader_parameter("mesh_size_z", mesh_size)
-material.set_shader_parameter("uv_offset_z", 0.0)
-```
-
-### 4. Match Mesh Subdivisions
-
-Ensure `subdivisions` variable matches the PlaneMesh:
-```
-[sub_resource type="PlaneMesh"]
-subdivide_width = 128
-subdivide_depth = 128
-```
 
 ---
 
 ## Performance Notes
 
+- **Two meshes vs one**: Negligible performance difference - same total vertex count visible
+- **Instance uniforms**: Efficient - no material duplication needed
 - **Subdivision count**: 128 is a good balance. Higher = smoother but more vertices
-- **Mesh scale**: Using transform scale (8×) instead of larger mesh reduces memory
-- **UV offset accumulation**: Will eventually overflow (float precision). Consider wrapping at large values
 - **Extra cull margin**: Set on MeshInstance3D to prevent culling when vertices are displaced
+- **UV offset accumulation**: Will eventually overflow (float precision). Consider wrapping at large values (e.g., every 1000.0) since noise texture is seamless
 
 ---
 
@@ -288,5 +276,5 @@ subdivide_depth = 128
 - [ ] Add biome coloring based on height (snow on peaks, grass in valleys)
 - [ ] Multiple noise layers for varied terrain
 - [ ] LOD system for distant terrain
-- [ ] Wrap `uv_accumulated_offset` to prevent float precision issues over long play sessions
-
+- [ ] Wrap UV offsets to prevent float precision issues over long play sessions
+- [x] ~~SpaceWarp-compatible scrolling~~ (DONE - dual mesh system)
