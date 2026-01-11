@@ -4,11 +4,10 @@
 [ext_resource type="PackedScene" uid="uid://b3mrx5kj7l8vc" path="res://scenes/Player.tscn" id="2"]
 [ext_resource type="Script" uid="uid://do4wn32gg6rng" path="res://scripts/beat_player.gd" id="3"]
 [ext_resource type="PackedScene" uid="uid://ueybijl2o3qc" path="res://scenes/FPSOverlay.tscn" id="3_2uts2"]
-[ext_resource type="Script" uid="uid://dio6sx6psyknr" path="res://scripts/FPSOverlay.gd" id="4_2chjq"]
 [ext_resource type="Environment" path="res://effects/menu_environment.tres" id="7"]
 [ext_resource type="Script" uid="uid://dytur4u8uamy8" path="res://scripts/EnvironmentManager.gd" id="8"]
 [ext_resource type="PackedScene" uid="uid://ctltchlf2j2r4" path="res://addons/xr-simulator/XRSimulator.tscn" id="9"]
-[ext_resource type="Script" path="res://scripts/DebugController.gd" id="10"]
+[ext_resource type="Script" uid="uid://cnmde0srm4xk6" path="res://scripts/DebugController.gd" id="10"]
 
 [node name="GameManager" type="Node"]
 script = ExtResource("1")
@@ -16,8 +15,7 @@ debug_start_scene = "Menu"
 
 [node name="Player" parent="." instance=ExtResource("2")]
 
-[node name="FPSOverlay" type="Node3D" parent="Player/XROrigin3D/XRCamera3D" index="3" instance=ExtResource("3_2uts2")]
-script = ExtResource("4_2chjq")
+[node name="FPSOverlay" parent="Player/XROrigin3D/XRCamera3D" index="3" instance=ExtResource("3_2uts2")]
 
 [node name="LeftHand" parent="Player/XROrigin3D/LeftHand" index="0"]
 script = null
