@@ -1,0 +1,5 @@
+# Ignore all build outputs
+*
+# But keep this .gitignore
+!.gitignore
+

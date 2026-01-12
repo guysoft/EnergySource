@@ -1,0 +1,143 @@
+# Build workflow for TempoVR
+# Based on https://github.com/Malcolmnixon/GodotCIBuildDemo
+---
+
+name: Build TempoVR
+
+# Trigger rules
+on:
+  push:
+    branches: [main, develop, ci-workflow]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# Environment variables
+env:
+  # Configure Godot version (must match project.godot config/features)
+  GODOT_VERSION: 4.4.1
+
+# CI jobs
+jobs:
+  # Build job (Matrix build for all exports)
+  build:
+    name: Building for ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Export for Windows
+          - name: Windows
+            os: ubuntu-22.04
+            platform: windows
+            export-preset: Windows
+            export-type: release
+            export-folder: build/windows
+            archive: Windows
+
+          # Export for Linux
+          - name: Linux
+            os: ubuntu-22.04
+            platform: linux
+            export-preset: Linux
+            export-type: release
+            export-folder: build/linux
+            archive: Linux
+
+          # Export for Android Quest
+          - name: Android-Quest
+            os: ubuntu-22.04
+            platform: android
+            export-preset: Android Quest CI
+            export-type: debug
+            export-args: --install-android-build-template
+            export-folder: build/android-quest
+            archive: Android-Quest
+
+    steps:
+      # Check out the repository
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # If targeting android then install JDK
+      - name: Set up JDK 17
+        if: matrix.platform == 'android'
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # If targeting android then install Android SDK
+      - name: Setup Android SDK
+        if: matrix.platform == 'android'
+        uses: android-actions/setup-android@v3
+
+      # If targeting android then install Android SDK Packages
+      - name: Install Android SDK Packages
+        if: matrix.platform == 'android'
+        run: >
+          sdkmanager
+          "platform-tools"
+          "build-tools;34.0.0"
+          "platforms;android-34"
+          "cmdline-tools;latest"
+          "cmake;3.10.2.4988404"
+          "ndk;23.2.8568313"
+
+      # Setup Godot
+      - name: Setup Godot
+        uses: chickensoft-games/setup-godot@v2
+        with:
+          version: ${{ env.GODOT_VERSION }}
+          use-dotnet: false
+          include-templates: true
+
+      # Import Godot Project
+      - name: Initial Godot Import
+        shell: bash
+        run: |
+          cd src
+          godot --headless --import || exit 0
+
+      # Export project
+      - name: Export Godot Project
+        shell: bash
+        run: |
+          cd src
+          godot --headless ${{ matrix.export-args }} --export-${{ matrix.export-type }} "${{ matrix.export-preset }}"
+
+      # Upload artifacts
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.archive }}-Artifacts
+          path: |
+            src/${{ matrix.export-folder }}/*.*
+            !**/.gitignore
+
+      # Compress project (if building release tag)
+      - name: Compress Project
+        if: >
+          github.event_name == 'push' && 
+          github.ref_type == 'tag'
+        run: |
+          cd src/${{ matrix.export-folder }}
+          7z a -tzip ${{ matrix.archive }}.zip *.* -x'!.gitignore'
+
+      # Publish release (if building release tag)
+      - name: Publish Release
+        uses: ncipollo/release-action@v1
+        if: >
+          github.event_name == 'push' && 
+          github.ref_type == 'tag'
+        with:
+          allowUpdates: true
+          artifacts: 'src/${{ matrix.export-folder }}/${{ matrix.archive }}.zip'
+          omitNameDuringUpdate: true
+          omitBodyDuringUpdate: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
