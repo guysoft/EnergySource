@@ -1,3 +1,10 @@
+# Project repo moved
+
+I am re-working the game here to be a rhythm workout game, its been upgraded to use Godot 4+ and supports running standalone on the vr headset:
+
+https://github.com/guysoft/TempoVRWorkout
+
+
 # TempoVR
 
 Work in progress, originally a game jam entry for Go Godot 2. Now we are actually trying to turn it in to a game.
