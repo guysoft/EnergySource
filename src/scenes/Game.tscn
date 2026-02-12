@@ -1,54 +1,54 @@
-[gd_scene load_steps=27 format=2]
+[gd_scene load_steps=27 format=3 uid="uid://7ayj7cglk12m"]
 
-[ext_resource path="res://scripts/Game.gd" type="Script" id=1]
-[ext_resource path="res://effects/Dark_environment.tres" type="Environment" id=2]
-[ext_resource path="res://sfx/RhySD-Scoreboard.wav" type="AudioStream" id=3]
-[ext_resource path="res://effects/menu_theme.tres" type="Theme" id=4]
-[ext_resource path="res://scripts/beat_responder.gd" type="Script" id=5]
-[ext_resource path="res://scenes/environment_particles.tscn" type="PackedScene" id=6]
-[ext_resource path="res://scenes/Ground.tscn" type="PackedScene" id=7]
-[ext_resource path="res://scenes/UICanvasInteract.tscn" type="PackedScene" id=8]
-[ext_resource path="res://sfx/RhySD-StartButton.wav" type="AudioStream" id=9]
-[ext_resource path="res://scripts/environment_particles.gd" type="Script" id=10]
-[ext_resource path="res://scenes/UICanvas.tscn" type="PackedScene" id=11]
-[ext_resource path="res://fonts/millimetre-font-128.tres" type="DynamicFont" id=12]
-[ext_resource path="res://scenes/ui_combo.tscn" type="PackedScene" id=13]
-[ext_resource path="res://effects/wall_material.tres" type="Material" id=14]
-[ext_resource path="res://effects/note_3_material.tres" type="Material" id=15]
-[ext_resource path="res://scenes/ui_score.tscn" type="PackedScene" id=16]
-[ext_resource path="res://scenes/ui_energy_bar.tscn" type="PackedScene" id=17]
-[ext_resource path="res://effects/note_1_material.tres" type="Material" id=18]
-[ext_resource path="res://effects/note_0_material.tres" type="Material" id=19]
-[ext_resource path="res://scenes/ui_time_left.tscn" type="PackedScene" id=20]
-[ext_resource path="res://fonts/millimetre-font-256.tres" type="DynamicFont" id=21]
-[ext_resource path="res://effects/Ground.tres" type="Material" id=22]
-[ext_resource path="res://scenes/Lasers.tscn" type="PackedScene" id=23]
-[ext_resource path="res://effects/center_lights_material.tres" type="Material" id=27]
+[ext_resource type="Script" uid="uid://dkxv61amt5qsg" path="res://scripts/Game.gd" id="1"]
+[ext_resource type="Environment" uid="uid://bmargeaaawkls" path="res://effects/Dark_environment.tres" id="2"]
+[ext_resource type="AudioStream" uid="uid://d2gbs0iasd02q" path="res://sfx/RhySD-Scoreboard.wav" id="3"]
+[ext_resource type="Theme" uid="uid://d1fbglwrn3v44" path="res://effects/menu_theme.tres" id="4"]
+[ext_resource type="Script" uid="uid://bfd0a4boxmkre" path="res://scripts/beat_responder.gd" id="5"]
+[ext_resource type="PackedScene" uid="uid://drlk24o5gw78t" path="res://scenes/environment_particles.tscn" id="6"]
+[ext_resource type="PackedScene" uid="uid://detft1vbxyxsd" path="res://scenes/Ground.tscn" id="7"]
+[ext_resource type="PackedScene" uid="uid://becsllrl52q2f" path="res://scenes/UICanvasInteract.tscn" id="8"]
+[ext_resource type="AudioStream" uid="uid://13hc5ql1epd1" path="res://sfx/RhySD-StartButton.wav" id="9"]
+[ext_resource type="Script" uid="uid://lojtn7gvvr2g" path="res://scripts/environment_particles.gd" id="10"]
+[ext_resource type="PackedScene" uid="uid://c3vqk8h2r4xcp" path="res://scenes/UICanvas.tscn" id="11"]
+[ext_resource type="FontFile" uid="uid://byemkjra3kgch" path="res://fonts/millimetre-font-128.tres" id="12"]
+[ext_resource type="PackedScene" uid="uid://dm6ln1wr7hmcs" path="res://scenes/ui_combo.tscn" id="13"]
+[ext_resource type="Material" uid="uid://bhuo1ttshnp37" path="res://effects/wall_material.tres" id="14"]
+[ext_resource type="Material" uid="uid://fm84yumfchuq" path="res://effects/note_3_material.tres" id="15"]
+[ext_resource type="PackedScene" uid="uid://bqmjf2xl6vp1h" path="res://scenes/ui_score.tscn" id="16"]
+[ext_resource type="PackedScene" uid="uid://c4hmskf6kfhyq" path="res://scenes/ui_energy_bar.tscn" id="17"]
+[ext_resource type="Material" uid="uid://dr8t6pa5tb8a4" path="res://effects/note_1_material.tres" id="18"]
+[ext_resource type="Material" uid="uid://0l3q4ycp43lc" path="res://effects/note_0_material.tres" id="19"]
+[ext_resource type="PackedScene" uid="uid://dp6qkljlk5y1r" path="res://scenes/ui_time_left.tscn" id="20"]
+[ext_resource type="FontFile" uid="uid://dyway4ixu5nvl" path="res://fonts/millimetre-font-256.tres" id="21"]
+[ext_resource type="Material" uid="uid://ceh5k72kyhean" path="res://effects/Ground.tres" id="22"]
+[ext_resource type="PackedScene" uid="uid://dxkql2n7h4lqo" path="res://scenes/Lasers.tscn" id="23"]
+[ext_resource type="PackedScene" uid="uid://rpgkb5jyych7" path="res://scenes/PauseMenu.tscn" id="24_jbgew"]
 
-[sub_resource type="QuadMesh" id=5]
-size = Vector2( 0.25, 500 )
+[sub_resource type="QuadMesh" id="5"]
+size = Vector2(0.25, 500)
 
-[sub_resource type="StyleBoxLine" id=6]
-color = Color( 1, 1, 1, 0.501961 )
+[sub_resource type="StyleBoxLine" id="6"]
+color = Color(1, 1, 1, 0.501961)
 thickness = 3
 
-[node name="Game" type="Spatial"]
-script = ExtResource( 1 )
-environment = ExtResource( 2 )
+[node name="Game" type="Node3D"]
+script = ExtResource("1")
+environment = ExtResource("2")
 
-[node name="Ground" parent="." instance=ExtResource( 7 )]
+[node name="Ground" parent="." instance=ExtResource("7")]
 
-[node name="EnvironmentParticles" parent="." instance=ExtResource( 6 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.45584, -8.76391 )
+[node name="EnvironmentParticles" parent="." instance=ExtResource("6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.45584, -8.76391)
 lifetime = 5.0
-script = ExtResource( 10 )
+script = ExtResource("10")
 
-[node name="SpawnLocation" type="Spatial" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -14 )
+[node name="SpawnLocation" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -14)
 
 [node name="BeatResponder" type="Node" parent="."]
-script = ExtResource( 5 )
-materials = [ ExtResource( 19 ), ExtResource( 18 ), ExtResource( 15 ), ExtResource( 14 ) ]
+script = ExtResource("5")
+materials = [ExtResource("19"), ExtResource("18"), ExtResource("15"), ExtResource("14")]
 params = {
 "min_displace": 2.5
 }
@@ -56,8 +56,8 @@ lerp_value = 10.0
 set_value = 0.0
 
 [node name="GroundBeatResponse" type="Node" parent="."]
-script = ExtResource( 5 )
-materials = [ ExtResource( 22 ) ]
+script = ExtResource("5")
+materials = [ExtResource("22")]
 params = {
 "displace_amount": 15.0
 }
@@ -65,240 +65,172 @@ lerp_value = 1.0
 disabled = true
 response_frequency = 2.0
 
-[node name="HitMarker" type="Position3D" parent="."]
-transform = Transform( 1, -3.63798e-12, 1.45519e-11, 3.63798e-12, 1, 2.98024e-08, -1.45519e-11, -2.98024e-08, 1, 0, 0, 0.0753192 )
+[node name="HitMarker" type="Marker3D" parent="."]
+transform = Transform3D(1, -3.63798e-12, 1.45519e-11, 3.63798e-12, 1, 2.98024e-08, -1.45519e-11, -2.98024e-08, 1, 0, 0, 0.0753192)
 
-[node name="MeshInstance" type="MeshInstance" parent="HitMarker"]
-transform = Transform( -2.62268e-08, 0.015, -4.37114e-08, 0, -6.55671e-10, -1, -0.6, -6.55671e-10, 3.55271e-15, 0, 0.5, 0.12 )
-mesh = SubResource( 5 )
+[node name="MeshInstance3D" type="MeshInstance3D" parent="HitMarker"]
+transform = Transform3D(-2.62268e-08, 0.015, -4.37114e-08, 0, -6.55671e-10, -1, -0.6, -6.55671e-10, 3.55271e-15, 0, 0.5, 0.12)
+mesh = SubResource("5")
 skeleton = NodePath("../..")
-material/0 = ExtResource( 27 )
 
-[node name="BigScore" parent="." instance=ExtResource( 8 )]
-transform = Transform( 1.5, 0, 0, 0, 1.5, 0, 0, 0, 2, 0, 1.5, -2.97768 )
+[node name="BigScore" parent="." instance=ExtResource("8")]
+transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 2, 0, 1.5, -2.97768)
 visible = false
 transparent = true
 
 [node name="ReferenceRect" type="Panel" parent="BigScore"]
-margin_right = 1216.0
-margin_bottom = 1230.0
-theme = ExtResource( 4 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+offset_right = 1216.0
+offset_bottom = 1230.0
+theme = ExtResource("4")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="BigScore/ReferenceRect"]
+layout_mode = 0
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -533.5
-margin_top = -551.0
-margin_right = 533.5
-margin_bottom = 551.0
+offset_left = -533.5
+offset_top = -551.0
+offset_right = 533.5
+offset_bottom = 551.0
 alignment = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Finished" type="RichTextLabel" parent="BigScore/ReferenceRect/VBoxContainer"]
-margin_top = 78.0
-margin_right = 1067.0
-margin_bottom = 334.0
-rect_min_size = Vector2( 1067, 256 )
-rect_clip_content = false
-custom_colors/default_color = Color( 1, 0.305882, 0.92549, 1 )
-custom_fonts/normal_font = ExtResource( 12 )
+clip_contents = false
+custom_minimum_size = Vector2(1067, 256)
+layout_mode = 2
+theme_override_colors/default_color = Color(1, 0.305882, 0.92549, 1)
+theme_override_fonts/normal_font = ExtResource("12")
+theme_override_font_sizes/normal_font_size = 53
 bbcode_enabled = true
-bbcode_text = "[center][wave][rainbow]SONG FINISHED"
 text = "SONG FINISHED"
 scroll_active = false
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="HSeparator2" type="HSeparator" parent="BigScore/ReferenceRect/VBoxContainer"]
-margin_top = 338.0
-margin_right = 1067.0
-margin_bottom = 342.0
-custom_styles/separator = SubResource( 6 )
+layout_mode = 2
+theme_override_styles/separator = SubResource("6")
 
 [node name="TimeBonusLabel" type="Label" parent="BigScore/ReferenceRect/VBoxContainer"]
-margin_top = 346.0
-margin_right = 1067.0
-margin_bottom = 475.0
-custom_fonts/font = ExtResource( 12 )
+layout_mode = 2
+theme_override_fonts/font = ExtResource("12")
+theme_override_font_sizes/font_size = 64
 text = "time bonus"
-align = 1
-valign = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="TimeBonus" type="Label" parent="BigScore/ReferenceRect/VBoxContainer"]
-margin_top = 479.0
-margin_right = 1067.0
-margin_bottom = 608.0
-align = 1
-valign = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
+layout_mode = 2
+theme_override_font_sizes/font_size = 64
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="HSeparator3" type="HSeparator" parent="BigScore/ReferenceRect/VBoxContainer"]
-margin_top = 612.0
-margin_right = 1067.0
-margin_bottom = 616.0
-custom_styles/separator = SubResource( 6 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+layout_mode = 2
+theme_override_styles/separator = SubResource("6")
 
 [node name="ScoreCardLabel" type="Label" parent="BigScore/ReferenceRect/VBoxContainer"]
-margin_top = 620.0
-margin_right = 1067.0
-margin_bottom = 749.0
-custom_colors/font_color = Color( 0.25098, 0.478431, 0.239216, 1 )
+layout_mode = 2
+theme_override_colors/font_color = Color(0.25098, 0.478431, 0.239216, 1)
+theme_override_font_sizes/font_size = 64
 text = "final score"
-align = 1
-valign = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
+horizontal_alignment = 1
+vertical_alignment = 1
 
-[node name="UIScore" parent="BigScore/ReferenceRect/VBoxContainer" instance=ExtResource( 16 )]
-margin_top = 753.0
-margin_right = 1067.0
-margin_bottom = 882.0
-custom_colors/font_color = Color( 0.25098, 0.478431, 0.239216, 1 )
+[node name="UIScore" parent="BigScore/ReferenceRect/VBoxContainer" instance=ExtResource("16")]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.25098, 0.478431, 0.239216, 1)
 text = "0"
 
 [node name="HSeparator" type="HSeparator" parent="BigScore/ReferenceRect/VBoxContainer"]
-margin_top = 886.0
-margin_right = 1067.0
-margin_bottom = 890.0
-custom_styles/separator = SubResource( 6 )
+layout_mode = 2
+theme_override_styles/separator = SubResource("6")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="BigScore/ReferenceRect/VBoxContainer"]
-margin_top = 894.0
-margin_right = 1067.0
-margin_bottom = 1023.0
-custom_constants/separation = 256
+layout_mode = 2
+theme_override_constants/separation = 256
 alignment = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="RestartButton" type="Button" parent="BigScore/ReferenceRect/VBoxContainer/HBoxContainer"]
-margin_left = 21.0
-margin_right = 456.0
-margin_bottom = 129.0
-theme = ExtResource( 4 )
-custom_fonts/font = ExtResource( 12 )
+layout_mode = 2
+theme = ExtResource("4")
+theme_override_fonts/font = ExtResource("12")
+theme_override_font_sizes/font_size = 64
 action_mode = 0
 text = "restart"
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="MenuButton" type="Button" parent="BigScore/ReferenceRect/VBoxContainer/HBoxContainer"]
-margin_left = 712.0
-margin_right = 1045.0
-margin_bottom = 129.0
-theme = ExtResource( 4 )
-custom_fonts/font = ExtResource( 12 )
+layout_mode = 2
+theme = ExtResource("4")
+theme_override_fonts/font = ExtResource("12")
+theme_override_font_sizes/font_size = 64
 action_mode = 0
 text = "menu"
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="SongFinished" type="AudioStreamPlayer" parent="BigScore"]
-stream = ExtResource( 3 )
+stream = ExtResource("3")
 
 [node name="AcceptSound" type="AudioStreamPlayer" parent="BigScore"]
-stream = ExtResource( 9 )
+stream = ExtResource("9")
 
-[node name="ScoreCanvas" parent="." instance=ExtResource( 11 )]
-transform = Transform( 1.22873, 0.363606, 0.0779755, 0, 1.35946, -0.0633927, -0.860365, 0.519283, 0.111361, -2.56726, 2.41427, -6.60775 )
+[node name="ScoreCanvas" parent="." instance=ExtResource("11")]
+transform = Transform3D(1.22873, 0.363606, 0.0779755, 0, 1.35946, -0.0633927, -0.860365, 0.519283, 0.111361, -2.56726, 2.41427, -6.60775)
 
 [node name="ReferenceRect" type="Panel" parent="ScoreCanvas"]
+custom_minimum_size = Vector2(1024, 800)
+anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -512.0
-margin_top = -400.0
-margin_right = 512.0
-margin_bottom = 400.0
-rect_min_size = Vector2( 1024, 800 )
-theme = ExtResource( 4 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+offset_left = -512.0
+offset_top = -400.0
+offset_right = 512.0
+offset_bottom = 400.0
+theme = ExtResource("4")
 
 [node name="CenterContainer" type="Container" parent="ScoreCanvas/ReferenceRect"]
+custom_minimum_size = Vector2(900, 0)
+layout_mode = 0
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-margin_left = -450.0
-margin_top = -374.0
-margin_right = 450.0
-margin_bottom = 374.0
-rect_min_size = Vector2( 900, 0 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+offset_left = -450.0
+offset_top = -374.0
+offset_right = 450.0
+offset_bottom = 374.0
 
 [node name="VBoxContainer" type="VBoxContainer" parent="ScoreCanvas/ReferenceRect/CenterContainer"]
-margin_right = 900.0
-margin_bottom = 748.0
-rect_min_size = Vector2( 900, 748 )
-custom_constants/separation = 0
+custom_minimum_size = Vector2(900, 748)
+layout_mode = 2
+theme_override_constants/separation = 0
 alignment = 1
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
-[node name="UITimeLeft" parent="ScoreCanvas/ReferenceRect/CenterContainer/VBoxContainer" instance=ExtResource( 20 )]
-margin_top = 131.0
-margin_right = 912.0
-margin_bottom = 260.0
+[node name="UITimeLeft" parent="ScoreCanvas/ReferenceRect/CenterContainer/VBoxContainer" instance=ExtResource("20")]
+layout_mode = 2
 theme = null
-custom_fonts/font = ExtResource( 12 )
+theme_override_fonts/font = ExtResource("12")
 text = "00:00:00"
 
 [node name="HBoxContainer" type="HBoxContainer" parent="ScoreCanvas/ReferenceRect/CenterContainer/VBoxContainer"]
-margin_top = 260.0
-margin_right = 912.0
-margin_bottom = 517.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
+layout_mode = 2
 
-[node name="UIScore" parent="ScoreCanvas/ReferenceRect/CenterContainer/VBoxContainer/HBoxContainer" instance=ExtResource( 16 )]
-margin_top = 33.0
-margin_right = 600.0
-margin_bottom = 223.0
-rect_min_size = Vector2( 600, 190 )
+[node name="UIScore" parent="ScoreCanvas/ReferenceRect/CenterContainer/VBoxContainer/HBoxContainer" instance=ExtResource("16")]
+custom_minimum_size = Vector2(600, 190)
+layout_mode = 2
 text = "000000"
 
-[node name="UICombo" parent="ScoreCanvas/ReferenceRect/CenterContainer/VBoxContainer/HBoxContainer" instance=ExtResource( 13 )]
-margin_left = 604.0
-margin_top = 0.0
-margin_right = 912.0
-margin_bottom = 257.0
-custom_fonts/font = ExtResource( 21 )
+[node name="UICombo" parent="ScoreCanvas/ReferenceRect/CenterContainer/VBoxContainer/HBoxContainer" instance=ExtResource("13")]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("21")
+theme_override_font_sizes/font_size = 60
 text = "X4"
 
-[node name="EnergyBar" parent="ScoreCanvas/ReferenceRect/CenterContainer/VBoxContainer" instance=ExtResource( 17 )]
-margin_top = 517.0
-margin_right = 912.0
-margin_bottom = 617.0
-rect_min_size = Vector2( 800, 100 )
+[node name="EnergyBar" parent="ScoreCanvas/ReferenceRect/CenterContainer/VBoxContainer" instance=ExtResource("17")]
+custom_minimum_size = Vector2(800, 100)
+layout_mode = 2
 
-[node name="Lasers" parent="." instance=ExtResource( 23 )]
+[node name="Lasers" parent="." instance=ExtResource("23")]
 
 [node name="StartTimer" type="Timer" parent="."]
 wait_time = 2.0
@@ -306,6 +238,15 @@ one_shot = true
 
 [node name="EndTimer" type="Timer" parent="."]
 one_shot = true
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.57185084, 0.6294633, -0.52608234, 0.27022094, 0.75002825, 0.6036873, 0.7745757, 0.20306051, -0.59899837, 0.12419295, 14.558197, -9.005886)
+light_color = Color(0.945098, 0.835294, 0.647059, 1)
+light_energy = 1.5
+
+[node name="PauseMenu" parent="." instance=ExtResource("24_jbgew")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3676617, -3.7702389)
+disable_collision = true
 
 [connection signal="pressed" from="BigScore/ReferenceRect/VBoxContainer/HBoxContainer/RestartButton" to="." method="_on_RestartButton_pressed"]
 [connection signal="pressed" from="BigScore/ReferenceRect/VBoxContainer/HBoxContainer/MenuButton" to="." method="_on_MenuButton_pressed"]

@@ -1,27 +1,26 @@
-[gd_resource type="ParticlesMaterial" load_steps=5 format=2]
+[gd_resource type="ParticleProcessMaterial" load_steps=5 format=3 uid="uid://dwk0jtenkcwdd"]
 
-[ext_resource path="res://effects/bw_gradient.tres" type="Gradient" id=1]
+[ext_resource type="Gradient" path="res://effects/bw_gradient.tres" id="1"]
 
-[sub_resource type="GradientTexture" id=24]
-gradient = ExtResource( 1 )
+[sub_resource type="GradientTexture2D" id="24"]
+gradient = ExtResource("1")
 width = 1024
 
-[sub_resource type="Curve" id=26]
-_data = [ Vector2( 0, 0 ), 0.0, 4.16463, 0, 0, Vector2( 0.537975, 1 ), -0.0341651, -0.0341651, 0, 0, Vector2( 1, 0 ), -0.316674, 0.0, 0, 0 ]
+[sub_resource type="Curve" id="26"]
+_data = [Vector2(0, 0), 0.0, 4.16463, 0, 0, Vector2(0.537975, 1), -0.0341651, -0.0341651, 0, 0, Vector2(1, 0), -0.316674, 0.0, 0, 0]
+point_count = 3
 
-[sub_resource type="CurveTexture" id=27]
-curve = SubResource( 26 )
+[sub_resource type="CurveTexture" id="27"]
+curve = SubResource("26")
 
 [resource]
 emission_shape = 2
-emission_box_extents = Vector3( 15, 4, 3 )
-direction = Vector3( 0, 0, 1 )
+emission_sphere_radius = 1.0
+direction = Vector3(0, 0, 1)
 spread = 0.0
-gravity = Vector3( 0, 0, 0 )
-initial_velocity = 5.0
-scale = 0.25
-scale_curve = SubResource( 27 )
-color = Color( 1.5, 1.22, 0, 1 )
-color_ramp = SubResource( 24 )
-hue_variation = 0.16
-hue_variation_random = 0.4
+gravity = Vector3(0, 0, 0)
+scale_min = 0.0
+scale_max = 0.0
+scale_curve = SubResource("27")
+color = Color(1.5, 1.22, 0, 1)
+color_ramp = SubResource("24")

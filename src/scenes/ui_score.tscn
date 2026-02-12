@@ -1,15 +1,13 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=2 format=3 uid="uid://bqmjf2xl6vp1h"]
 
-[ext_resource path="res://scripts/ui_score.gd" type="Script" id=1]
+[ext_resource type="Script" uid="uid://b0x1aw2lnboh8" path="res://scripts/ui_score.gd" id="1"]
 
 [node name="UIScore" type="Label"]
-margin_right = 659.0
-margin_bottom = 215.0
-custom_colors/font_color = Color( 0.25, 0.48, 0.24, 1 )
+offset_right = 659.0
+offset_bottom = 215.0
+theme_override_colors/font_color = Color(0.25, 0.48, 0.24, 1)
+theme_override_font_sizes/font_size = 64
 text = "SCORE: 999999"
-align = 1
-valign = 1
-script = ExtResource( 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+horizontal_alignment = 1
+vertical_alignment = 1
+script = ExtResource("1")

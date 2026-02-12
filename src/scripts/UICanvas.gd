@@ -1,21 +1,21 @@
-tool
-extends Spatial
+@tool
+extends Node3D
 
 class_name UICanvas
 
 var ui_control:Control = null
 
-onready var viewport = $Viewport
-onready var ui_mesh_instance:MeshInstance = $UIMeshInstance
+@onready var viewport = $SubViewport
+@onready var ui_mesh_instance:MeshInstance3D = $UIMeshInstance
 
-export var transparent = false
-export var editor_live_update = false setget set_editor_update
+@export var transparent = false
+@export var editor_live_update = false: set = set_editor_update
 
 var mesh_material = null
 
 var ui_size = Vector2()
 
-func _get_configuration_warning():
+func _get_configuration_warnings():
 	if (ui_control == null): return "Need a Control node as child."
 	return '';
 
@@ -30,20 +30,35 @@ func find_child_control():
 			
 
 func update_size():
-	ui_size = ui_control.get_size();
+	var current_size = ui_control.get_size()
+	var min_size = ui_control.get_combined_minimum_size()
+	
+	ui_size = current_size
+	if ui_size.x < min_size.x:
+		ui_size.x = min_size.x
+	if ui_size.y < min_size.y:
+		ui_size.y = min_size.y
+		
 	if (ui_mesh_instance != null):
 		ui_mesh_instance.scale.x = ui_size.x * GameVariables.UI_PIXELS_TO_METER
 		ui_mesh_instance.scale.y = ui_size.y * GameVariables.UI_PIXELS_TO_METER
 	if (viewport != null):
 		print ("setting viewport size:", ui_size)
 		viewport.set_size(ui_size)
+		
+	# Fix for Godot 4: Explicitly bind viewport texture to material
+	if ui_mesh_instance and viewport:
+		var mat = ui_mesh_instance.get_surface_override_material(0)
+		if mat:
+			mat.albedo_texture = viewport.get_texture()
 
 func _ready():
-	mesh_material = ui_mesh_instance.get_surface_material(0)
+	mesh_material = ui_mesh_instance.get_surface_override_material(0)
 	# only enable transparency when necessary as it is significantly slower than non-transparent rendering
-	mesh_material.flags_transparent = transparent
+	if mesh_material is StandardMaterial3D:
+		mesh_material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA if transparent else BaseMaterial3D.TRANSPARENCY_DISABLED
 	
-	if Engine.editor_hint:
+	if Engine.is_editor_hint():
 		return;
 	
 	find_child_control()
@@ -56,7 +71,7 @@ func _ready():
 
 func _editor_update_preview():
 	#duplicate the ui
-	var preview_node= ui_control.duplicate(DUPLICATE_USE_INSTANCING)
+	var preview_node= ui_control.duplicate(0)
 	#set it to be visible
 	preview_node.visible = true
 	
@@ -84,7 +99,7 @@ func update_editor():
 
 func _process(delta: float) -> void:
 	#if we aren't in the editor
-	if !Engine.editor_hint:
+	if !Engine.is_editor_hint():
 		return
 	
 	update_editor()

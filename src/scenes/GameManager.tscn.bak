@@ -1,0 +1,94 @@
+[gd_scene load_steps=7 format=3 uid="uid://dfvrt1g74wo5l"]
+
+[ext_resource type="Script" uid="uid://dtu41n7u2cbs4" path="res://scripts/GameManager.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="2"]
+[ext_resource type="Script" uid="uid://do4wn32gg6rng" path="res://scripts/beat_player.gd" id="3"]
+[ext_resource type="Environment" path="res://effects/menu_environment.tres" id="7"]
+[ext_resource type="Script" uid="uid://dytur4u8uamy8" path="res://scripts/EnvironmentManager.gd" id="8"]
+[ext_resource type="PackedScene" uid="uid://ctltchlf2j2r4" path="res://addons/xr-simulator/XRSimulator.tscn" id="9"]
+
+[node name="GameManager" type="Node"]
+script = ExtResource("1")
+debug_start_scene = "GGJ2Splash"
+
+[node name="Player" parent="." instance=ExtResource("2")]
+
+[node name="LeftHand" parent="Player/XROrigin3D" index="1"]
+visible = false
+tracker = &"left_hand"
+
+[node name="LeftHand" parent="Player/XROrigin3D/LeftHand" index="0"]
+script = null
+
+[node name="Position3D2" parent="Player/XROrigin3D/LeftHand" index="1"]
+transform = Transform3D(1, 0, 0, 0, 0.81915194, -0.5735769, 0, 0.5735769, 0.81915194, 0, 0, 0)
+
+[node name="Marker3D" parent="Player/XROrigin3D/LeftHand/Position3D2" index="0"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, -0.377)
+
+[node name="Handle" parent="Player/XROrigin3D/LeftHand/Position3D2/Marker3D" index="0"]
+transform = Transform3D(1, 0, 0, 0, 0.99999976, 0, 0, 0, 0.99999976, 0, 0.446, 0)
+
+[node name="RightHand" parent="Player/XROrigin3D" index="2"]
+tracker = &"right_hand"
+
+[node name="HandModel" parent="Player/XROrigin3D/RightHand" index="0"]
+script = null
+
+[node name="Marker3D" parent="Player/XROrigin3D/RightHand/Marker3D" index="0"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, -0.377)
+
+[node name="Handle" parent="Player/XROrigin3D/RightHand/Marker3D/Marker3D" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.446, 0)
+
+[node name="PauseLabel" parent="Player/XROrigin3D" index="3"]
+visible = true
+disable_collision = null
+editor_live_update = null
+
+[node name="PauseLabel" parent="Player/XROrigin3D/PauseLabel/PauseContainer" index="0"]
+layout_mode = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PauseBtns" parent="Player/XROrigin3D/PauseLabel/PauseContainer" index="1"]
+layout_mode = 2
+
+[node name="ResumeBtn" parent="Player/XROrigin3D/PauseLabel/PauseContainer/PauseBtns" index="0"]
+layout_mode = 2
+
+[node name="RestartBtn" parent="Player/XROrigin3D/PauseLabel/PauseContainer/PauseBtns" index="1"]
+layout_mode = 2
+
+[node name="MenuBtn" parent="Player/XROrigin3D/PauseLabel/PauseContainer/PauseBtns" index="2"]
+layout_mode = 2
+
+[node name="CollisionShape3D" parent="Player" index="1"]
+visible = false
+
+[node name="PlayerCenter" parent="Player" index="3"]
+visible = false
+
+[node name="BeatPlayer" type="AudioStreamPlayer" parent="."]
+script = ExtResource("3")
+bpm = 109.0
+beat_subdivisions = 1.0
+
+[node name="EnvironmentManager" type="WorldEnvironment" parent="."]
+environment = ExtResource("7")
+script = ExtResource("8")
+
+[node name="MaterialCache" type="Node3D" parent="."]
+
+[node name="PlayerStats" type="Node" parent="."]
+
+[node name="Button" type="Button" parent="."]
+offset_left = 23.0
+offset_top = 17.0
+offset_right = 88.0
+offset_bottom = 37.0
+text = "Enter VR"
+
+[node name="XRSimulator" parent="." instance=ExtResource("9")]
+
+[editable path="Player"]

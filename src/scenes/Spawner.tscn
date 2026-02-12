@@ -1,15 +1,15 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=3 format=3 uid="uid://bq1j7l2u3xp6c"]
 
-[ext_resource path="res://scenes/ball.tscn" type="PackedScene" id=1]
-[ext_resource path="res://scripts/spawner.gd" type="Script" id=2]
+[ext_resource type="PackedScene" path="res://scenes/ball.tscn" id="1"]
+[ext_resource type="Script" path="res://scripts/spawner.gd" id="2"]
 
-[node name="Spawner" type="Spatial"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2 )
-script = ExtResource( 2 )
+[node name="Spawner" type="Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2)
+script = ExtResource("2")
 active = true
 spawn_time = 0.5
-spawn_object = ExtResource( 1 )
-bounding_box = AABB( -1, 0, 0, 1, 1.5, 0 )
+spawn_object = ExtResource("1")
+bounding_box = AABB(-1, 0, 0, 1, 1.5, 0)
 
 [node name="Timer" type="Timer" parent="."]
 autostart = true

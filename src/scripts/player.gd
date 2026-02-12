@@ -1,4 +1,4 @@
-extends KinematicBody
+extends CharacterBody3D
 
 # velocity mechanics settnings
 const HIT_VELOCITY = 0.2
@@ -7,21 +7,22 @@ const BOMB_ENERGY_VALUE = 25
 const MAX_COMBO = 8
 
 # Payer movement in non-vr mode settings
-export var mouse_sensitivity = 0.03
-export var Invert_Y_Axis = true
-export var Exit_On_Escape = true
-export var Maximum_Y_Look = 45
-export var Accelaration = 5
-export var Maximum_Walk_Speed = 10
-export var Jump_Speed = 2
+@export var mouse_sensitivity = 0.03
+@export var Invert_Y_Axis = true
+@export var Exit_On_Escape = true
+@export var Maximum_Y_Look = 45
+@export var Accelaration = 5
+@export var Maximum_Walk_Speed = 10
+@export var Jump_Speed = 2
 
 var in_game = false
 var game_node #reference to game node
 
 var _beat_player
+var _pause_button_cooldown = false
 
 const GRAVITY = 0 #0.098
-var velocity = Vector3(0,0,0)
+#var velocity = Vector3(0,0,0)
 var forward_velocity = 0
 var Walk_Speed = 0.1
 
@@ -29,23 +30,45 @@ enum {FASTER, NEUTRAL, SLOWER}
 const MAX_ACCELERATION = 1
 const MIN_ACCELERATION = 0
 var time_direction = NEUTRAL
-var song_acceleration = 0.00 setget set_song_acceleration
+var song_acceleration = 0.00:
+	set(value):
+		song_acceleration = value
+		if song_acceleration > MAX_ACCELERATION:
+			song_acceleration = MAX_ACCELERATION
+		if song_acceleration <= MIN_ACCELERATION:
+			song_acceleration = MIN_ACCELERATION
 var song_deceleration = 1.0 #rate at which we return to zero
 var acceleration_rate = 0.25
 
 var hit_range = Vector2(-0.25, 0.25)
 var accuracy_range = Vector2(0.0, 3.0)
 
-var score = 0 setget set_score
-var energy = 0 setget set_energy
-var combo = 0 setget set_combo
+var score = 0:
+	set(value):
+		score = value
+		if score < 0:
+			score = 0
+		Events.emit_signal("current_score_updated", score)
+var energy = 0:
+	set(value):
+		energy = value
+		if energy > 100: energy = 100
+		if energy < 0: energy = 0
+		if energy == 0: disable_energy_use(1.0)
+		Events.emit_signal("current_energy_updated", energy)
+var combo = 0:
+	set(value):
+		combo = value
+		if combo >= MAX_COMBO:
+			combo = MAX_COMBO
+		Events.emit_signal("current_combo_updated", combo)
 
 var can_use_energy = true
 
 var energy_decay_rate = 7
 
 #REFS
-onready var _camera = $ARVROrigin/ARVRCamera
+@onready var _camera = $XROrigin3D/XRCamera3D
 
 
 func reset_player():
@@ -59,31 +82,8 @@ func reset_player():
 	if not _beat_player:
 		_beat_player = Global.manager()._beatplayer
 
-func set_song_acceleration(newval):
-	song_acceleration = newval
-	if song_acceleration>MAX_ACCELERATION:
-		song_acceleration = MAX_ACCELERATION
-	if song_acceleration<=MIN_ACCELERATION:
-		song_acceleration = MIN_ACCELERATION
-
-func set_combo(new_val):
-	combo = new_val
-	if combo>=MAX_COMBO:
-		combo = MAX_COMBO
-	Events.emit_signal("current_combo_updated", combo)
-	
-func set_score(new_val):
-	score = new_val
-	if score<0:
-		score=0
-	Events.emit_signal("current_score_updated", score)
-
-func set_energy(new_val):
-	energy = new_val
-	if energy>100: energy = 100
-	if energy<0: energy = 0
-	if energy==0: disable_energy_use(1.0)
-	Events.emit_signal("current_energy_updated", energy)
+# All property setters (song_acceleration, score, energy, combo) are now inline
+# with their property definitions above
 
 func _ready():
 	# TODO Change this not to the global variable
@@ -123,7 +123,7 @@ func _process(delta):
 					elif game_node.song_speed <1.0:
 						game_node.set_song_speed(game_node.song_speed+song_deceleration * delta)
 				else:
-					game_node.song_speed = 1.0
+						game_node.song_speed = 1.0
 	
 	# Handle non-vr exit on ESCAPE
 #	if not GameVariables.ENABLE_VR:
@@ -141,10 +141,25 @@ func _physics_process(delta):
 #			if Input.is_key_pressed(KEY_P):
 #				game_node.toggle_speed(0.5, 0.1, 5.0, 0.01)
 	
+	# Camera raycast is ONLY for non-VR mode (for mouse look-and-click)
+	# In VR mode, use controller raycasts instead
 	if GameVariables.ENABLE_VR:
-		$ARVROrigin/ARVRCamera/Feature_UIRayCast.active=false
+		# VR mode: always disable camera raycast, use controller raycasts
+		$XROrigin3D/XRCamera3D/Feature_UIRayCast.active = false
 	else:
-		$ARVROrigin/ARVRCamera/Feature_UIRayCast.active=true
+		# Non-VR mode: always enable camera raycast for mouse interaction
+		$XROrigin3D/XRCamera3D/Feature_UIRayCast.active = true
+	
+	# Check pause button in physics_process so it works even when game is paused
+	# Only check when in_game (during song playback)
+	if GameVariables.ENABLE_VR and in_game and not _pause_button_cooldown:
+		var left_hand = Global.manager()._left_hand
+		if left_hand and left_hand.is_button_just_pressed("ax_button"):
+			_pause_button_cooldown = true
+			pause_game()
+			# Wait a bit before allowing another pause toggle
+			await get_tree().create_timer(0.3, true, false, true).timeout
+			_pause_button_cooldown = false
 	
 	if GameVariables.NON_VR_MOVEMENT:
 		_handle_non_vr_move_and_slide()
@@ -183,18 +198,21 @@ func _handle_non_vr_move_and_slide():
 		if is_on_floor():
 				if Input.is_action_just_pressed("ui_accept"):
 						velocity.y = Jump_Speed
-		velocity = move_and_slide(velocity, Vector3(0,1,0))
+		#set_velocity(velocity)
+		up_direction = Vector3(0,1,0)
+		move_and_slide()
+		#velocity = velocity
 
 func _unhandled_input(event):
 	if not GameVariables.ENABLE_VR:
 		
-		if Input.is_key_pressed(KEY_ESCAPE) and in_game:
+		if event.is_action_pressed("ui_cancel") and in_game:
 				pause_game()
 		
 		if event is InputEventMouseMotion:
-			rotate_y(deg2rad(-event.relative.x * mouse_sensitivity))
-			_camera.rotate_x(deg2rad(-event.relative.y * mouse_sensitivity))
-			_camera.rotation.x = clamp(_camera.rotation.x, deg2rad(-89), deg2rad(89))
+			rotate_y(deg_to_rad(-event.relative.x * mouse_sensitivity))
+			_camera.rotate_x(deg_to_rad(-event.relative.y * mouse_sensitivity))
+			_camera.rotation.x = clamp(_camera.rotation.x, deg_to_rad(-89), deg_to_rad(89))
 
 
 func handle_hit(body, hand):
@@ -251,17 +269,17 @@ func handle_hit(body, hand):
 				#if the value is outside the range, it's a miss!
 				var score_value = 0
 				
-				if hit_accuracy<0.0 and hit_accuracy>3.0:
+				if hit_accuracy<0.0 or hit_accuracy>3.0:
 					self.combo = 0
 					self.energy-= 1
 					score_value = -50
 					
 				else:
 					
-					if controller.is_simple_rumbling():
-						controller._rumble_duration = 0.25
-					else:
-						controller.simple_rumble(0.5, 0.25)
+					#if controller.is_simple_rumbling():
+					#	controller._rumble_duration = 0.25
+					#else:
+					#	controller.simple_rumble(0.5, 0.25)
 					
 					#note is early
 					if hit_accuracy>0.0 and hit_accuracy<1.0:
@@ -333,35 +351,48 @@ func _on_RightHand_button_release(button):
 
 
 var last_position
+const PAUSE_MENU_DISTANCE = 2.0  # Distance in meters in front of camera
 
 func pause_game():
+	if not game_node or not is_instance_valid(game_node):
+		return
+	
+	var pause_menu = game_node.get_node_or_null("PauseMenu")
+	if not pause_menu:
+		return
+	
 	var pause_state = get_tree().paused
 	get_tree().paused = !pause_state
 
-	var pause_btns = $ARVROrigin/PauseLabel/Viewport/PauseContainer/PauseBtns.get_children()
+	var pause_btns = pause_menu.get_node("SubViewport/PauseContainer/PauseBtns").get_children()
 	
 	if get_tree().paused:
 		set_process(false)
 		if _beat_player:
 			_beat_player.stream_paused = true
-		$ARVROrigin/PauseLabel/UnpauseSound.play()
-		$ARVROrigin/PauseLabel.visible=true
-		#$ARVROrigin/PauseLabel.enable_collision()
-		$ARVROrigin/PauseLabel.disable_collision = false
-		for btn in pause_btns:
-			btn.disabled=false
 		
-		#if game_node: game_node._spawn_location.visible = false
+		# Position pause menu 2m in front of camera, facing the player
+		# var camera_transform = _camera.global_transform
+		# var menu_position = camera_transform.origin - camera_transform.basis.z * PAUSE_MENU_DISTANCE
+		# pause_menu.global_transform.origin = menu_position
+		
+		# Make the menu face the camera
+		# pause_menu.look_at(camera_transform.origin, Vector3.UP)
+		
+		pause_menu.get_node("UnpauseSound").play()
+		pause_menu.visible = true
+		pause_menu.disable_collision = false
+		for btn in pause_btns:
+			btn.disabled = false
 	else:
 		set_process(true)
 		if _beat_player:
 			_beat_player.stream_paused = false
-		$ARVROrigin/PauseLabel/PauseSound.play()
-		$ARVROrigin/PauseLabel.visible=false
-		$ARVROrigin/PauseLabel.disable_collision= true
+		pause_menu.get_node("PauseSound").play()
+		pause_menu.visible = false
+		pause_menu.disable_collision = true
 		for btn in pause_btns:
-			btn.disabled=true
-		#if game_node: game_node._spawn_location.visible = true
+			btn.disabled = true
 	
 
 func process_controller_input(hand, delta):
@@ -385,21 +416,19 @@ func process_controller_input(hand, delta):
 			trigger = 4
 			grip = 5
 		else:
-			trigger = JOY_VR_TRIGGER
-			grip = JOY_VR_GRIP
+			trigger = "trigger_click"
+			grip = "grip_click"
 			
 		if GameVariables.ENABLE_VR:
-		
-			if hand_object._buttons_just_pressed[JOY_OCULUS_MENU]:
-				pause_game()
-			
+			# Pause button is now handled in _physics_process so it works when paused
 			#if hand_object._buttons_pressed[JOY_OPENVR_MENU]:
 			
-			if hand_object._buttons_just_pressed[trigger] or hand_object._buttons_just_pressed[JOY_VR_GRIP]:
-				if can_use_energy==false or energy<energy_decay_rate*delta:
-					$BombSound.play()
+			# NOTE: Removed the BombSound.play() here - it was playing every frame
+			# when trigger was pressed and energy was low, causing repeated beep sounds
+			# The original intent was likely a one-time feedback, but this needs proper
+			# "just pressed" detection to work correctly
 			
-			if hand_object._buttons_pressed[trigger]:
+			if hand_object.is_button_pressed(trigger):
 				if energy>energy_decay_rate*delta and can_use_energy:
 					#print ("joy button pressed")
 					#self.get_parent().toggle_speed(1.5, 0.1, 5.0, 0.01)
@@ -407,7 +436,7 @@ func process_controller_input(hand, delta):
 					time_direction = FASTER
 					self.energy -= energy_decay_rate * delta
 			
-			if hand_object._buttons_pressed[grip]:
+			if hand_object.is_button_pressed(grip):
 				if energy>energy_decay_rate*delta and can_use_energy:
 					#print ("joy grip pressed")
 					#self.get_parent().toggle_speed(0.5, 0.1, 5.0, 0.01)
@@ -461,24 +490,33 @@ func _on_HeadArea_area_entered(area):
 
 func disable_energy_use(seconds):
 	can_use_energy = false
-	yield(get_tree().create_timer(seconds),"timeout")
+	await get_tree().create_timer(seconds).timeout
 	can_use_energy = true
 
 
 func _on_ResumeBtn_pressed():
-	$ARVROrigin/PauseLabel/PauseSound.play()
+	if game_node:
+		var pause_menu = game_node.get_node_or_null("PauseMenu")
+		if pause_menu:
+			pause_menu.get_node("PauseSound").play()
 	pause_game()
 
 func _on_MenuBtn_pressed():
-	$ARVROrigin/PauseLabel/PauseSound.play()
+	if game_node:
+		var pause_menu = game_node.get_node_or_null("PauseMenu")
+		if pause_menu:
+			pause_menu.get_node("PauseSound").play()
 	pause_game()
 	reset_player()
-	yield(get_tree().create_timer(0.1),"timeout")
+	await get_tree().create_timer(0.1).timeout
 	Global.manager().load_scene(Global.manager().menu_path,"menu")
 
 func _on_RestartBtn_pressed():
-	$ARVROrigin/PauseLabel/PauseSound.play()
+	if game_node:
+		var pause_menu = game_node.get_node_or_null("PauseMenu")
+		if pause_menu:
+			pause_menu.get_node("PauseSound").play()
 	reset_player()
 	pause_game()
-	yield(get_tree().create_timer(0.1),"timeout")
+	await get_tree().create_timer(0.1).timeout
 	Global.manager().load_scene(Global.manager().game_path,"game")

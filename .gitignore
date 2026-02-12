@@ -1,7 +1,18 @@
 *.o
 *.os
-.import/
-*.import
+# Godot 4+ specific
+.godot/
+
+# Godot 3 specific (can be removed if fully migrated)
+#.import/
+
+# Imported translations (generated)
+*.translation
+
+# Mono/C# builds
+.mono/
+*.a
+
 *.dblite
 *.exp
 *.lib
@@ -10,3 +21,4 @@
 *.swo
 logs
 Thumbs.db
+addons

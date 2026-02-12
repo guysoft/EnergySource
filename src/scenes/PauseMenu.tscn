@@ -1,0 +1,103 @@
+[gd_scene load_steps=10 format=3 uid="uid://rpgkb5jyych7"]
+
+[ext_resource type="Script" uid="uid://b1ebm8spgjdxo" path="res://scripts/UICanvasInteract.gd" id="1_hjd6f"]
+[ext_resource type="Script" uid="uid://bfp24meby8o0e" path="res://scripts/UIArea.gd" id="2_nu2dh"]
+[ext_resource type="AudioStream" uid="uid://c0xrgcajnsyfk" path="res://sfx/RhySD-BackButton.wav" id="3_w7wvk"]
+[ext_resource type="Theme" uid="uid://dhxx6nyx60wmn" path="res://ui_theme.tres" id="4_bpqks"]
+[ext_resource type="Theme" uid="uid://d1fbglwrn3v44" path="res://effects/menu_theme.tres" id="5_b2bvj"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_g77cm"]
+size = Vector3(1, 1, 0.002)
+
+[sub_resource type="QuadMesh" id="QuadMesh_t8ixm"]
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_lbkkj"]
+viewport_path = NodePath("SubViewport")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_goxsb"]
+resource_local_to_scene = true
+transparency = 1
+shading_mode = 0
+albedo_texture = SubResource("ViewportTexture_lbkkj")
+
+[node name="PauseMenu" type="Node3D"]
+process_mode = 3
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
+visible = false
+script = ExtResource("1_hjd6f")
+transparent = true
+
+[node name="SubViewport" type="SubViewport" parent="."]
+disable_3d = true
+transparent_bg = true
+handle_input_locally = false
+size = Vector2i(850, 313)
+render_target_update_mode = 4
+
+[node name="PauseContainer" type="VBoxContainer" parent="SubViewport"]
+offset_right = 850.0
+offset_bottom = 313.0
+
+[node name="PauseTitle" type="Label" parent="SubViewport/PauseContainer"]
+layout_mode = 2
+theme = ExtResource("4_bpqks")
+theme_override_font_sizes/font_size = 64
+text = "paused"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PauseBtns" type="HBoxContainer" parent="SubViewport/PauseContainer"]
+custom_minimum_size = Vector2(512, 0)
+layout_mode = 2
+theme = ExtResource("5_b2bvj")
+theme_override_constants/separation = 128
+
+[node name="ResumeBtn" type="Button" parent="SubViewport/PauseContainer/PauseBtns"]
+process_mode = 3
+custom_minimum_size = Vector2(350, 128)
+layout_mode = 2
+focus_mode = 0
+theme_override_font_sizes/font_size = 64
+disabled = true
+shortcut_in_tooltip = false
+text = "resume"
+
+[node name="RestartBtn" type="Button" parent="SubViewport/PauseContainer/PauseBtns"]
+process_mode = 3
+custom_minimum_size = Vector2(350, 128)
+layout_mode = 2
+focus_mode = 0
+theme_override_font_sizes/font_size = 64
+disabled = true
+action_mode = 0
+shortcut_in_tooltip = false
+text = "restart"
+
+[node name="MenuBtn" type="Button" parent="SubViewport/PauseContainer/PauseBtns"]
+process_mode = 3
+custom_minimum_size = Vector2(350, 128)
+layout_mode = 2
+focus_mode = 0
+theme_override_font_sizes/font_size = 64
+disabled = true
+shortcut_in_tooltip = false
+text = "menu"
+
+[node name="UIArea" type="Area3D" parent="."]
+collision_layer = 16
+collision_mask = 16
+script = ExtResource("2_nu2dh")
+
+[node name="UICollisionShape" type="CollisionShape3D" parent="UIArea"]
+shape = SubResource("BoxShape3D_g77cm")
+
+[node name="UIMeshInstance" type="MeshInstance3D" parent="UIArea"]
+cast_shadow = 0
+mesh = SubResource("QuadMesh_t8ixm")
+surface_material_override/0 = SubResource("StandardMaterial3D_goxsb")
+
+[node name="UnpauseSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("3_w7wvk")
+
+[node name="PauseSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("3_w7wvk")

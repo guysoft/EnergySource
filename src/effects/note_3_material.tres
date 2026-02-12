@@ -1,22 +1,23 @@
-[gd_resource type="ShaderMaterial" load_steps=4 format=2]
+[gd_resource type="ShaderMaterial" load_steps=4 format=3 uid="uid://fm84yumfchuq"]
 
-[ext_resource path="res://effects/note_displace_shader.tres" type="Shader" id=1]
+[ext_resource type="Shader" path="res://effects/note_displace_shader.tres" id="1"]
 
-[sub_resource type="OpenSimplexNoise" id=13]
+[sub_resource type="FastNoiseLite" id="13"]
 
-[sub_resource type="NoiseTexture" id=14]
-noise = SubResource( 13 )
+[sub_resource type="NoiseTexture2D" id="14"]
+noise = SubResource("13")
 
 [resource]
-shader = ExtResource( 1 )
-shader_param/emission_color = Color( 0.913725, 0.219608, 0.219608, 1 )
-shader_param/albedo_color = Color( 0.913725, 0.219608, 0.219608, 1 )
-shader_param/displace_scale = 0.148
-shader_param/mid_level = 0.5
-shader_param/scale = 0.0
-shader_param/offset = Vector2( 0, 0 )
-shader_param/scroll = Vector2( 0.1, 0.25 )
-shader_param/object_position = Vector3( 1.35, 0.963, 0.6 )
-shader_param/max_distance_clamp = 0.5
-shader_param/min_displace = 0.564
-shader_param/noise = SubResource( 14 )
+render_priority = 0
+shader = ExtResource("1")
+shader_parameter/emission_color = Color(0.913725, 0.219608, 0.219608, 1)
+shader_parameter/albedo_color = Color(0.913725, 0.219608, 0.219608, 1)
+shader_parameter/displace_scale = 0.148
+shader_parameter/mid_level = 0.5
+shader_parameter/scale = 0.0
+shader_parameter/offset = Vector2(0, 0)
+shader_parameter/noise = SubResource("14")
+shader_parameter/scroll = Vector2(0.1, 0.25)
+shader_parameter/object_position = Vector3(1.35, 0.963, 0.6)
+shader_parameter/max_distance_clamp = 0.5
+shader_parameter/min_displace = 0.564

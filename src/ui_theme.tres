@@ -1,45 +1,54 @@
-[gd_resource type="Theme" load_steps=8 format=2]
+[gd_resource type="Theme" load_steps=8 format=3 uid="uid://dhxx6nyx60wmn"]
 
-[ext_resource path="res://fonts/anthony-master/fonts/Anthony.otf" type="DynamicFontData" id=1]
-[ext_resource path="res://fonts/millimetre-font-64.tres" type="DynamicFont" id=2]
+[ext_resource type="FontFile" uid="uid://02edy2v61pii" path="res://fonts/anthony-master/fonts/Anthony.otf" id="1"]
+[ext_resource type="FontFile" uid="uid://c46eoi7k3obk3" path="res://fonts/millimetre-font-64.tres" id="2"]
 
-[sub_resource type="DynamicFont" id=19]
-size = 150
-use_mipmaps = true
-use_filter = true
-font_data = ExtResource( 1 )
+[sub_resource type="FontFile" id="19"]
+fallbacks = Array[Font]([ExtResource("1")])
+cache/0/16/0/ascent = 0.0
+cache/0/16/0/descent = 0.0
+cache/0/16/0/underline_position = 0.0
+cache/0/16/0/underline_thickness = 0.0
+cache/0/16/0/scale = 1.0
+cache/0/64/0/ascent = 0.0
+cache/0/64/0/descent = 0.0
+cache/0/64/0/underline_position = 0.0
+cache/0/64/0/underline_thickness = 0.0
+cache/0/64/0/scale = 1.0
 
-[sub_resource type="StyleBoxFlat" id=22]
-bg_color = Color( 0, 0, 0, 0.627451 )
+[sub_resource type="StyleBoxFlat" id="22"]
+bg_color = Color(0, 0, 0, 0.627451)
 corner_radius_top_left = 64
 corner_radius_top_right = 64
 corner_radius_bottom_right = 64
 corner_radius_bottom_left = 64
 
-[sub_resource type="StyleBoxFlat" id=20]
-bg_color = Color( 0, 0, 0, 0.0980392 )
+[sub_resource type="StyleBoxFlat" id="20"]
+bg_color = Color(0, 0, 0, 0.0980392)
 corner_radius_top_left = 32
 corner_radius_top_right = 32
 corner_radius_bottom_right = 32
 corner_radius_bottom_left = 23
 
-[sub_resource type="StyleBoxFlat" id=21]
-bg_color = Color( 0.254902, 0.603922, 0.882353, 1 )
+[sub_resource type="StyleBoxFlat" id="21"]
+bg_color = Color(0.254902, 0.603922, 0.882353, 1)
 corner_radius_top_left = 32
 corner_radius_top_right = 32
 corner_radius_bottom_right = 32
 corner_radius_bottom_left = 32
 
-[sub_resource type="DynamicFont" id=24]
-size = 150
-use_mipmaps = true
-use_filter = true
-font_data = ExtResource( 1 )
+[sub_resource type="FontFile" id="24"]
+fallbacks = Array[Font]([ExtResource("1")])
+cache/0/16/0/ascent = 0.0
+cache/0/16/0/descent = 0.0
+cache/0/16/0/underline_position = 0.0
+cache/0/16/0/underline_thickness = 0.0
+cache/0/16/0/scale = 1.0
 
 [resource]
-default_font = ExtResource( 2 )
-Label/fonts/font = SubResource( 19 )
-Panel/styles/panel = SubResource( 22 )
-ProgressBar/styles/bg = SubResource( 20 )
-ProgressBar/styles/fg = SubResource( 21 )
-RichTextLabel/fonts/normal_font = SubResource( 24 )
+default_font = ExtResource("2")
+Label/fonts/font = SubResource("19")
+Panel/styles/panel = SubResource("22")
+ProgressBar/styles/bg = SubResource("20")
+ProgressBar/styles/fg = SubResource("21")
+RichTextLabel/fonts/normal_font = SubResource("24")

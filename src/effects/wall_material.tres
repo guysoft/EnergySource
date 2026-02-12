@@ -1,6 +1,6 @@
-[gd_resource type="ShaderMaterial" load_steps=2 format=2]
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://bhuo1ttshnp37"]
 
-[sub_resource type="Shader" id=1]
+[sub_resource type="Shader" id="1"]
 code = "shader_type spatial;
 render_mode unshaded, cull_disabled;
 
@@ -10,7 +10,7 @@ uniform float radius = 1.0;
 uniform float offset = 0.268;
 uniform float power = 1.0;
 uniform bool hide_incomplete = false;
-uniform vec4 color : hint_color = vec4(0.0, 0.6, 1.0, 1.0);
+uniform vec4 color : source_color = vec4(0.0, 0.6, 1.0, 1.0);
 
 float is_in_hex(float hex_radius, vec2 local_point) {
 	const vec2 AXIS[3] = {
@@ -77,11 +77,12 @@ void fragment() {
 }"
 
 [resource]
-shader = SubResource( 1 )
-shader_param/speed_scale = 0.05
-shader_param/scale = 35.0
-shader_param/radius = 1.0
-shader_param/offset = 0.268
-shader_param/power = 4.0
-shader_param/hide_incomplete = false
-shader_param/color = Color( 1, 0.654902, 0, 1 )
+render_priority = 0
+shader = SubResource("1")
+shader_parameter/speed_scale = 0.05
+shader_parameter/scale = 35.0
+shader_parameter/radius = 1.0
+shader_parameter/offset = 0.268
+shader_parameter/power = 4.0
+shader_parameter/hide_incomplete = false
+shader_parameter/color = Color(1, 0.654902, 0, 1)

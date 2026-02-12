@@ -50,19 +50,17 @@ func report_errors(err, filepath):
 		print("Unknown error with file ", filepath, " error code: ", err)
 
 func loadfile(filepath, loop = false, type_override=null):
-	var file = File.new()
-	var err = file.open(filepath, File.READ)
-	if err != OK:
-		report_errors(err, filepath)
-		file.close()
-		return AudioStreamSample.new()
+	var file = FileAccess.open(filepath, FileAccess.READ)
+	if file == null:
+		report_errors(FileAccess.get_open_error(), filepath)
+		return AudioStreamWAV.new()
 
-	var bytes = file.get_buffer(file.get_len())
+	var bytes = file.get_buffer(file.get_length())
 
 	# if File is wav
 	if filepath.ends_with(".wav") or type_override==AUDIO_EXT.WAV:
 
-		var newstream = AudioStreamSample.new()
+		var newstream = AudioStreamWAV.new()
 
 		#---------------------------
 		#parrrrseeeeee!!! :D
@@ -141,9 +139,8 @@ func loadfile(filepath, loop = false, type_override=null):
 
 	#if file is ogg
 	elif filepath.ends_with(".ogg") or type_override==AUDIO_EXT.OGG:
-		var newstream = AudioStreamOGGVorbis.new()
+		var newstream = AudioStreamOggVorbis.load_from_buffer(bytes)
 		newstream.loop = loop #set to false or delete this line if you don't want to loop
-		newstream.data = bytes
 		return newstream
 
 	#if file is mp3

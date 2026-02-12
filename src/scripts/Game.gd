@@ -1,22 +1,22 @@
-extends Spatial
+extends Node3D
 
-export(Environment) var environment:Environment
-export (NodePath) var viewport = null #Unused, here for compatability
-export var start_time_offset = 0
+@export var environment: Environment
+@export var viewport: Viewport = null #Unused, here for compatability
+@export var start_time_offset = 0
 
 var notescene = preload("res://scenes/Note.tscn")
 var obstaclescene = preload("res://scenes/Obstacle.tscn")
 
 # References
-onready var _player = Global.manager()._player
-onready var _beat_player = Global.manager()._beatplayer
-onready var _environment_manager = Global.manager()._environment_manager
-onready var _spawn_location = $SpawnLocation
-onready var _hit_marker = $HitMarker
-onready var travel_distance = $HitMarker.global_transform.origin.distance_to($SpawnLocation.global_transform.origin)
+@onready var _player = Global.manager()._player
+@onready var _beat_player = Global.manager()._beatplayer
+@onready var _environment_manager = Global.manager()._environment_manager
+@onready var _spawn_location = $SpawnLocation
+@onready var _hit_marker = $HitMarker
+@onready var travel_distance = $HitMarker.global_transform.origin.distance_to($SpawnLocation.global_transform.origin)
 
 # how many beats does it take the spawned notes to travel to arvr origin
-onready var notes_delay = 4
+@onready var notes_delay = 4
 
 const MIN_SONG_SPEED = 0.5
 const MAX_SONG_SPEED = 1.5
@@ -29,10 +29,10 @@ var _bounce_time = 0
 var _bounce_freq = 0
 var _bounce_amp = 0.025
 
-onready var _map = null
+@onready var _map = null
 
 #Does this need be unique? Consider moving to a utility singleton
-onready var _rand = RandomNumberGenerator.new()
+@onready var _rand = RandomNumberGenerator.new()
 
 var _time_begin = null
 var _time_delay
@@ -43,6 +43,9 @@ func _ready():
 	_player.in_game = true
 	_player.game_node = self
 	
+	# Connect pause menu button signals to player
+	_connect_pause_menu_signals()
+	
 	var difficulty = GameVariables.difficulty
 	var path = GameVariables.path
 	
@@ -52,6 +55,26 @@ func _ready():
 
 	#begin timer to offset start of song
 	$StartTimer.start()
+
+func _connect_pause_menu_signals():
+	var pause_menu = $PauseMenu
+	if not pause_menu:
+		return
+	
+	var pause_btns = pause_menu.get_node_or_null("SubViewport/PauseContainer/PauseBtns")
+	if not pause_btns:
+		return
+	
+	var resume_btn = pause_btns.get_node_or_null("ResumeBtn")
+	var restart_btn = pause_btns.get_node_or_null("RestartBtn")
+	var menu_btn = pause_btns.get_node_or_null("MenuBtn")
+	
+	if resume_btn:
+		resume_btn.pressed.connect(_player._on_ResumeBtn_pressed)
+	if restart_btn:
+		restart_btn.pressed.connect(_player._on_RestartBtn_pressed)
+	if menu_btn:
+		menu_btn.pressed.connect(_player._on_MenuBtn_pressed)
 	
 
 func setup_song(map:Map):
@@ -59,7 +82,7 @@ func setup_song(map:Map):
 		return
 	_beat_player.stop()
 
-	_beat_player.connect("beat", self, "_on_beat_detected")
+	_beat_player.connect("beat", Callable(self, "_on_beat_detected"))
 	
 	if OS.get_name() == "HTML5":
 		_beat_player.stream = load(map.path + "/song.ogg")
@@ -70,7 +93,7 @@ func setup_song(map:Map):
 	_song_length = _beat_player.stream.get_length()
 	_beat_player.bpm = map.get_bpm()
 	
-	_time_begin = OS.get_ticks_usec() #currently unused
+	_time_begin = Time.get_ticks_usec() #currently unused
 	_time_delay = AudioServer.get_time_to_next_mix() + AudioServer.get_output_latency()
 	#print ("time delay:", time_delay)
 	_song_offset = map.get_offset()
@@ -86,7 +109,7 @@ func setup_environment(map:Map):
 	_environment_manager.environment.adjustment_enabled=true
 	
 	#set color and speed which to move ground and particles
-	$Ground.setup_ground(map.get_bpm(), notes_delay, Color.chocolate)
+	$Ground.setup_ground(map.get_bpm(), notes_delay, Color.CHOCOLATE)
 	$EnvironmentParticles.setup_particles(map.get_bpm(), notes_delay)
 	
 	#position center lights
@@ -145,7 +168,7 @@ func _on_beat_detected(beat):
 	
 	for note in notes:
 		# Spawn note
-		var note_instance = notescene.instance()
+		var note_instance = notescene.instantiate()
 		_spawn_location.add_child(note_instance)
 		
 		var note_speed = calc_object_speed()
@@ -156,7 +179,7 @@ func _on_beat_detected(beat):
 		
 	for obstacle in obstacles:
 		# Spawn obstacle
-		var obstacle_instance = obstaclescene.instance()
+		var obstacle_instance = obstaclescene.instantiate()
 		_spawn_location.add_child(obstacle_instance)
 		
 		var obstacle_speed = calc_object_speed()
@@ -174,7 +197,7 @@ func _on_beat_detected(beat):
 		#if event type is a light event
 		if type <=4:
 			var light = type
-			var material = lights[light].get_child(0).get_surface_material(0) as SpatialMaterial
+			var material = lights[light].get_child(0).get_surface_override_material(0) as StandardMaterial3D
 			#turn off
 			if event["_value"] == 0:
 				lights[light].visible = false
@@ -182,29 +205,29 @@ func _on_beat_detected(beat):
 			if event["_value"] == 1:
 				#material change to blue
 				lights[light].visible = true
-				material.albedo_color = Color.aqua * brightness 
+				material.albedo_color = Color.AQUA * brightness 
 			#flash brightly blue, return to previous state
 			if event["_value"] == 2:
 				lights[light].visible = true
-				material.albedo_color = Color.aqua* brightness 
+				material.albedo_color = Color.AQUA* brightness 
 			#flash brightly blue, fade to black
 			if event["_value"] == 3:
 				lights[light].visible = true
-				material.albedo_color = Color.aqua * brightness 
+				material.albedo_color = Color.AQUA * brightness 
 			#Unused
 			#if event["_value"] == 4:
 			#turn on red
 			if event["_value"] == 5:
 				lights[light].visible = true
-				material.albedo_color = Color.greenyellow * brightness 
+				material.albedo_color = Color.GREEN_YELLOW * brightness 
 			#flash bright red, return to previous
 			if event["_value"] == 6:
 				lights[light].visible = true
-				material.albedo_color = Color.greenyellow * brightness 
+				material.albedo_color = Color.GREEN_YELLOW * brightness 
 			#flash bright red, fade to black
 			if event["_value"] == 7:
 				lights[light].visible = true
-				material.albedo_color = Color.greenyellow * brightness 
+				material.albedo_color = Color.GREEN_YELLOW * brightness 
 		#ring spin, remapped to ground displacement
 		elif type == 8:
 			$GroundBeatResponse.disabled=false
@@ -238,7 +261,7 @@ func set_song_speed(newval, do_lerp = false, lerp_step = 0.05, lerp_delay= 0.05)
 				_beat_player.pitch_scale = lerp(_beat_player.pitch_scale, song_speed, lerp_step)
 				_environment_manager.environment.adjustment_saturation = Utility.remap_value(song_speed,Vector2(0.5,1.5),Vector2(0.0,2.0))
 				Engine.time_scale = lerp(Engine.time_scale, song_speed, lerp_step)
-				yield (get_tree().create_timer(lerp_delay),"timeout")
+				await get_tree().create_timer(lerp_delay).timeout
 	
 	_environment_manager.environment.adjustment_saturation = Utility.remap_value(song_speed,Vector2(0.5,1.5),Vector2(0.0,2.0))
 	_beat_player.pitch_scale = song_speed
@@ -253,7 +276,7 @@ func toggle_speed(target_speed, step, duration_stay, step_delay):
 
 	set_song_speed(target_speed,true,step,step_delay)
 
-	yield(get_tree().create_timer(duration_stay),"timeout")
+	await get_tree().create_timer(duration_stay).timeout
 
 	set_song_speed(1.0,true,step,step_delay)
 	
@@ -270,10 +293,10 @@ func _on_music_finished():
 #triggering a song end callback from the menu music, showing the end of level
 #score card early. Should probably add a secondary audiostream for menu music
 func _on_StartTimer_timeout():
-	var time_left = $ScoreCanvas/Viewport/ReferenceRect/CenterContainer/VBoxContainer/UITimeLeft
+	var time_left = $ScoreCanvas/SubViewport/ReferenceRect/CenterContainer/VBoxContainer/UITimeLeft
 	time_left.time = (_song_length*start_time_offset)+_beat_player.offset
-	_beat_player.play(_song_length*start_time_offset)
-	_beat_player.connect("finished", self, "_on_music_finished")
+	_beat_player.play_music(_song_length*start_time_offset)
+	_beat_player.connect("finished", Callable(self, "_on_music_finished"))
 	Events.emit_signal("song_begin")
 
 
@@ -281,20 +304,20 @@ func _on_EndTimer_timeout():
 	$BigScore/SongFinished.play()
 	$BigScore.visible = true
 	
-	var clear_time = $ScoreCanvas/Viewport/ReferenceRect/CenterContainer/VBoxContainer/UITimeLeft.time
+	var clear_time = $ScoreCanvas/SubViewport/ReferenceRect/CenterContainer/VBoxContainer/UITimeLeft.time
 	var time_multiplier = (_song_length/clear_time)
-	$BigScore/Viewport/ReferenceRect/VBoxContainer/TimeBonus.text = String(stepify(time_multiplier*100, 0.01)) + "%"
+	$BigScore/SubViewport/ReferenceRect/VBoxContainer/TimeBonus.text = str(snapped(time_multiplier*100, 0.01)) + "%"
 	
-	var multiplier_color = Color.white
+	var multiplier_color = Color.WHITE
 	if time_multiplier<0.95:
-		multiplier_color = Color.yellow
+		multiplier_color = Color.YELLOW
 	if time_multiplier<-1.25:
-		multiplier_color = Color.red
+		multiplier_color = Color.RED
 	if time_multiplier>1.05:
-		multiplier_color = Color.aqua
+		multiplier_color = Color.AQUA
 	if time_multiplier>1.25:
-		multiplier_color = Color.green
-	$BigScore/Viewport/ReferenceRect/VBoxContainer/TimeBonus.add_color_override("font_color", multiplier_color)
+		multiplier_color = Color.GREEN
+	$BigScore/SubViewport/ReferenceRect/VBoxContainer/TimeBonus.add_theme_color_override("font_color", multiplier_color)
 	
 	#unimplemented
 	#begin calculation of whether player got a good score
@@ -302,23 +325,23 @@ func _on_EndTimer_timeout():
 	#provide rank and suggestion based on performance
 	var total_notes = _map.get_note_count(_map.get_difficulty())
 	
-	$BigScore/Viewport/ReferenceRect/VBoxContainer/Finished.visible=true
-	yield(get_tree().create_timer(0.5),"timeout")
-	$BigScore/Viewport/ReferenceRect/VBoxContainer/HSeparator2.visible=true
-	$BigScore/Viewport/ReferenceRect/VBoxContainer/TimeBonusLabel.visible=true
-	yield(get_tree().create_timer(0.5),"timeout")
-	$BigScore/Viewport/ReferenceRect/VBoxContainer/TimeBonus.visible=true
-	yield(get_tree().create_timer(0.5),"timeout")
-	$BigScore/Viewport/ReferenceRect/VBoxContainer/ScoreCardLabel.visible=true
-	yield(get_tree().create_timer(0.5),"timeout")
-	$BigScore/Viewport/ReferenceRect/VBoxContainer/UIScore.visible=true
+	$BigScore/SubViewport/ReferenceRect/VBoxContainer/Finished.visible=true
+	await get_tree().create_timer(0.5).timeout
+	$BigScore/SubViewport/ReferenceRect/VBoxContainer/HSeparator2.visible=true
+	$BigScore/SubViewport/ReferenceRect/VBoxContainer/TimeBonusLabel.visible=true
+	await get_tree().create_timer(0.5).timeout
+	$BigScore/SubViewport/ReferenceRect/VBoxContainer/TimeBonus.visible=true
+	await get_tree().create_timer(0.5).timeout
+	$BigScore/SubViewport/ReferenceRect/VBoxContainer/ScoreCardLabel.visible=true
+	await get_tree().create_timer(0.5).timeout
+	$BigScore/SubViewport/ReferenceRect/VBoxContainer/UIScore.visible=true
 	_player.score *= time_multiplier
 
-	yield(get_tree().create_timer(1),"timeout")
-	$BigScore/Viewport/ReferenceRect/VBoxContainer/HSeparator.visible=true
-	$BigScore/Viewport/ReferenceRect/VBoxContainer/HBoxContainer.visible=true
-	$BigScore/Viewport/ReferenceRect/VBoxContainer/HBoxContainer/MenuButton.disabled=false
-	$BigScore/Viewport/ReferenceRect/VBoxContainer/HBoxContainer/RestartButton.disabled=false
+	await get_tree().create_timer(1).timeout
+	$BigScore/SubViewport/ReferenceRect/VBoxContainer/HSeparator.visible=true
+	$BigScore/SubViewport/ReferenceRect/VBoxContainer/HBoxContainer.visible=true
+	$BigScore/SubViewport/ReferenceRect/VBoxContainer/HBoxContainer/MenuButton.disabled=false
+	$BigScore/SubViewport/ReferenceRect/VBoxContainer/HBoxContainer/RestartButton.disabled=false
 	
 	#log_score("gravebud", _player.score)
 	#$Leaderboard.visible = true
@@ -339,10 +362,8 @@ func _on_RestartButton_pressed():
 var screenshot_number=1
 func take_screenshot():
 	viewport = get_viewport()
-	viewport.arvr = true
-	var image = viewport.get_texture().get_data()
+	viewport.use_xr = true
+	var image = viewport.get_texture().get_image()
 	image.flip_y()
-	image.save_png("res://screenshots/screenshot_" + String(screenshot_number) + ".png")
+	image.save_png("res://screenshots/screenshot_" + str(screenshot_number) + ".png")
 	screenshot_number+=1
-
-

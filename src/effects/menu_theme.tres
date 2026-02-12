@@ -1,107 +1,105 @@
-[gd_resource type="Theme" load_steps=16 format=2]
+[gd_resource type="Theme" load_steps=15 format=3 uid="uid://d1fbglwrn3v44"]
 
-[ext_resource path="res://fonts/millimetre-font-64.tres" type="DynamicFont" id=1]
-[ext_resource path="res://fonts/millimetre-font-24.tres" type="DynamicFont" id=2]
-[ext_resource path="res://fonts/millimetre-font-256.tres" type="DynamicFont" id=3]
-[ext_resource path="res://fonts/millimetre-font-128.tres" type="DynamicFont" id=4]
+[ext_resource type="FontFile" uid="uid://c46eoi7k3obk3" path="res://fonts/millimetre-font-64.tres" id="1"]
+[ext_resource type="FontFile" uid="uid://3pf1bwauqjqe" path="res://fonts/millimetre-font-24.tres" id="2"]
+[ext_resource type="FontFile" uid="uid://byemkjra3kgch" path="res://fonts/millimetre-font-128.tres" id="4"]
 
-[sub_resource type="StyleBoxEmpty" id=11]
+[sub_resource type="StyleBoxEmpty" id="11"]
 
-[sub_resource type="StyleBoxEmpty" id=20]
+[sub_resource type="StyleBoxEmpty" id="20"]
 
-[sub_resource type="StyleBoxEmpty" id=21]
+[sub_resource type="StyleBoxEmpty" id="21"]
 
-[sub_resource type="StyleBoxEmpty" id=19]
+[sub_resource type="StyleBoxEmpty" id="19"]
 
-[sub_resource type="StyleBoxEmpty" id=22]
+[sub_resource type="StyleBoxEmpty" id="22"]
 
-[sub_resource type="StyleBoxEmpty" id=27]
+[sub_resource type="StyleBoxEmpty" id="27"]
 
-[sub_resource type="StyleBoxFlat" id=25]
-bg_color = Color( 0.113725, 0.160784, 0.321569, 0.501961 )
+[sub_resource type="StyleBoxFlat" id="25"]
+bg_color = Color(0.113725, 0.160784, 0.321569, 0.501961)
 corner_radius_top_left = 32
 corner_radius_top_right = 32
 corner_radius_bottom_right = 32
 corner_radius_bottom_left = 32
 
-[sub_resource type="StyleBoxEmpty" id=26]
+[sub_resource type="StyleBoxEmpty" id="26"]
 
-[sub_resource type="StyleBoxFlat" id=31]
+[sub_resource type="StyleBoxFlat" id="31"]
 content_margin_left = 32.0
-content_margin_right = 32.0
 content_margin_top = 32.0
+content_margin_right = 32.0
 content_margin_bottom = 32.0
-bg_color = Color( 0.113725, 0.160784, 0.321569, 0.501961 )
+bg_color = Color(0.113725, 0.160784, 0.321569, 0.501961)
 corner_radius_top_left = 32
 corner_radius_top_right = 32
 corner_radius_bottom_right = 32
 corner_radius_bottom_left = 32
 anti_aliasing = false
 
-[sub_resource type="StyleBoxFlat" id=29]
+[sub_resource type="StyleBoxFlat" id="29"]
 content_margin_left = 64.0
-content_margin_right = 64.0
 content_margin_top = 16.0
+content_margin_right = 64.0
 content_margin_bottom = 16.0
-bg_color = Color( 0.1088, 0.120747, 0.16, 0.501961 )
+bg_color = Color(0.1088, 0.120747, 0.16, 0.501961)
 corner_radius_top_left = 32
 corner_radius_top_right = 32
 
-[sub_resource type="StyleBoxFlat" id=30]
+[sub_resource type="StyleBoxFlat" id="30"]
 content_margin_left = 64.0
-content_margin_right = 64.0
 content_margin_top = 16.0
+content_margin_right = 64.0
 content_margin_bottom = 16.0
-bg_color = Color( 0.113725, 0.160784, 0.321569, 0.501961 )
+bg_color = Color(0.113725, 0.160784, 0.321569, 0.501961)
 corner_radius_top_left = 32
 corner_radius_top_right = 32
 anti_aliasing = false
 
 [resource]
-default_font = ExtResource( 2 )
-Button/colors/font_color = Color( 0.556863, 0.556863, 0.556863, 1 )
-Button/colors/font_color_hover = Color( 1, 0.152941, 0.968627, 0.501961 )
-Button/colors/font_color_pressed = Color( 1, 0.152941, 0.968627, 1 )
-Button/fonts/font = ExtResource( 3 )
-Button/styles/disabled = SubResource( 11 )
-Button/styles/focus = SubResource( 20 )
-Button/styles/hover = SubResource( 21 )
-Button/styles/normal = SubResource( 19 )
-Button/styles/pressed = SubResource( 22 )
-CheckBox/fonts/font = null
-CheckButton/fonts/font = null
-ColorPickerButton/fonts/font = null
-Fonts/fonts/large = null
-Fonts/fonts/normal = null
-GraphNode/fonts/title_font = null
-ItemList/colors/font_color = Color( 0.556863, 0.556863, 0.556863, 1 )
-ItemList/colors/font_color_selected = Color( 1, 0.152941, 0.968627, 1 )
+default_font = ExtResource("2")
+Button/colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+Button/colors/font_color_hover = Color(1, 0.152941, 0.968627, 0.501961)
+Button/colors/font_color_pressed = Color(1, 0.152941, 0.968627, 1)
+Button/fonts/font = ExtResource("2")
+Button/styles/disabled = SubResource("11")
+Button/styles/focus = SubResource("20")
+Button/styles/hover = SubResource("21")
+Button/styles/normal = SubResource("19")
+Button/styles/pressed = SubResource("22")
+CheckBox/fonts/font = ExtResource("2")
+CheckButton/fonts/font = ExtResource("2")
+ColorPickerButton/fonts/font = ExtResource("2")
+Fonts/fonts/large = ExtResource("2")
+Fonts/fonts/normal = ExtResource("2")
+GraphNode/fonts/title_font = ExtResource("2")
+ItemList/colors/font_color = Color(0.556863, 0.556863, 0.556863, 1)
+ItemList/colors/font_color_selected = Color(1, 0.152941, 0.968627, 1)
 ItemList/constants/icon_margin = 16
-ItemList/fonts/font = ExtResource( 1 )
-ItemList/styles/bg = SubResource( 27 )
-Label/fonts/font = ExtResource( 4 )
-LineEdit/fonts/font = null
-LinkButton/fonts/font = null
-MenuButton/fonts/font = null
-OptionButton/fonts/font = null
-Panel/styles/panel = SubResource( 25 )
-PopupMenu/fonts/font = null
-ProgressBar/fonts/font = null
-RichTextLabel/fonts/bold_font = null
-RichTextLabel/fonts/bold_italics_font = null
-RichTextLabel/fonts/italics_font = null
-RichTextLabel/fonts/mono_font = null
-RichTextLabel/fonts/normal_font = null
-ScrollContainer/styles/bg = SubResource( 26 )
-TabContainer/colors/font_color_fg = Color( 1, 0.152941, 0.968627, 1 )
-TabContainer/fonts/font = ExtResource( 1 )
-TabContainer/styles/panel = SubResource( 31 )
-TabContainer/styles/tab_bg = SubResource( 29 )
-TabContainer/styles/tab_fg = SubResource( 30 )
-Tabs/fonts/font = null
-TextEdit/fonts/font = null
-ToolButton/fonts/font = null
-TooltipLabel/fonts/font = null
-Tree/fonts/font = null
-Tree/fonts/title_button_font = null
-WindowDialog/fonts/title_font = null
+ItemList/fonts/font = ExtResource("1")
+ItemList/styles/bg = SubResource("27")
+Label/fonts/font = ExtResource("4")
+LineEdit/fonts/font = ExtResource("2")
+LinkButton/fonts/font = ExtResource("2")
+MenuButton/fonts/font = ExtResource("2")
+OptionButton/fonts/font = ExtResource("2")
+Panel/styles/panel = SubResource("25")
+PopupMenu/fonts/font = ExtResource("2")
+ProgressBar/fonts/font = ExtResource("2")
+RichTextLabel/fonts/bold_font = ExtResource("2")
+RichTextLabel/fonts/bold_italics_font = ExtResource("2")
+RichTextLabel/fonts/italics_font = ExtResource("2")
+RichTextLabel/fonts/mono_font = ExtResource("2")
+RichTextLabel/fonts/normal_font = ExtResource("2")
+ScrollContainer/styles/bg = SubResource("26")
+TabBar/fonts/font = ExtResource("2")
+TabContainer/colors/font_color_fg = Color(1, 0.152941, 0.968627, 1)
+TabContainer/fonts/font = ExtResource("1")
+TabContainer/styles/panel = SubResource("31")
+TabContainer/styles/tab_bg = SubResource("29")
+TabContainer/styles/tab_fg = SubResource("30")
+TextEdit/fonts/font = ExtResource("2")
+TooltipLabel/fonts/font = ExtResource("2")
+Tree/fonts/font = ExtResource("2")
+Tree/fonts/title_button_font = ExtResource("2")
+Window/fonts/title_font = ExtResource("2")

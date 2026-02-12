@@ -1,44 +1,74 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=7 format=3 uid="uid://dfvrt1g74wo5l"]
 
-[ext_resource path="res://scripts/GameManager.gd" type="Script" id=1]
-[ext_resource path="res://scenes/Player.tscn" type="PackedScene" id=2]
-[ext_resource path="res://scripts/beat_player.gd" type="Script" id=3]
-[ext_resource path="res://addons/godot-openxr/config/OpenXRConfig.gdns" type="Script" id=6]
-[ext_resource path="res://effects/menu_environment.tres" type="Environment" id=7]
-[ext_resource path="res://scripts/EnvironmentManager.gd" type="Script" id=8]
+[ext_resource type="Script" uid="uid://dtu41n7u2cbs4" path="res://scripts/GameManager.gd" id="1"]
+[ext_resource type="PackedScene" uid="uid://b3mrx5kj7l8vc" path="res://scenes/Player.tscn" id="2"]
+[ext_resource type="Script" uid="uid://do4wn32gg6rng" path="res://scripts/beat_player.gd" id="3"]
+[ext_resource type="Environment" path="res://effects/menu_environment.tres" id="7"]
+[ext_resource type="Script" uid="uid://dytur4u8uamy8" path="res://scripts/EnvironmentManager.gd" id="8"]
+[ext_resource type="PackedScene" uid="uid://ctltchlf2j2r4" path="res://addons/xr-simulator/XRSimulator.tscn" id="9"]
 
 [node name="GameManager" type="Node"]
-script = ExtResource( 1 )
-debug_start_scene = "GGJ2Splash"
+script = ExtResource("1")
+debug_start_scene = "Menu"
 
-[node name="Player" parent="." instance=ExtResource( 2 )]
+[node name="Player" parent="." instance=ExtResource("2")]
+
+[node name="LeftHand" parent="Player/XROrigin3D" index="1"]
+visible = false
+
+[node name="LeftHand" parent="Player/XROrigin3D/LeftHand" index="0"]
+visible = true
+script = null
+
+[node name="Position3D2" parent="Player/XROrigin3D/LeftHand" index="1"]
+transform = Transform3D(1, 0, 0, 0, 0.81915194, -0.5735769, 0, 0.5735769, 0.81915194, 0, 0, 0)
+
+[node name="Marker3D" parent="Player/XROrigin3D/LeftHand/Position3D2" index="0"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, -0.377)
+
+[node name="Handle" parent="Player/XROrigin3D/LeftHand/Position3D2/Marker3D" index="0"]
+transform = Transform3D(1, 0, 0, 0, 0.99999976, 0, 0, 0, 0.99999976, 0, 0.446, 0)
+
+[node name="HandModel" parent="Player/XROrigin3D/RightHand" index="0"]
+script = null
+
+[node name="Marker3D" parent="Player/XROrigin3D/RightHand/Marker3D" index="0"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, -0.377)
+
+[node name="Handle" parent="Player/XROrigin3D/RightHand/Marker3D/Marker3D" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.446, 0)
+
+[node name="CollisionShape3D" parent="Player" index="1"]
+visible = false
+
+[node name="PlayerCenter" parent="Player" index="2"]
+visible = false
 
 [node name="BeatPlayer" type="AudioStreamPlayer" parent="."]
-script = ExtResource( 3 )
+script = ExtResource("3")
 bpm = 109.0
 beat_subdivisions = 1.0
 
 [node name="EnvironmentManager" type="WorldEnvironment" parent="."]
-environment = ExtResource( 7 )
-script = ExtResource( 8 )
+environment = ExtResource("7")
+script = ExtResource("8")
 
-[node name="MaterialCache" type="Spatial" parent="."]
+[node name="MaterialCache" type="Node3D" parent="."]
 
 [node name="PlayerStats" type="Node" parent="."]
 
-[node name="Configuration" type="Node" parent="."]
-script = ExtResource( 6 )
-color_space = 0
-refresh_rate = 0.0
-
 [node name="Button" type="Button" parent="."]
-margin_left = 23.0
-margin_top = 17.0
-margin_right = 88.0
-margin_bottom = 37.0
+offset_left = 23.0
+offset_top = 17.0
+offset_right = 88.0
+offset_bottom = 37.0
 text = "Enter VR"
-__meta__ = {
-"_edit_use_anchors_": false
-}
+
+[node name="XRSimulator" parent="." instance=ExtResource("9")]
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.8660254, 0.12940952, -0.4829629, 0, 0.9659258, 0.25881904, 0.5, -0.22414386, 0.83651626, 0, 0, 0)
+light_color = Color(0.945098, 0.835294, 0.647059, 1)
+light_energy = 1.5
 
 [editable path="Player"]

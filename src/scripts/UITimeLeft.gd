@@ -7,8 +7,8 @@ func _ready():
 	#move to main
 	format_time()
 	set_process(false)
-	Events.connect("song_begin", self, "_on_song_begin")
-	Events.connect("song_end", self, "_on_song_end")
+	Events.connect("song_begin", Callable(self, "_on_song_begin"))
+	Events.connect("song_end", Callable(self, "_on_song_end"))
 
 func _on_song_begin():
 	set_process(true)
